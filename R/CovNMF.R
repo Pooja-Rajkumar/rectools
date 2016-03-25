@@ -15,16 +15,16 @@
 
 # if already have the predictive vals, call getnmf() directory
 
-covnmf <- function(narrowrat,k) {
+covNMF <- function(narrowrat,k) {
    nc <- ncol(narrowrat)
    if (nc > 3) {
       narrowrat[,3] <- narrowrat[,3] - getpreds(narrowrat)
 
    }
-   getnmf(narrowrat,k)
+   getNMF(narrowrat,k)
 }
 
-getpreds <- function(narrowrat) {
+getPreds <- function(narrowrat) {
       nrw <- as.matrix(narrowrat)
       tmp <- lm(nrw[,3],nrw[,4:nc])
       predict(tmp,nrw[,4:nc])
@@ -32,7 +32,7 @@ getpreds <- function(narrowrat) {
 
 ###################    getnmf()   ##############################
 
-getnmf <- function(narrowrat,k) {
+getNMF <- function(narrowrat,k) {
    require(NMF)
    a <- buildMatrix(narrowrat)
    nmfout <- nmf(a,k)
