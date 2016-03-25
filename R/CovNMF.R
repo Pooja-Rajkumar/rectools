@@ -34,22 +34,10 @@ getpreds <- function(narrowrat) {
 
 getnmf <- function(narrowrat,k) {
    require(NMF)
-   a <- formfullmat(narrowrat)
+   a <- buildMatrix(narrowrat)
    nmfout <- nmf(a,k)
    w <- nmfout@fit@W
    h <- nmfout@fit@H
    w %*% h
-}
-
-formfullmat <- function(narrowrat) {
-   nuser <- length(table(narrowrat[,1]))
-   nitem <- length(table(narrowrat[,2]))
-   tmp <- matrix(rep(0,nuser*nitem),nrow=nuser)
-   for (m in 1:nrow(narrowrat)) {
-      i <- narrowrat[m,1]
-      j <- narrowrat[m,2]
-      tmp[i,j] <- narrowrat[m,3]
-   }
-   tmp
 }
 
