@@ -19,7 +19,7 @@ covNMF <- function(narrowrat,k) {
    nc <- ncol(narrowrat)
    if (nc > 3) {
       narrowrat[,3] <- narrowrat[,3] - getpreds(narrowrat)
-
+      narrowrat <- pmax(narrowrat,0)
    }
    getNMF(narrowrat,k)
 }
