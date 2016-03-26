@@ -11,7 +11,7 @@ buildMatrix(data)
 }
 
 \arguments{
-	\item{data} {any given data set with minimum 3 columns}
+	\item{data}{any given data set with minimum 3 columns}
 }
 \details{
 	The \code{buildMatrix} function inputs a user ratings matrix, and returns a new matrix 
