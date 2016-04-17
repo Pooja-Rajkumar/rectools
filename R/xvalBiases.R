@@ -28,14 +28,19 @@ xvalBiases <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
   # predict the cases in the test set
   testA$pred = 
      Yi.[as.character(testA[,1])] + Y.j[as.character(testA[,2])] - Y..
-print(testA)
+  numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
+  result = list(ndata=nrow(ratingsIn),trainprop=trainprop,
+     accmeasure=accmeasure,numpredna=numpredna)
   if (accmeasure == 'exact') {
      testA$pred = round(testA$pred)
-     return(mean(testA$pred == testA[,3],na.rm=TRUE))
+     acc = mean(testA$pred == testA[,3],na.rm=TRUE)
   } else if (accmeasure == 'mad') {
-     return(mean(abs(testA$pred-testA[,3]),na.rm=TRUE))
+     acc = mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
   }
+  result$acc = acc
+  class(result) <- 'xvalb'
+  result
 }
 
 # check
