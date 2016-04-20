@@ -13,7 +13,8 @@
 #      Y..: grand mean (0 if have covariates)
 #      Yi.: vector of mean ratings for each user
 #      Y.j: vector of mean ratings for each item
-#      regCoefs: if have covariates, the regression coefficients
+#      regOjb: if have covariates, object of class 'lm' from
+#              the regression op
 
 findYdots <- function(ratingsIn) {
   users = ratingsIn[,1]
@@ -31,7 +32,7 @@ findYdots <- function(ratingsIn) {
   Yi. = tapply(ratings,users,mean) # means of all ratings per user
   Y.j = tapply(ratings,items,mean) # means of all ratings per item
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
-  if (haveCovs) ydots$regCoefs = coef(lmout)
+  if (haveCovs) ydots$regOb = lmout
   class(ydots) = 'ydots'
   ydots
 } 
