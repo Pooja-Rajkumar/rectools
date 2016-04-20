@@ -1,38 +1,37 @@
 
 # arguments:
 
-#   ratingsIn: raw data, with each row of the form (user, item, rating)
-#   keepUsrs: if TRUE, keep split by users
-#   keepItms: if TRUE, keep split by items
+#   ratingsIn: raw data, with each row of the form (user, item,
+#      rating,...), where the ellipsis indicates optional covariates;
+#      later prediction presumes the same input format, minus the
+#      ratings column
 
 # value:
 
 #   S3 class of type "ydots", with components:
 
-#      Y..: grand mean
+#      Y..: grand mean (0 if have covariates)
 #      Yi.: vector of mean ratings for each user
 #      Y.j: vector of mean ratings for each item
-#      grpByUsrs: a list showing all the items rated by each user
-#      grpByItms: a list showing all the users who  rated each item
+#      regCoefs: if have covariates, the regression coefficients
 
-findYdots <- function(ratingsIn,keepUsrs=FALSE,keepItms=FALSE){
+findYdots <- function(ratingsIn) {
   users = ratingsIn[,1]
   items = ratingsIn[,2]
   ratings = ratingsIn[,3]
-  Y.. = mean(ratings) # this is Y..
-  if (keepUsrs) {
-     grpByUsrs = split(items,users)
-     Yi. = sapply(grpByUsrs,mean)
-  } else
-     Yi. = tapply(ratings,users,mean) # means of all ratings per user
-  if (keepItms) {
-     grpByItms = split(users,items)
-     Y.j = sapply(grpByItms,mean)
-  } else
-     Y.j = tapply(ratings,items,mean) # means of all ratings per item
-  ydots = list(GrandMean=Y..,UsrMeans=Yi.,ItmMeans=Y.j)
-  if (keepUsrs) ydots$grpByUsrs = grpByUsrs
-  if (keepItms) ydots$grpByItms = grpByItms
+  nms <- names(ratingsIn)
+  haveCovs = ncol(ratingsIn) > 3
+  if (haveCovs) {
+     frml = as.formula(paste(nms[3],'~ .'))
+     lmout = lm(frml,data=ratingsIn[,-(1:2)])
+     fits = lmout$fitted.values
+     ratings = ratings - fits
+     Y.. = 0
+  } else Y.. = mean(ratings) 
+  Yi. = tapply(ratings,users,mean) # means of all ratings per user
+  Y.j = tapply(ratings,items,mean) # means of all ratings per item
+  ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
+  if (haveCovs) ydots$regCoefs = coef(lmout)
   class(ydots) = 'ydots'
   ydots
 } 
@@ -43,8 +42,9 @@ checkyd <- function() {
       data.frame(userID = c(1,3,2,1,2),itemID = c(1,1,3,2,3),ratings=6:10)
    print(check)
    print(findYdots(check))
-   print(findYdots(check,keepUsrs=T))
-   print(findYdots(check,keepItms=T))
+   check$cv <- c(1,4,6,2,10)
+   print(check)
+   print(findYdots(check))
 }
 
 
