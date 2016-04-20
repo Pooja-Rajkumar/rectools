@@ -15,25 +15,21 @@
 ### temporarily call our method the Additive method
 
 xvalAdd <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
-  # split into training and validation sets 
-  rowNum = floor(trainprop * nrow(ratingsIn))
-  trainingSet = ratingsIn[1:rowNum ,]
+  # split into random training and validation sets 
+  nrowRatin = nrow(ratingsIn)
+  rowNum = floor(trainprop * nrowRatin)
+  trainIdxs = sample(1:nrow(ratingsIn),rowNum)
+  trainingSet = ratingsIn[trainIdxs, ]
   trainRatings = trainingSet[,3]
   trainItems = trainingSet[,2]
   trainUsers = trainingSet[,1]
   # get means
   means = findYdots(trainingSet)
-  Y.. = means$grandMean
-  Yi. = means$usrMeans
-  Y.j = means$itmMeans
-  testA = ratingsIn[(rowNum+1):nrow(ratingsIn),]
-  haveCovs = ncol(testA) > 3
-  browser()
-  # predict the cases in the test set
-  testA$pred = 
-     Yi.[as.character(testA[,1])] + Y.j[as.character(testA[,2])] - Y..
-  if (haveCovs) 
-     testA$pred = testA$pred + predict(means$regObj,testA[,-(1:3)])
+  # Y.. = means$grandMean
+  # Yi. = means$usrMeans
+  # Y.j = means$itmMeans
+  testA = ratingsIn[setdiff(1:nrowRatin,trainIdxs),]
+  testA$pred = predict(means,testA[,-3])  # predict.ydots
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
   result = list(ndata=nrow(ratingsIn),trainprop=trainprop,
@@ -47,6 +43,20 @@ xvalAdd <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
   result$acc = acc
   class(result) <- 'xvalb'
   result
+}
+
+# predict() method for the 'ydots' class
+#
+# testSet in same form as ratingsIn in findYdots(), except that there 
+# is no ratings column; regObj is as in the output of findYdots()
+#
+# returns vector of predicted values for testSet
+predict.ydots <- function(ydotsObj,testSet) {
+   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] + 
+      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
+   if (!is.null(ydotsObj$regObj))
+      testSet$pred = testSet$pred + predict(ydotsObj$regObj,testSet[,-(1:2)])
+   testSet$pred
 }
 
 # check
