@@ -32,7 +32,7 @@ findYdots <- function(ratingsIn) {
   Yi. = tapply(ratings,users,mean) # means of all ratings per user
   Y.j = tapply(ratings,items,mean) # means of all ratings per item
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
-  if (haveCovs) ydots$regOb = lmout
+  if (haveCovs) ydots$regObj = lmout
   class(ydots) = 'ydots'
   ydots
 } 
