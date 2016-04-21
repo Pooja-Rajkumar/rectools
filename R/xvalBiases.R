@@ -14,7 +14,8 @@
 
 ### temporarily call our method the Additive method
 
-xvalAdd <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
+xvalAdd <- function(ratingsIn, trainprop=0.5,
+    accmeasure=c('exact','mad','rms')){
   # split into random training and validation sets 
   nrowRatin = nrow(ratingsIn)
   rowNum = floor(trainprop * nrowRatin)
@@ -32,6 +33,7 @@ xvalAdd <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
   testA$pred = predict(means,testA[,-3])  # predict.ydots
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
+  accmeasure = match.arg(accmeasure)
   result = list(ndata=nrow(ratingsIn),trainprop=trainprop,
      accmeasure=accmeasure,numpredna=numpredna)
   if (accmeasure == 'exact') {
@@ -39,6 +41,8 @@ xvalAdd <- function(ratingsIn, trainprop=0.5,accmeasure='exact'){
      acc = mean(testA$pred == testA[,3],na.rm=TRUE)
   } else if (accmeasure == 'mad') {
      acc = mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
+  } else if (accmeasure == 'rms') {
+     acc = sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
   }
   result$acc = acc
   class(result) <- 'xvalb'
