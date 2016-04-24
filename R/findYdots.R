@@ -1,10 +1,11 @@
 
 # arguments:
 
-#   ratingsIn: raw data, with each row of the form (user, item,
-#      rating,...), where the ellipsis indicates optional covariates;
-#      later prediction presumes the same input format, minus the
-#      ratings column
+#   ratingsIn: input data, with first cols (userID,itemID,rating,
+#              covariates); data frame, unless cls is non-null, in which
+#              case this argument is the quoted name of the distributed 
+#              data frame
+#   cls: an R 'parallel' cluster
 
 # value:
 
@@ -16,7 +17,8 @@
 #      regOjb: if have covariates, object of class 'lm' from
 #              the regression op
 
-findYdots <- function(ratingsIn) {
+findYdots <- function(ratingsIn,cls=NULL) {
+  require(partools)
   users = ratingsIn[,1]
   items = ratingsIn[,2]
   ratings = ratingsIn[,3]
@@ -29,8 +31,17 @@ findYdots <- function(ratingsIn) {
      ratings = ratings - fits
      Y.. = 0
   } else Y.. = mean(ratings) 
-  Yi. = tapply(ratings,users,mean) # means of all ratings per user
-  Y.j = tapply(ratings,items,mean) # means of all ratings per item
+  if (is.null(cls)) {
+     Yi. = tapply(ratings,users,mean) # means of all ratings per user
+     Y.j = tapply(ratings,items,mean) # means of all ratings per item
+  } else {
+     cmd = paste('names(',ratingsIn,') = c("uID","iID","rating")',sep="")
+browser()
+     clusterExport(cls,cmd,env=environment())
+     clusterEvalQ(cls,docmd(cmd))
+     Yi. = distribmeans(cls,'rating','uID',ratingsIn)
+     Y.j = distribmeans(cls,'rating','iID',ratingsIn)
+  }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   if (haveCovs) ydots$regObj = lmout
   class(ydots) = 'ydots'
