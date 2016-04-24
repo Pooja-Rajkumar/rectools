@@ -19,33 +19,41 @@
 
 findYdots <- function(ratingsIn,cls=NULL) {
   require(partools)
-  users = ratingsIn[,1]
-  items = ratingsIn[,2]
-  ratings = ratingsIn[,3]
-  nms <- names(ratingsIn)
-  haveCovs = ncol(ratingsIn) > 3
-  if (haveCovs) {
-     frml = as.formula(paste(nms[3],'~ .'))
-     lmout = lm(frml,data=ratingsIn[,-(1:2)])
-     fits = lmout$fitted.values
-     ratings = ratings - fits
-     Y.. = 0
-  } else Y.. = mean(ratings) 
   if (is.null(cls)) {
-     Yi. = tapply(ratings,users,mean) # means of all ratings per user
-     Y.j = tapply(ratings,items,mean) # means of all ratings per item
+     users = ratingsIn[,1]
+     items = ratingsIn[,2]
+     ratings = ratingsIn[,3]
+     nms <- names(ratingsIn)
+     haveCovs = ncol(ratingsIn) > 3
+     if (haveCovs) {
+        frml = as.formula(paste(nms[3],'~ .'))
+        lmout = lm(frml,data=ratingsIn[,-(1:2)])
+        fits = lmout$fitted.values
+        ratings = ratings - fits
+        Y.. = 0
+     } else Y.. = mean(ratings) 
+        Yi. = tapply(ratings,users,mean) # means of all ratings per user
+        Y.j = tapply(ratings,items,mean) # means of all ratings per item
   } else {
-     cmd = paste('names(',ratingsIn,') = c("uID","iID","rating")',sep="")
-browser()
-     clusterExport(cls,cmd,env=environment())
+     # find haveCovs
+     cmd = sprintf('ncol(%s)',ratingsIn)
+     clusterExport(cls,'cmd',envir=environment())
+     haveCovs = clusterEvalQ(cls,docmd(cmd))[[1]] > 3
+     # set names at workers
+     nms = c('uID','iID','rating')
+     cmd = paste('names(',ratingsIn,') <<- nms',sep="")
+     clusterExport(cls,c('nms','cmd'),envir=environment())
      clusterEvalQ(cls,docmd(cmd))
-     Yi. = distribmeans(cls,'rating','uID',ratingsIn)
-     Y.j = distribmeans(cls,'rating','iID',ratingsIn)
+     # get means
+     tmp = distribmeans(cls,'rating','uID',ratingsIn,saveni=TRUE)
+     Y.. = sum(tmp[,2]*tmp[,3]) / sum(tmp[,3])
+     Yi. = tmp[,2]
+     Y.j = distribmeans(cls,'rating','iID',ratingsIn)[,2]
   }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   if (haveCovs) ydots$regObj = lmout
   class(ydots) = 'ydots'
-  ydots
+  invisible(ydots)
 } 
 
 # check
