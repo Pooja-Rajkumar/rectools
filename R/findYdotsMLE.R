@@ -19,26 +19,31 @@ WORK IN PROGRESS
 #      regOjb: if have covariates, object of class 'lm' from
 #              the regression op
 
-findYdotsMLE <- function(ratingsIn,cls=NULL) {
+findYdotsMLE <- function(ratingsInName,cls=NULL) {
   require(partools)
   if (is.null(cls)) {
+     ratingsIn <- get(ratingsInName)
      users = ratingsIn[,1]
      items = ratingsIn[,2]
      ratings = ratingsIn[,3]
      nms <- names(ratingsIn)
      haveCovs = ncol(ratingsIn) > 3
-     if (haveCovs) {
-        frml = as.formula(paste(nms[3],'~ .'))
-        lmout = lm(frml,data=ratingsIn[,-(1:2)])
-        fits = lmout$fitted.values
-        ratings = ratings - fits
-        Y.. = 0
+     if (!haveCovs) {
+        tmp = sprintf('%s ~ (1|%s) + (1|%s)',
+           nms[3],nms[1],nms[2])
+        frml = as.formula(paste(tmp)
+        lmerout = lmer(frml,data=ratingsIn)
+        Y.. = fixef(lmerout)
      } else Y.. = mean(ratings) 
-        Yi. = tapply(ratings,users,mean) # means of all ratings per user
-        Y.j = tapply(ratings,items,mean) # means of all ratings per item
+     clm <- coef(lmerout)
+clm$V1[,1][196]  # est. alpha_196
+clm$V2[,1][242]  # est. beta_242
+
+     Yi. = tapply(ratings,users,mean) # means of all ratings per user
+     Y.j = tapply(ratings,items,mean) # means of all ratings per item
   } else {
      # find haveCovs
-     stop('covariate feature not implemented yet')
+     stop('paralel feature not implemented yet')
   }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   if (haveCovs) ydots$regObj = lmout
