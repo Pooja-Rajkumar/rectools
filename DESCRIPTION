@@ -2,11 +2,11 @@ Package: rectools
 Version: 1.0.0
 Author: Pooja Rajkumar <prajkumar@ucdavis.edu>, Norm Matloff <normmatloff@gmail.com>
 Maintainer: Norm Matloff <normmatloff@gmail.com>
-Date: 03/23/2016
+Date: 04/30/2016
 Title: Advanced Recommender System
 Description: Tools for covariate-oriented recommender systems, with
    parallel computation.
-Depends: parallel, partools
+Depends: partools, lme4
 LazyLoad: no
 ByteCompile: yes
 NeedsCompilation: no

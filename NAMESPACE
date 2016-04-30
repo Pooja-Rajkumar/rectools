@@ -1,3 +1,5 @@
 
-export(covNMF,getNMF,getPreds,buildMatrix,findYdots,predict.ydots,xValAdd)
+export(findYdots,predict.ydots,
+       findYdotsMLE,predict.ydotsMLE,
+       xValAdd,xvalMLE))
 

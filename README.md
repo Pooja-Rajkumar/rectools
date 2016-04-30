@@ -1,11 +1,70 @@
 # rectools
 Advanced package for recommender systems.
 
-We allow the user to incorporate user and item covariate information, and offer other capabilities not seen in other packages.
+We allow the user to incorporate user and item covariate information,
+and offer other capabilities not seen in other packages, as well as
+adding parallel computation to some popular methods..
 
-Main functions included so far:
+Here is a quick example:
 
-   * covNMF(), which adds a covariate capability to the nonnegative matrix factorization approach to recommender systems.
-   * buildMatrix(), which builds a new matrix from a given data set to represent a user ratings matrix in which the users are the rows,       the item they are rating is the columns, and the values are the ratings.
-   * Various utilities.
+A simple latent factor model is
+
+E(Yij =  mu + alphai + betaj
+
+where Yij is the rating of item j by user i, with alphai and betaj
+being specific latent effects for user i and item j.
+
+A simple Method of Moments approach would estimate alphai by
+Yi. - Y.., where the first term is the mean of all observed ratings by
+user i and the second is the overall mean of all ratings.  We estimate
+betaj similarly.  The predicted value of Yij is then
+
+Yi. + Y.j - Y..
+
+Under a Maximum Likelihood approach, the alphai and betaj are assumed to
+have a normal distribution.  
+
+> library(lme4)
+> data(InstEval)
+> ivl <- InstEval
+> ivl$s <- as.numeric(ivl$s)
+> ivl$d <- as.numeric(ivl$d)
+> ivlnocovs <- ivl[,c(1,2,7)]
+> xvalAdd(ivlnocovs)
+$ndata
+[1] 73421
+
+$trainprop
+[1] 0.5
+
+$accmeasure
+[1] "exact"
+
+$numpredna
+[1] 48
+
+$acc
+[1] 0.2732182
+
+attr(,"class")
+[1] "xvalb"
+> xvalMLE(ivlnocovs)
+$ndata
+[1] 73421
+
+$trainprop
+[1] 0.5
+
+$accmeasure
+[1] "exact"
+
+$numpredna
+[1] 29
+
+$acc
+[1] 0.2315305
+
+attr(,"class")
+[1] "xvalb"
+
 
