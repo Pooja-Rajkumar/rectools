@@ -18,7 +18,7 @@
 #              the regression op
 
 findYdotsMLE <- function(ratingsIn,cls=NULL) {
-  require(partools)
+  require(lme4)
   if (is.null(cls)) {
      users = ratingsIn[,1]
      items = ratingsIn[,2]
@@ -33,16 +33,33 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
         Y.. = fixef(lmerout)
         clm = coef(lmerout)
         Yi. = clm[[nms[1]]][,1]
+        names(Yi.) = as.character(unique(ratingsIn[,1]))
         Y.j = clm[[nms[2]]][,1]
+        names(Y.j) = as.character(unique(ratingsIn[,2]))
      } 
   } else {
      stop('parallel feature not implemented yet')
   }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   if (haveCovs) ydots$regObj = lmout
-  class(ydots) = 'ydots'
+  class(ydots) = 'ydotsMLE'
   invisible(ydots)
-} 
+}
+
+# predict() method for the 'ydotsMLE' class
+#
+# testSet in same form as ratingsIn in findYdots(), except that there 
+# is no ratings column; regObj is as in the output of findYdots()
+#
+# returns vector of predicted values for testSet
+predict.ydotsMLE <- function(ydotsObj,testSet) {
+   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] +
+      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
+   if (!is.null(ydotsObj$regObj))
+      testSet$pred = testSet$pred +
+         predict(ydotsObj$regObj,testSet[,-(1:2)])
+   testSet$pred
+}
 
 # check
 checkyd <- function() {

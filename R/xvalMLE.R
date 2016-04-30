@@ -1,5 +1,5 @@
 
-# splits input data into training and test sets, fits "ydots" model on
+# splits input data into training and test sets, fits "lme4" model on
 # the former, then predicts the latter
 
 # arguments:
@@ -12,7 +12,7 @@
 #   accmeasure: accuracy measure; 'exact', 'mad', 'rms' for
 #               prop of exact matches, mean absolute error, and
 #               root-mean square error
-#   cls: if non-null, 
+#   cls: if non-null, do this in parallel
 
 # value:
 
@@ -20,7 +20,7 @@
 
 ### temporarily call our method the Additive method
 
-xvalAdd <- function(ratingsIn, trainprop=0.5,
+xvalMLE <- function(ratingsIn, trainprop=0.5,
     accmeasure=c('exact','mad','rms'),cls=NULL){
   if(!is.null(cls)) stop('parallel version under construction')
   if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
@@ -33,7 +33,7 @@ xvalAdd <- function(ratingsIn, trainprop=0.5,
   trainItems = trainingSet[,2]
   trainUsers = trainingSet[,1]
   # get means
-  means = findYdots(trainingSet,cls)
+  means = findYdotsMLE(trainingSet,cls)
   # Y.. = means$grandMean
   # Yi. = means$usrMeans
   # Y.j = means$itmMeans

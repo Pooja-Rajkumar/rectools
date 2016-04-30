@@ -35,17 +35,22 @@ findYdots <- function(ratingsIn,cls=NULL) {
      Yi. = tapply(ratings,users,mean) # means of all ratings per user
      Y.j = tapply(ratings,items,mean) # means of all ratings per item
   } else {
+     stop('parallel version under construction')
      # find haveCovs
      cmd = sprintf('ncol(%s)',ratingsIn)
-     clusterExport(cls,'cmd',envir=environment())
-     haveCovs = clusterEvalQ(cls,docmd(cmd))[[1]] > 3
+     # clusterExport(cls,'cmd',envir=environment())
+     # haveCovs = clusterEvalQ(cls,docmd(cmd))[[1]] > 3
+     haveCovs = evalq(cmd) > 3
      # set names at workers
      nms = c('uID','iID','rating')
      cmd = paste('names(',ratingsIn,') <<- nms',sep="")
      clusterExport(cls,c('nms','cmd'),envir=environment())
      clusterEvalQ(cls,docmd(cmd))
      # get means
-     tmp = distribmeans(cls,'rating','uID',ratingsIn,saveni=TRUE)
+     cmd = sprintf('tapply(%s[,3],%s[,1],sumnum)',ratingsIn,ratingsIn)
+     clusterExport(cls,c('sumnum','cmd'),envir=environment())
+     tmp = clusterEvalQ(cls,docmd(cmd))
+     tmpcb = Reduce(cbind,tmp)
      Y.. = sum(tmp[,2]*tmp[,3]) / sum(tmp[,3])
      Yi. = tmp[,2]
      Y.j = distribmeans(cls,'rating','iID',ratingsIn)[,2]
