@@ -32,8 +32,8 @@ findYdots <- function(ratingsIn,cls=NULL) {
         ratings = ratings - fits
         Y.. = 0
      } else Y.. = mean(ratings) 
-        Yi. = tapply(ratings,users,mean) # means of all ratings per user
-        Y.j = tapply(ratings,items,mean) # means of all ratings per item
+     Yi. = tapply(ratings,users,mean) # means of all ratings per user
+     Y.j = tapply(ratings,items,mean) # means of all ratings per item
   } else {
      # find haveCovs
      cmd = sprintf('ncol(%s)',ratingsIn)
