@@ -67,4 +67,17 @@ checkyd <- function() {
    print(findYdots(check))
 }
 
+# predict() method for the 'ydots' class
+#
+# testSet in same form as ratingsIn in findYdots(), except that there 
+# is no ratings column; regObj is as in the output of findYdots()
+#
+# returns vector of predicted values for testSet
+predict.ydots <- function(ydotsObj,testSet) {
+   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] + 
+      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
+   if (!is.null(ydotsObj$regObj))
+      testSet$pred = testSet$pred + predict(ydotsObj$regObj,testSet[,-(1:2)])
+   testSet$pred
+}
 
