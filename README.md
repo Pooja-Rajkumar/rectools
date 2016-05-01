@@ -24,13 +24,16 @@ Yi. + Y.j - Y..
 Under a Maximum Likelihood approach, the alphai and betaj are assumed to
 have a normal distribution.  
 
+Let's try it out (some output has been omitted for clarity):
+
 > library(lme4)
 > data(InstEval)
 > ivl <- InstEval
 > ivl$s <- as.numeric(ivl$s)
 > ivl$d <- as.numeric(ivl$d)
 > ivlnocovs <- ivl[,c(1,2,7)]
-> xvalAdd(ivlnocovs)
+> xva <- xvalAdd(ivlnocovs)
+> xva
 $ndata
 [1] 73421
 
@@ -48,6 +51,10 @@ $acc
 
 attr(,"class")
 [1] "xvalb"
+
+# in cross-validation, the simple latent factor model predicted 27% of
+# the ratings exactly correctly
+
 > xvalMLE(ivlnocovs)
 $ndata
 [1] 73421
@@ -66,5 +73,18 @@ $acc
 
 attr(,"class")
 [1] "xvalb"
+# the accuracy was somewhat less for MLE
 
+# here is how to predict individual cases
+# simple latent factors
+> fyd <- findYdots(ivlnocovs)
+> predict(fyd,matrix(c(3,88),nrow=1))
+4.109381 
+# MLE
+> fydmle <- findYdotsMLE(ivlnocovs)
+> predict(fydmle,matrix(c(3,88),nrow=1))
+3.787764 
+
+The package allows the user to incorporate covariate data, and to run
+these and other methods in parallel.
 
