@@ -5,7 +5,7 @@ We allow the user to incorporate user and item covariate information,
 and offer other capabilities not seen in other packages, as well as
 adding parallel computation to some popular methods.
 
-Here is a quick example:
+QUICK FIRST EXAMPLES:
 
 A simple latent factor model is
 
@@ -84,6 +84,8 @@ attr(,"class")
 > fydmle <- findYdotsMLE(ivlnocovs)
 > predict(fydmle,matrix(c(3,88),nrow=1))
 3.787764 
+
+INCORPORATING COVARIATES:
 
 The package allows the user to incorporate covariate data, and to run
 these and other methods in parallel.
