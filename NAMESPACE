@@ -1,5 +1,5 @@
 
 export(findYdots,predict.ydots,
        findYdotsMLE,predict.ydotsMLE,
-       xValAdd,xvalMLE))
+       xvalMM,xvalMLE)
 

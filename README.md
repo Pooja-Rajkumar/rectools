@@ -3,13 +3,13 @@ Advanced package for recommender systems.
 
 We allow the user to incorporate user and item covariate information,
 and offer other capabilities not seen in other packages, as well as
-adding parallel computation to some popular methods..
+adding parallel computation to some popular methods.
 
 Here is a quick example:
 
 A simple latent factor model is
 
-E(Yij =  mu + alphai + betaj
+E(Yij) =  mu + alphai + betaj
 
 where Yij is the rating of item j by user i, with alphai and betaj
 being specific latent effects for user i and item j.
@@ -32,7 +32,7 @@ Let's try it out (some output has been omitted for clarity):
 > ivl$s <- as.numeric(ivl$s)
 > ivl$d <- as.numeric(ivl$d)
 > ivlnocovs <- ivl[,c(1,2,7)]
-> xva <- xvalAdd(ivlnocovs)
+> xva <- xvalMM(ivlnocovs)
 > xva
 $ndata
 [1] 73421

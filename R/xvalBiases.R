@@ -18,9 +18,7 @@
 
 #    accuracy value
 
-### temporarily call our method the Additive method
-
-xvalAdd <- function(ratingsIn, trainprop=0.5,
+xvalMM <- function(ratingsIn, trainprop=0.5,
     accmeasure=c('exact','mad','rms'),cls=NULL){
   if(!is.null(cls)) stop('parallel version under construction')
   if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
@@ -62,10 +60,10 @@ checkxv <- function(trainprop=0.5,acc='mad') {
    check <- 
       data.frame(userID = c(1,3,2,1,2,3),itemID = c(1,1,3,2,3,3),ratings=5:10)
    print(check)
-   print(xValAdd(check,trainprop,acc))
-   check$cv = c(1,2,8,6,3,3)
+   print(xvalMM(check,trainprop,acc))
+   check$cv = c(1,2,8,6,3,3)  # covariate
    print(check)
-   print(xvalAdd(check,trainprop,acc))
+   print(xvalMM(check,trainprop,acc))
 }
 
 
