@@ -31,7 +31,10 @@ Let's try it out (some output has been omitted for clarity):
 > ivl <- InstEval
 > ivl$s <- as.numeric(ivl$s)
 > ivl$d <- as.numeric(ivl$d)
+> ivl$studage <- as.numeric(ivl$studage)
+> ivl$lectage <- as.numeric(ivl$lectage)
 > ivlnocovs <- ivl[,c(1,2,7)]
+> ivlcovs <- ivl[,c(1,2,7,3:6)]
 > xva <- xvalMM(ivlnocovs)
 > xva
 $ndata
@@ -89,4 +92,11 @@ INCORPORATING COVARIATES:
 
 The package allows the user to incorporate covariate data, and to run
 these and other methods in parallel.
+
+> xvalMM(ivlcovs)
+...
+$acc
+[1] 0.2726306
+
+Actually, using the covariates in this case didn't help.
 
