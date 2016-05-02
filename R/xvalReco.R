@@ -7,8 +7,9 @@ xvalReco <- function(newdata, trainprop = 0.5,
 {
   library(recosystem)
   r <- Reco()
-  trainRow = floor(trainprop*nrow(newdata))
-  trainidxs = sample(1:nrow(newdata),trainRow)
+  rownew = nrow(newdata)
+  trainRow = floor(trainprop*rownew)
+  trainidxs = sample(1:rownew,trainRow)
   trainSet = newdata[trainidxs,]
   testSet = newdata[setdiff(1:nrow(newdata),trainidxs),]
   write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
@@ -18,6 +19,7 @@ xvalReco <- function(newdata, trainprop = 0.5,
   p <- res$P
   q <- res$Q
   apred <- p %*% t(q)
+  print(head(apred))
   numpredna = sum(is.na(apred))
   accmeasure = match.arg(accmeasure)
   result = list(ndata =nrow(newdata),trainprop = trainprop, 
@@ -25,11 +27,11 @@ xvalReco <- function(newdata, trainprop = 0.5,
   if(accmeasure == 'exact'){
     apred = round(apred)
     acc = mean(apred == testSet[,3],na.rm = TRUE)
+    
   } else if (accmeasure == 'mad'){
     acc = mean(abs(apred-testSet[,3]), na.rm = TRUE)
   } else if (accmeasure == 'rms'){
     acc = sqrt(mean((apred-testSet[,3])^2,na.rm = TRUE))
-    
   }
   result$acc = acc 
   class(result) <- 'xvalreco'
