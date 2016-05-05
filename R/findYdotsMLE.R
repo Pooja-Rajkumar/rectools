@@ -29,14 +29,24 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
         tmp = sprintf('%s ~ (1|%s) + (1|%s)',
            nms[3],nms[1],nms[2])
         frml = as.formula(paste(tmp))
-        lmerout = lmer(frml,data=ratingsIn)
-        Y.. = fixef(lmerout)
-        clm = coef(lmerout)
-        Yi. = clm[[nms[1]]][,1]
-        names(Yi.) = as.character(unique(ratingsIn[,1]))
-        Y.j = clm[[nms[2]]][,1]
-        names(Y.j) = as.character(unique(ratingsIn[,2]))
-     } 
+     } else {
+        browser()
+        frml <- paste(nms[3],'~ ')
+        for (i in 4:ncol(ratingsIn)) {
+           frml <- paste(frml,nms[i])
+           if (i == ncol(ratingsIn)) frml <- paste(frml,'+')
+        }
+        frml <- paste(frml,'(1|',nms[1],')',
+                         '+ (1|',nms[2],')')
+        frml <- as.formula(frml)
+    }
+    lmerout = lmer(frml,data=ratingsIn)
+    Y.. = fixef(lmerout)
+    clm = coef(lmerout)
+    Yi. = clm[[nms[1]]][,1]
+    names(Yi.) = as.character(unique(ratingsIn[,1]))
+    Y.j = clm[[nms[2]]][,1]
+    names(Y.j) = as.character(unique(ratingsIn[,2]))
   } else {
      stop('parallel feature not implemented yet')
   }
@@ -62,15 +72,14 @@ predict.ydotsMLE <- function(ydotsObj,testSet) {
 }
 
 # check
-checkyd <- function() {
+checkydmle <- function() {
    check <- 
       data.frame(userID = c(1,3,2,1,2),itemID = c(1,1,3,2,3),ratings=6:10)
    print(check)
    print(findYdotsMLE(check))
-        browser()
-   # check$cv <- c(1,4,6,2,10)
-   # print(check)
-   # print(findYdotsMLE(check))
+   check$cv <- c(1,4,6,2,10)
+   print(check)
+   print(findYdotsMLE(check))
 }
 
 
