@@ -31,7 +31,7 @@ xvalMM <- function(ratingsIn, trainprop=0.5,
   trainItems = trainingSet[,2]
   trainUsers = trainingSet[,1]
   # get means
-  means = findYdots(trainingSet,cls)
+  means = findYdotsMM(trainingSet,cls)
   # Y.. = means$grandMean
   # Yi. = means$usrMeans
   # Y.j = means$itmMeans

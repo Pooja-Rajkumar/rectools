@@ -80,7 +80,7 @@ attr(,"class")
 
 # here is how to predict individual cases
 # simple latent factors
-> fyd <- findYdots(ivlnocovs)
+> fyd <- findYdotsMM(ivlnocovs)
 > predict(fyd,matrix(c(3,88),nrow=1))
 4.109381 
 # MLE
