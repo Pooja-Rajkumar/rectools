@@ -14,8 +14,7 @@
 #      Y..: grand mean (0 if have covariates)
 #      Yi.: vector of mean ratings for each user
 #      Y.j: vector of mean ratings for each item
-#      regOjb: if have covariates, object of class 'lm' from
-#              the regression op
+#      regOjb: if have covariates, regression output, e.g. coefs
 
 findYdotsMM <- function(ratingsIn,cls=NULL) {
   require(partools)
@@ -56,7 +55,10 @@ findYdotsMM <- function(ratingsIn,cls=NULL) {
 #       Y.j = distribmeans(cls,'rating','iID',ratingsIn)[,2]
   }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
-  if (haveCovs) ydots$regObj = lmout
+  if (haveCovs) {
+     ydots$regObj = lmout
+  }
+  
   class(ydots) = 'ydotsMM'
   invisible(ydots)
 } 
@@ -72,13 +74,18 @@ checkyd <- function() {
    print(findYdotsMM(check))
 }
 
+# predict from output from coef(lm()); not used currently
+predict.lmcoef = function(coefs,testSet) {
+   cbind(1,as.matrix(testSet)) %*% as.vector(coefs)
+}
+
 # predict() method for the 'ydots' class
 #
 # testSet in same form as ratingsIn in findYdots(), except that there 
 # is no ratings column; regObj is as in the output of findYdots()
 #
 # returns vector of predicted values for testSet
-predict.ydotsMM <- function(ydotsObj,testSet) {
+predict.ydotsMM = function(ydotsObj,testSet) {
    testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] + 
       ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
    if (!is.null(ydotsObj$regObj))
