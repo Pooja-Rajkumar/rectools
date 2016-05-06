@@ -1,39 +1,37 @@
-# args: takes in the data set with 3 columns (user, movie, rating respectively), a specific user to test, and a specific movie to test
-# return: apred, a predicted data set from transposing recosystems P and Q
-#
-#
 xvalReco <- function(newdata, trainprop = 0.5,
                      accmeasure = c('exact','mad','rms'))
 {
   library(recosystem)
   r <- Reco()
   rownew = nrow(newdata)
-  trainRow = floor(trainprop*rownew)
+  trainRow = floor(.5*rownew)
   trainidxs = sample(1:rownew,trainRow)
   trainSet = newdata[trainidxs,]
   testSet = newdata[setdiff(1:nrow(newdata),trainidxs),]
   write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
-  write.table(testSet,file = "test.txt", row.names = FALSE, col.names = FALSE)
   r$train('train.txt')
   res <- r$output(NULL,NULL)
-  p <- res$P
-  q <- res$Q
-  apred <- p %*% t(q)
-  print(head(apred))
+  testSet$pred <- vector(length=nrow(testSet))
+  for(i in 1:nrow(testSet)){
+    j = newdata[i,1]
+    k = newdata[i,2]
+    testSet$pred[i] = res$P[j,] %*% res$Q[k,]
+  }
   numpredna = sum(is.na(apred))
   accmeasure = match.arg(accmeasure)
   result = list(ndata =nrow(newdata),trainprop = trainprop, 
                 accmeasure = accmeasure, numpredna = numpredna)
   if(accmeasure == 'exact'){
-    apred = round(apred)
-    acc = mean(apred == testSet[,3],na.rm = TRUE)
+    testSet$pred = round(testSet$pred)
+    acc = mean(testSet$pred == testSet[,3],na.rm = TRUE)
     
   } else if (accmeasure == 'mad'){
-    acc = mean(abs(apred-testSet[,3]), na.rm = TRUE)
+    acc = mean(abs(testSet$pred-testSet[,3]), na.rm = TRUE)
   } else if (accmeasure == 'rms'){
-    acc = sqrt(mean((apred-testSet[,3])^2,na.rm = TRUE))
+    acc = sqrt(mean((testSet$pred-testSet[,3])^2,na.rm = TRUE))
   }
   result$acc = acc 
+  result$pred = testSet$pred
   class(result) <- 'xvalreco'
   result
 }
