@@ -1,5 +1,5 @@
 
-export(findYdots,predict.ydots,
+export(findYdotsMM,predict.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
        xvalMM,xvalMLE)
 
