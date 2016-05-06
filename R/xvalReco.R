@@ -4,7 +4,7 @@ xvalReco <- function(newdata, trainprop = 0.5,
   library(recosystem)
   r <- Reco()
   rownew = nrow(newdata)
-  trainRow = floor(.5*rownew)
+  trainRow = floor(trainprop*rownew)
   trainidxs = sample(1:rownew,trainRow)
   trainSet = newdata[trainidxs,]
   testSet = newdata[setdiff(1:nrow(newdata),trainidxs),]
