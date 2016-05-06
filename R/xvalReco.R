@@ -1,25 +1,25 @@
-xvalReco <- function(newdata, trainprop = 0.5,
+xvalReco <- function(ratingsIn, trainprop = 0.5,
                      accmeasure = c('exact','mad','rms'))
 {
   library(recosystem)
   r <- Reco()
-  rownew = nrow(newdata)
+  rownew = nrow(ratingsIn)
   trainRow = floor(trainprop*rownew)
   trainidxs = sample(1:rownew,trainRow)
-  trainSet = newdata[trainidxs,]
-  testSet = newdata[setdiff(1:nrow(newdata),trainidxs),]
+  trainSet = ratingsIn[trainidxs,]
+  testSet = ratingsIn[setdiff(1:nrow(ratingsIn),trainidxs),]
   write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
   r$train('train.txt')
   res <- r$output(NULL,NULL)
   testSet$pred <- vector(length=nrow(testSet))
   for(i in 1:nrow(testSet)){
-    j = newdata[i,1]
-    k = newdata[i,2]
+    j = ratingsIn[i,1]
+    k = ratingsIn[i,2]
     testSet$pred[i] = res$P[j,] %*% res$Q[k,]
   }
-  numpredna = sum(is.na(apred))
+  numpredna = sum(is.na(testSet$pred))
   accmeasure = match.arg(accmeasure)
-  result = list(ndata =nrow(newdata),trainprop = trainprop, 
+  result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
                 accmeasure = accmeasure, numpredna = numpredna)
   if(accmeasure == 'exact'){
     testSet$pred = round(testSet$pred)
@@ -32,6 +32,7 @@ xvalReco <- function(newdata, trainprop = 0.5,
   }
   result$acc = acc 
   result$pred = testSet$pred
+  result$testVals = testSet[,3]
   class(result) <- 'xvalreco'
   result
 }
