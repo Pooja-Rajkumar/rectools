@@ -30,28 +30,35 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
            nms[3],nms[1],nms[2])
         frml = as.formula(paste(tmp))
      } else {
-        browser()
         frml <- paste(nms[3],'~ ')
         for (i in 4:ncol(ratingsIn)) {
            frml <- paste(frml,nms[i])
-           if (i == ncol(ratingsIn)) frml <- paste(frml,'+')
+           # if (i < ncol(ratingsIn)) 
+           frml <- paste(frml,'+')
         }
         frml <- paste(frml,'(1|',nms[1],')',
                          '+ (1|',nms[2],')')
         frml <- as.formula(frml)
     }
     lmerout = lmer(frml,data=ratingsIn)
-    Y.. = fixef(lmerout)
-    clm = coef(lmerout)
-    Yi. = clm[[nms[1]]][,1]
-    names(Yi.) = as.character(unique(ratingsIn[,1]))
-    Y.j = clm[[nms[2]]][,1]
-    names(Y.j) = as.character(unique(ratingsIn[,2]))
+    ydots = list()
+    if (!haveCovs) {
+       Y.. = fixef(lmerout)
+       ydots$Y.. = Y..
+       clm = coef(lmerout)
+       Yi. = clm[[nms[1]]][,1]
+       names(Yi.) = as.character(unique(ratingsIn[,1]))
+       ydots$Yi. = Yi.
+       Y.j = clm[[nms[2]]][,1]
+       names(Y.j) = as.character(unique(ratingsIn[,2]))
+       ydots$Y.j = Y.j
+    } else {
+       ydots$Y.. = fixef(lmerout)
+       ydots$Yi. = ranef(lmerout)
+    }
   } else {
      stop('parallel feature not implemented yet')
   }
-  ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
-  if (haveCovs) ydots$regObj = lmout
   class(ydots) = 'ydotsMLE'
   invisible(ydots)
 }

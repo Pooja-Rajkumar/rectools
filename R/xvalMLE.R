@@ -32,6 +32,7 @@ xvalMLE <- function(ratingsIn, trainprop=0.5,
   trainUsers = trainingSet[,1]
   # get means
   means = findYdotsMLE(trainingSet,cls)
+  browser()
   testA = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
   ### testA$pred = predict(means,testA[,-3])  # predict.ydots
   testA$pred = predict(means,testA[,-3])
