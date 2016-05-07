@@ -40,7 +40,6 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
     }
     lmerout = lmer(frml,data=ratingsIn)
     ydots = list()
-    browser()
     if (!haveCovs) {
        Y.. = fixef(lmerout)
        ydots$Y.. = Y..
@@ -54,7 +53,6 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
     } else {
        ydots$Y.. = fixef(lmerout)
        tmp = ranef(lmerout)
-       browser()
        ydots$Yi. = tmp[[2]][1][,1]
        ydots$Y.j = tmp[[1]][1][,1]
     }
