@@ -70,8 +70,8 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
 #
 # returns vector of predicted values for testSet
 predict.ydotsMLE <- function(ydotsObj,testSet) {
-   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] +
-      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
+   testSet$pred = ydotsObj$Yi.[as.character(testSet[,1])] +
+      ydotsObj$Y.j[as.character(testSet[,2])] - ydotsObj$Y..
    if (!is.null(ydotsObj$regObj))
       testSet$pred = testSet$pred +
          predict(ydotsObj$regObj,testSet[,-(1:2)])
