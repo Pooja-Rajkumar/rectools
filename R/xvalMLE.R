@@ -27,13 +27,9 @@ xvalMLE <- function(ratingsIn, trainprop=0.5,
   rowNum = floor(trainprop * nrowRatIn)
   trainIdxs = sample(1:nrowRatIn,rowNum)
   trainingSet = ratIn[trainIdxs, ]
-  trainRatings = trainingSet[,3]
-  trainItems = trainingSet[,2]
-  trainUsers = trainingSet[,1]
   # get means
   means = findYdotsMLE(trainingSet,cls)
   testA = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
-  ### testA$pred = predict(means,testA[,-3])  # predict.ydots
   testA$pred = predict(means,testA[,-3])
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
