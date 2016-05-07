@@ -72,9 +72,8 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
 #
 # returns vector of predicted values for testSet
 predict.ydotsMLE <- function(ydotsObj,testSet) {
-   if (ncol(testSet) == 2) Y.. = ydotsObj$Y.. else {
-      Y.. = - as.matrix(cbind(1,testSet[,-(1:2)])) %*% ydotsObj$Y..
-   }
+   Y.. = if (ncol(testSet) == 2) ydotsObj$Y.. else 
+            as.matrix(cbind(1,testSet[,-(1:2)])) %*% ydotsObj$Y..
    testSet$pred = ydotsObj$Yi.[testSet[,1]] +
                   ydotsObj$Y.j[testSet[,2]] - Y..
    testSet$pred
