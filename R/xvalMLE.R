@@ -20,8 +20,7 @@
 
 xvalMLE <- function(ratingsIn, trainprop=0.5,
     accmeasure=c('exact','mad','rms'),cls=NULL){
-  if(!is.null(cls)) stop('parallel version under construction')
-  if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
+  ratIn = ratingsIn 
   # split into random training and validation sets 
   nrowRatIn = nrow(ratIn)
   rowNum = floor(trainprop * nrowRatIn)

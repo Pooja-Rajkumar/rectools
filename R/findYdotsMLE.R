@@ -1,4 +1,4 @@
-
+ 
 # arguments:
 
 #   ratingsIn: input data, with first cols (userID,itemID,rating,
@@ -37,19 +37,21 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
   }
   if (is.null(cls)) {
      lmerout = lmer(frml,data=ratingsIn)
-     ydots = formYdots(ratingsIn,nms,haveCovs)
+     ydots = formYdots(ratingsIn,nms,haveCovs,lmerout)
   } else {
      require(partools)
+     clusterEvalQ(cls,require(lme4))
      distribsplit(cls,'ratingsIn')
      clusterExport(cls,c('frml','formYdots'),envir=environment())
-     clusterEvalQ(cls,lmerout = lmer(frml,data=ratingsIn))
-     ydots = clusterEvalQ(cls,formYdots(ratingsIn,nms,haveCovs))
+     clusterExport(cls,c('nms','haveCovs'),envir=environment())
+     clusterEvalQ(cls,lmerout <- lmer(frml,data=ratingsIn))
+     ydots = clusterEvalQ(cls,formYdots(ratingsIn,nms,haveCovs,lmerout))
      class(ydots) = 'ydotsMLEpar'
   }
   invisible(ydots)
 }
 
-formYdots = function(ratingsIn,nms,haveCovs) {
+formYdots = function(ratingsIn,nms,haveCovs,lmerout) {
   ydots = list()
   if (!haveCovs) {
      Y.. = fixef(lmerout)
