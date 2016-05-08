@@ -17,12 +17,9 @@
 
 findYdotsMLE <- function(ratingsIn,cls=NULL) {
   require(lme4)
+  nms <- names(ratingsIn)
+  haveCovs = ncol(ratingsIn) > 3
   if (is.null(cls)) {
-     users = ratingsIn[,1]
-     items = ratingsIn[,2]
-     ratings = ratingsIn[,3]
-     nms <- names(ratingsIn)
-     haveCovs = ncol(ratingsIn) > 3
      if (!haveCovs) {
         tmp = sprintf('%s ~ (1|%s) + (1|%s)',
            nms[3],nms[1],nms[2])
@@ -31,12 +28,14 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
         frml <- paste(nms[3],'~ ')
         for (i in 4:ncol(ratingsIn)) {
            frml <- paste(frml,nms[i])
-           # if (i < ncol(ratingsIn)) 
            frml <- paste(frml,'+')
         }
         frml <- paste(frml,'(1|',nms[1],')',
                          '+ (1|',nms[2],')')
         frml <- as.formula(frml)
+      }
+    } else {
+       require(partools)
     }
     lmerout = lmer(frml,data=ratingsIn)
     ydots = list()
