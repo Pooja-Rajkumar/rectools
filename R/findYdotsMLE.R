@@ -1,21 +1,21 @@
  
 # arguments:
 
-#   ratingsIn: input data, with first cols (userID,itemID,rating,
-#              covariates); data frame, unless cls is non-null, in which
-#              case this argument is the quoted name of the distributed 
-#              data frame
+#   ratingsIn: input data, with cols (userID,itemID,rating,
+#              covariates); data frame
 #   cls: an R 'parallel' cluster
 
 # value:
 
-#   S3 class of type "ydots", with components:
+#   ydotsMLE (if NULL cls): S3 class with components:
 
 #      Y..: grand mean (fixef() if have covariates)
 #      Yi.: vector of mean ratings for each user
 #           (part of ranef() if have covariates)
 #      Y.j: vector of mean ratings for each item
 #           (part of ranef() if have covariates)
+
+#   ydotsMLEpar (if non-NULL cls): S3 class with components of class ydotsMLE
 
 findYdotsMLE <- function(ratingsIn,cls=NULL) {
   require(lme4)
@@ -86,6 +86,15 @@ predict.ydotsMLE <- function(ydotsObj,testSet) {
    testSet$pred = ydotsObj$Yi.[testSet[,1]] +
                   ydotsObj$Y.j[testSet[,2]] - Y..
    testSet$pred
+}
+
+# predict() method for the 'ydotsMLE' class
+predict.ydotsMLEpar <- function(ydotsMLEparObj,testSet) {
+   predict.testSet <- 
+      function(ydotsMLEObj) predict(ydotsMLEObj,testSet)
+   tmp = lapply(ydotsMLEparObj,predict.testSet)
+   tmp = Reduce(cbind,tmp)
+   rowMeans(tmp,na.rm=TRUE)
 }
 
 # check

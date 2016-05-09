@@ -5,9 +5,7 @@
 # arguments:
 
 #   ratingsIn: input data, with first cols (userID,itemID,rating,
-#              covariates); data frame, unless cls is non-null, in which
-#              case this argument is the quoted name of the distributed 
-#              data frame
+#              covariates)
 #   trainprop: proportion of data for the training set
 #   accmeasure: accuracy measure; 'exact', 'mad', 'rms' for
 #               prop of exact matches, mean absolute error, and
