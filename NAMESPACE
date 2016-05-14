@@ -2,5 +2,5 @@
 export(findYdotsMM,predict.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
        xvalMM,xvalMLE,
-       ratingness)
+       ratingness,covratingness)
 
