@@ -22,12 +22,23 @@ covratingness(ratingsIn,splitCol)
      for item ratings.}}
 }
 
+\details{
+
+   The fact that some users rate more items may be useful, say as a
+   predictor.  A typical usage of the latter is to call
+   \code{covratingness} and then append the result to the input data
+   frame.
+
+}
+
 \examples{
 rtin <- data.frame(uid = c(1,3,2,1,2),itemid = c(1,2,1,2,2), rats=c(2,5,3,5,1))
 ratingness(rtin,1)  
 # returns (2,2,1), meaning that user 1 submitted 2 ratings, etc.
 > covratingness(rtin,1)
 # returns a 5-element vector, corresponding to the 5 rows of rtin
+rtin$nrats <- covratingness(rtin,1)
+# now usable as a predictor
 }
 
 \author{
