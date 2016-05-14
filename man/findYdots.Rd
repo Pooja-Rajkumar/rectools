@@ -51,6 +51,40 @@ predict.ydotsMLE(ydotsObj,testSet)
    return a vector of predicted ratings.
 }
 
+\examples{
+# lme4 data set, needs some prep
+data(InstEval)
+ivl <- InstEval
+# convert from factors
+ivl$s <- as.numeric(ivl$s)
+ivl$d <- as.numeric(ivl$d)
+ivl$studage <- as.numeric(ivl$studage)
+ivl$lectage <- as.numeric(ivl$lectage)
+ivl$service <- as.numeric(ivl$service)
+# make correct format, choose 
+ivl <- ivl[,c(1,2,7,3:6)]
+# create dummy variables in place of dept
+library(dummies)
+dms <- dummy(ivlcovs$dept)
+dms <- as.data.frame(dms)
+dms$dept2 <- NULL
+ivl$dept <- NULL
+ivl <- cbind(ivl,dms)
+# run the training data, no covariates
+ydout <- findYdotsMLE(ivl[,1:3]) 
+# form a test set to illustrate prediction
+testSet <- ivl[c(3,8),]
+head(testSet)
+# say want to predict how well students 1 and 3 would like instructor 12
+testSet[1,2] <- 12
+testSet[2,2] <- 12
+# predict
+predict(ydout,testSet[,1:2])  # 4.272660 4.410612
+# try using the covariates
+ydout <- findYdotsMLE(ivl)
+predict(ydout,testSet[,-3])  # 3.286828 3.551587
+}
+
 \author{
 Norm Matloff and Pooja Rajkumar
 }
