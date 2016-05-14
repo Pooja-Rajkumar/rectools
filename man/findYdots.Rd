@@ -1,14 +1,15 @@
-\name{findYdotsMM,findYdotsMLE, predict.ydotsMM, predict.ydotsMLE}k
+\name{findYdotsMM,findYdotsMLE, predict.ydotsMM, predict.ydotsMLE}
 \alias{findYdotsMM}
 \alias{findYdotsMLE}
-\alias{predict.ydotsMM}}
+\alias{predict.ydotsMM}
 \alias{predict.ydotsMLE}
 
-\title{Covariate-Based Recommender Systems}
+\title{Covariate-Based, Latent-Factor Recommender Systems}
 
 \description{
-Tools to incorporate user and item information into recommender system
-methodology.
+Tools to incorporate user and item information into latent-factor 
+recommender system methodology, and to add parallel computation
+capability.
 }
 
 \usage{
@@ -22,38 +23,35 @@ predict.ydotsMLE(ydotsObj,testSet)
   \item{ratingsIn}{Input data frame.  Within-row format is UserID,
      ItemID, Rating and optional covariates.}
   \item{cls}{An R \code{parallel} cluster.}
+  \item{ydotsObj}{An object of class \code{'ydotsMM'} or \code{'ydotsMLE'}.}
+  \item{testSet}{A data frame consisting of cases to be predicted.
+     Format is the same as \code{ratingsIn}, except that there is no
+     ratings column.}
 }
 
 \details{
 
-   The \code{covNMF} function inputs a user ratings matrix, and if
-   covariate information is present, i.e. there are more than three
-   columns, regresses the ratings against the covariates.  This is used
-   to compute predicted values of the ratings, given the covariates.
-   The predicted values are subtracted from the actual ratings,
-   truncating below at 0 if necessary.  (If no covariate information is
-   present, then the ratings do not change.)
+   All functions here implement latent-factor models for recommender
+   systems.  They add the capability of using covariates, and in some
+   cases enable parallel computation.
 
-   Then the nonnegative matrix factorization is performed.  First, the
-   full matrix is constructed from (the first three columns of)
-   \code{narrowrat}.  NMF is applied to the result, by calling
-   \code{getNMF}.
-
-   If several values of \code{k} will be tried, one should form the
-   predicted values separately, by calling \code{getPreds}, then adjusting
-   the input matrix, then calling \code{getNMF}.
+   The functions \code{findYdotsMM} and \code{findYdotsMLE} work on a
+   training set, returning objects that later can be used to predict new
+   cases.
 
 }
 
 \value{
 
-The functions \code{covNMF} and \code{getNMF} return the 
-matrix approximating the one built by \code{buildMatrix}, thus providing
-estimated values for the missing ratings.
-
+   The functions \code{findYdotsMM} and \code{findYdotsMLE} return
+   objects of class \code{} \code{'ydotsMM'} and \code{'ydotsMLE'},
+   respectively.
+   
+   The functions \code{predict.ydotsMM} and \code{predict.ydotsMLE}
+   return a vector of predicted ratings.
 }
 
 \author{
-Norm Matloff
+Norm Matloff and Pooja Rajkumar
 }
 
