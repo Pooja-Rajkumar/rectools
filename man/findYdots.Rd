@@ -65,7 +65,7 @@ ivl$service <- as.numeric(ivl$service)
 ivl <- ivl[,c(1,2,7,3:6)]
 # create dummy variables in place of dept
 library(dummies)
-dms <- dummy(ivlcovs$dept)
+dms <- dummy(ivl$dept)
 dms <- as.data.frame(dms)
 dms$dept2 <- NULL
 ivl$dept <- NULL
