@@ -26,77 +26,38 @@ have a normal distribution.
 
 Let's try it out (some output has been omitted for clarity):
 
-> library(lme4)
+> # lme4 data set, needs some prep
 > data(InstEval)
 > ivl <- InstEval
+> # convert factors to numeric
 > ivl$s <- as.numeric(ivl$s)
 > ivl$d <- as.numeric(ivl$d)
 > ivl$studage <- as.numeric(ivl$studage)
 > ivl$lectage <- as.numeric(ivl$lectage)
-> ivlnocovs <- ivl[,c(1,2,7)]
-> ivlcovs <- ivl[,c(1,2,7,3:6)]
-> xva <- xvalMM(ivlnocovs)
-> xva
-$ndata
-[1] 73421
-
-$trainprop
-[1] 0.5
-
-$accmeasure
-[1] "exact"
-
-$numpredna
-[1] 48
-
-$acc
-[1] 0.2732182
-
-attr(,"class")
-[1] "xvalb"
-
-# in cross-validation, the simple latent factor model predicted 27% of
-# the ratings exactly correctly
-
-> xvalMLE(ivlnocovs)
-$ndata
-[1] 73421
-
-$trainprop
-[1] 0.5
-
-$accmeasure
-[1] "exact"
-
-$numpredna
-[1] 29
-
-$acc
-[1] 0.2315305
-
-attr(,"class")
-[1] "xvalb"
-# the accuracy was somewhat less for MLE
-
-# here is how to predict individual cases
-# simple latent factors
-> fyd <- findYdotsMM(ivlnocovs)
-> predict(fyd,matrix(c(3,88),nrow=1))
-4.109381 
-# MLE
-> fydmle <- findYdotsMLE(ivlnocovs)
-> predict(fydmle,matrix(c(3,88),nrow=1))
-3.787764 
-
-INCORPORATING COVARIATES:
-
-The package allows the user to incorporate covariate data, and to run
-these and other methods in parallel.
-
-> xvalMM(ivlcovs)
+> ivl$service <- as.numeric(ivl$service)
+> # make correct format, choose covs
+> ivl <- ivl[,c(1,2,7,3:6)]
+> # create dummy variables in place of dept
+> library(dummies)
 ...
-$acc
-[1] 0.2726306
-
-Actually, using the covariates in this case didn't help.
+> dms <- dummy(ivl$dept)
+> dms <- as.data.frame(dms)
+> dms$dept2 <- NULL
+> ivl$dept <- NULL
+> ivl <- cbind(ivl,dms)
+# run the training data, no covariates
+# form a test set to illustrate prediction
+> testSet <- ivl[c(3,8),]  # these happen to be students 1, 3
+# say want to predict how well students 1 and 3 would like instructor 12
+> testSet[1,2] <- 12
+> testSet[2,2] <- 12
+> # predict
+> predict(ydout,testSet[,1:2])  
+[1] 4.272660 4.410612
+> # try using the covariates
+> ydout <- findYdotsMLE(ivl)
+> predict(ydout,testSet[,-3])  
+      [,1]
+3 3.286828
+8 3.551587
 
