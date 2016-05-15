@@ -5,6 +5,10 @@
 #              covariates); data frame, unless cls is non-null, in which
 #              case this argument is the quoted name of the distributed 
 #              data frame
+#   regressYdots; if TRUE, apply lm() to the estimated latent factors
+#                 (and their product), enabling rating prediction from the
+#                 resulting linear function of the factors; currently
+#                 only implemented if have no covariates
 #   cls: an R 'parallel' cluster
 
 # value:
@@ -16,7 +20,7 @@
 #      Y.j: vector of mean ratings for each item
 #      regOjb: if have covariates, regression output, e.g. coefs
 
-findYdotsMM <- function(ratingsIn,cls=NULL) {
+findYdotsMM <- function(ratingsIn,regressYdots=FALSE,cls=NULL) {
   require(partools)
   if (is.null(cls)) {
      users = ratingsIn[,1]
@@ -35,28 +39,17 @@ findYdotsMM <- function(ratingsIn,cls=NULL) {
      Y.j = tapply(ratings,items,mean) # means of all ratings per item
   } else {
      stop('parallel version under construction')
-     # find haveCovs
-#       cmd = sprintf('ncol(%s)',ratingsIn)
-#       # clusterExport(cls,'cmd',envir=environment())
-#       # haveCovs = clusterEvalQ(cls,docmd(cmd))[[1]] > 3
-#       haveCovs = evalq(cmd) > 3
-#       # set names at workers
-#       nms = c('uID','iID','rating')
-#       cmd = paste('names(',ratingsIn,') <<- nms',sep="")
-#       clusterExport(cls,c('nms','cmd'),envir=environment())
-#       clusterEvalQ(cls,docmd(cmd))
-#       # get means
-#       cmd = sprintf('tapply(%s[,3],%s[,1],sumnum)',ratingsIn,ratingsIn)
-#       clusterExport(cls,c('sumnum','cmd'),envir=environment())
-#       tmp = clusterEvalQ(cls,docmd(cmd))
-#       tmpcb = Reduce(cbind,tmp)
-#       Y.. = sum(tmp[,2]*tmp[,3]) / sum(tmp[,3])
-#       Yi. = tmp[,2]
-#       Y.j = distribmeans(cls,'rating','iID',ratingsIn)[,2]
   }
   ydots = list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   if (haveCovs) {
      ydots$regObj = lmout
+  } 
+  if (regressYdots && !haveCovs) {
+       yi. = Yi.[ratingsIn[,1]]
+       y.j = Y.j[ratingsIn[,2]]
+       # yij = yi. * y.j
+       # ydots$regressYdots = coef(lm(ratings ~ yi. + y.j + yij))
+       ydots$regressYdots = coef(lm(ratings ~ yi. + y.j))
   }
   
   class(ydots) = 'ydotsMM'

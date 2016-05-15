@@ -13,7 +13,7 @@ capability.
 }
 
 \usage{
-findYdotsMM(ratingsIn,cls=NULL) 
+findYdotsMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
 predict.ydotsMM(ydotsObj,testSet) 
 findYdotsMLE(ratingsIn,cls=NULL) 
 predict.ydotsMLE(ydotsObj,testSet) 
@@ -22,6 +22,8 @@ predict.ydotsMLE(ydotsObj,testSet)
 \arguments{
   \item{ratingsIn}{Input data frame.  Within-row format is UserID,
      ItemID, Rating and optional covariates.}
+  \item{regressYdots}{If TRUE, apply linear regression to the latent
+     factors.}
   \item{cls}{An R \code{parallel} cluster.}
   \item{ydotsObj}{An object of class \code{'ydotsMM'} or \code{'ydotsMLE'}.}
   \item{testSet}{A data frame consisting of cases to be predicted.
@@ -38,6 +40,12 @@ predict.ydotsMLE(ydotsObj,testSet)
    The functions \code{findYdotsMM} and \code{findYdotsMLE} work on a
    training set, returning objects that later can be used to predict new
    cases.
+
+   In order to accommodate possibility that the user latent factor is a
+   stronger predictor than the one for items, or vice versa, the option
+   \code{regressYdots = TRUE} regresses ratings against user and item
+   latent factors, enabling later prediction using the resulting
+   coefficients.
 
 }
 

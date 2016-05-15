@@ -19,7 +19,7 @@ covratingness(ratingsIn,splitCol)
   \item{ratingsIn}{Input data frame.  Within-row format is UserID,
      ItemID, Rating and optional covariates.}
   \item{splitCol}{Column to count ratings for -- 1 for user ratings, 2
-     for item ratings.}}
+     for item ratings.}
 }
 
 \details{

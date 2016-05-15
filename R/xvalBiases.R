@@ -12,6 +12,10 @@
 #   accmeasure: accuracy measure; 'exact', 'mad', 'rms' for
 #               prop of exact matches, mean absolute error, and
 #               root-mean square error
+#   regressYdots; if TRUE, apply lm() to the estimated latent factors
+#                 (and their product), enabling rating prediction from the
+#                 resulting linear function of the factors; currently
+#                 only implemented if have no covariates
 #   cls: if non-null, 
 
 # value:
@@ -19,7 +23,7 @@
 #    accuracy value
 
 xvalMM <- function(ratingsIn, trainprop=0.5,
-    accmeasure=c('exact','mad','rms'),cls=NULL){
+    accmeasure=c('exact','mad','rms'),regressYdots=FALSE,cls=NULL){
   if(!is.null(cls)) stop('parallel version under construction')
   if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
   # split into random training and validation sets 
@@ -31,12 +35,18 @@ xvalMM <- function(ratingsIn, trainprop=0.5,
   trainItems = trainingSet[,2]
   trainUsers = trainingSet[,1]
   # get means
-  means = findYdotsMM(trainingSet,cls)
+  means = findYdotsMM(trainingSet,regressYdots,cls)
   # Y.. = means$grandMean
   # Yi. = means$usrMeans
   # Y.j = means$itmMeans
   testA = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
-  testA$pred = predict(means,testA[,-3])  # predict.ydots
+  testA$pred = predict(means,testA[,-3])  # predict.ydotsMM
+  # need to integrate the following into predict.ydotsMM
+  if (regressYdots) {
+     yi. = means$usrMeans[testA[,1]]
+     y.j = means$itmMeans[testA[,2]]
+     testA$pred = cbind(1,yi.,y.j) %*% means$regressYdots 
+  }
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
   accmeasure = match.arg(accmeasure)
