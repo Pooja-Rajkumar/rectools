@@ -37,15 +37,36 @@ predict.ydotsMLE(ydotsObj,testSet)
    systems.  They add the capability of using covariates, and in some
    cases enable parallel computation.
 
+   The basic model is 
+
+   mean rating = overall mean + user effect + item effect
+
+   Adding covariates, this becomes
+
+   mean rating = linear covariates effect + user effect + item effect
+
    The functions \code{findYdotsMM} and \code{findYdotsMLE} work on a
    training set, returning objects that later can be used to predict new
    cases.
 
+   The \code{findYdotsMLE} function is primarily a wrapper that sets up
+   Maximum Likelihood Estimation (assuming normal user and item effects)
+   for a crossed-effects model in the \code{lme4} function \code{lmer}.
+   As the computation for that function can be lengthy,
+   \code{findYdotsMLE} also enables parallelizing the computation.
+
+   The \code{findYdotsMM} function uses the Methods of Moments instead
+   of MLE.  It is much faster, and thus at present does not have a
+   parallel computation capability.
+
    In order to accommodate possibility that the user latent factor is a
    stronger predictor than the one for items, or vice versa, the option
-   \code{regressYdots = TRUE} regresses ratings against user and item
-   latent factors, enabling later prediction using the resulting
-   coefficients.
+   \code{regressYdots = TRUE} for \code{findYdotsMM} regresses ratings
+   against user and item latent factors, enabling later prediction using
+   the resulting coefficients.  This is not needed for
+   \code{findYdotsMLE}, since \code{lmer} calculates the Best Linear
+   Unbiased Predictors, thus indirectly assigning weights to the user
+   and item effects.
 
 }
 
