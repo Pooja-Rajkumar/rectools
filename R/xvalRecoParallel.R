@@ -9,6 +9,18 @@ training <- function(trainSet,
   res
 }
 
+prediction <- function(ratingsIn,res,testSet){
+  p = res$P
+  q = res$Q
+  testSet$pred <- vector(length=nrow(testSet))
+  for(i in 1:nrow(testSet)){
+    j = ratingsIn[i,1]
+    k = ratingsIn[i,2]
+    testSet$pred[i] = p[j,] %*% q[k,]
+  }
+  testSet
+}
+
 getTrainSet <- function(ratingsIn,trainprop = 0.5){
   rownew = nrow(ratingsIn)
   trainRow = floor(trainprop*rownew)
@@ -35,14 +47,7 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
     trainSet = getTrainSet(ratingsIn, trainprop)
     testSet= getTestSet(ratingsIn, trainSet)
     res = training(ratingsIn)
-    p = res$P
-    q = res$Q
-    testSet$pred <- vector(length=nrow(testSet))
-    for(i in 1:nrow(testSet)){
-      j = ratingsIn[i,1]
-      k = ratingsIn[i,2]
-      testSet$pred[i] = p[j,] %*% q[k,]
-    }
+    testSet$pred = prediction(ratingsIn,res,testSet)
   }else {
     #require(partools)
     #clusterEvalQ(cls,require(partools))
@@ -69,3 +74,4 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
   class(result) <- 'xvalreco'
   result
 }
+
