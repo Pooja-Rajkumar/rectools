@@ -18,8 +18,9 @@ prediction <- function(ratingsIn,res,testSet){
     k = ratingsIn[i,2]
     testSet$pred[i] = p[j,] %*% q[k,]
   }
-  testSet
+  testSet$pred
 }
+
 
 getTrainSet <- function(ratingsIn,trainprop = 0.5){
   rownew = nrow(ratingsIn)
@@ -46,32 +47,36 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
   if(is.null(cls)){
     trainSet = getTrainSet(ratingsIn, trainprop)
     testSet= getTestSet(ratingsIn, trainSet)
-    res = training(ratingsIn)
-    testSet$pred = prediction(ratingsIn,res,testSet)
+    res = training(trainSet)
+    totalPreds = prediction(ratingsIn,res,testSet)
+  
   }else {
-    #require(partools)
-    #clusterEvalQ(cls,require(partools))
-    #distribsplit(cls, 'ratingsIn')
-    #clusterExport(cls,c('training'))
-    #clusterEvalQ(cls,resu <- training(ratingsIn,trainprop,rank))
-    #trainSet = clusterEvalQ(cls,training(ratingsIn,trainprop, rank))
-    #class(trainSet) = "PARALLELTEST"
+    require(partools)
+    clusterEvalQ(cls,require(partools))
+    distribsplit(cls, 'ratingsIn')
+    clusterExport(cls,c('training','prediction','getTestSet','getTrainSet'))
+    clusterEvalQ(cls, trainSet<- getTrainSet(ratingsIn,trainprop=0.5))
+    testSet= clusterEvalQ(cls, testSet<- getTestSet(ratingsIn,trainSet))
+    testSet = mapply(c,testSet$ratings[1],testSet$ratings[2],SIMPLIFY = FALSE)
+    clusterEvalQ(cls,resu <- training(trainSet,trainprop=0.5,rank=10))
+    allPreds = clusterEvalQ(cls, pred <- prediction(ratingsIn,resu,testSet))
+    totalPreds = mapply(c,totalPreds[1],totalPreds[2],SIMPLIFY = FALSE)
   }
-  numpredna = sum(is.na(testSet$pred))
+  numpredna = sum(is.na(totalPreds))
   accmeasure = match.arg(accmeasure)
   result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
                 accmeasure = accmeasure, numpredna = numpredna)
   if(accmeasure == 'exact'){
-    testSet$pred = round(testSet$pred)
-    acc = mean(testSet$pred == testSet[,3],na.rm = TRUE)
-    
+    totalPreds = round(totalPreds)
+    acc = mean(totalPreds == testSet[,3],na.rm = TRUE)
   } else if (accmeasure == 'mad'){
-    acc = mean(abs(testSet$pred-testSet[,3]), na.rm = TRUE)
+    acc = mean(abs(totalPreds-testSet[,3]), na.rm = TRUE)
   } else if (accmeasure == 'rms'){
-    acc = sqrt(mean((testSet$pred-testSet[,3])^2,na.rm = TRUE))
+    acc = sqrt(mean((totalPreds-testSet[,3])^2,na.rm = TRUE))
   }
   result$acc = acc 
   class(result) <- 'xvalreco'
   result
+ 
 }
 
