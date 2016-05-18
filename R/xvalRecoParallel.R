@@ -1,43 +1,60 @@
-xvalReco <- function(newdata, trainprop = 0.5,
+training <- function(trainSet,
+                    trainprop = 0.5,
+                    rank = 10){
+  library(recosystem)
+  r <- Reco()
+  write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
+  r$train('train.txt',opts = list(dim=rank))
+  res <- r$output(NULL,NULL)
+  res
+}
+
+getTrainSet <- function(ratingsIn,trainprop = 0.5){
+  rownew = nrow(ratingsIn)
+  trainRow = floor(trainprop*rownew)
+  trainidxs = sample(1:rownew,trainRow)
+  trainSet = ratingsIn[trainidxs,]
+  trainSet$trainidxs = trainidxs
+  trainSet
+}
+
+getTestSet <- function(ratingsIn, trainSet){
+  testSet = ratingsIn[setdiff(1:nrow(ratingsIn),trainSet$trainidxs),]
+  testSet
+}
+
+
+xvalReco <- function(ratingsIn, trainprop = 0.5,
                      accmeasure = c('exact','mad','rms'),
-                     cls = NULL)
+                     cls = NULL,
+                     rank = 10)
 {
   library(recosystem)
   library(parallel)
-  if(is.null(cls))
-    {
-      r <- Reco()
-      rownew = nrow(newdata)
-      trainRow = floor(trainprop*rownew)
-      trainidxs = sample(1:rownew,trainRow)
-      trainSet = newdata[trainidxs,]
-      testSet = newdata[setdiff(1:nrow(newdata),trainidxs),]
-      write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
-      r$train('train.txt')
-      res <- r$output(NULL,NULL)
-      p = res$P
-      q = res$Q
-      testSet$pred <- vector(length=nrow(testSet))
-      for(i in 1:nrow(testSet)){
-        j = newdata[i,1]
-        k = newdata[i,2]
-        testSet$pred[i] = p[j,] %*% q[k,]
-      }
-  }else {
-    #stop("parallel under construction")
-    for(i in 1:length(cls)){
-    rowgrps = splitIndices(nrow(newdata),length(cls))
-    grpall = train(newdata,rowgrps)
-    mout = clusterApply(cls,rowgrps,grpall)
-    Reduce(c,mout)
+  if(is.null(cls)){
+    trainSet = getTrainSet(ratingsIn, trainprop)
+    testSet= getTestSet(ratingsIn, trainSet)
+    res = training(ratingsIn)
+    p = res$P
+    q = res$Q
+    testSet$pred <- vector(length=nrow(testSet))
+    for(i in 1:nrow(testSet)){
+      j = ratingsIn[i,1]
+      k = ratingsIn[i,2]
+      testSet$pred[i] = p[j,] %*% q[k,]
     }
+  }else {
+    #require(partools)
+    #clusterEvalQ(cls,require(partools))
+    #distribsplit(cls, 'ratingsIn')
+    #clusterExport(cls,c('training'))
+    #clusterEvalQ(cls,resu <- training(ratingsIn,trainprop,rank))
+    #trainSet = clusterEvalQ(cls,training(ratingsIn,trainprop, rank))
+    #class(trainSet) = "PARALLELTEST"
   }
-  #testSet$pred = round(testSet$pred)
-  #acc = mean(testSet$pred == testSet[,3],na.rm = TRUE)
-  
-  numpredna = sum(is.na(apred))
+  numpredna = sum(is.na(testSet$pred))
   accmeasure = match.arg(accmeasure)
-  result = list(ndata =nrow(newdata),trainprop = trainprop, 
+  result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
                 accmeasure = accmeasure, numpredna = numpredna)
   if(accmeasure == 'exact'){
     testSet$pred = round(testSet$pred)
@@ -52,24 +69,3 @@ xvalReco <- function(newdata, trainprop = 0.5,
   class(result) <- 'xvalreco'
   result
 }
-
-train <- function(newdata,group){
-  trainSet = newdata[group,]
-  testSet = newdata[setdiff(1:nrow(newdata),group),]
-  p = res$P
-  q = res$Q
-  testSet$pred <- vector(length=nrow(testSet))
-  for(i in 1:nrow(testSet)){
-    j = newdata[i,1]
-    k = newdata[i,2]
-    testSet$pred[i] = p[j,] %*% q[k,]
-  }
-  testSet$pred
-}
-
-xvalReco(newdata,.5,'exact')
-
-library(parallel)
-c2 <- makePSOCKcluster(rep("localhost",2))
-xvalReco(newdata,.5,'exact',c2)
-check(newdata,298,474)
