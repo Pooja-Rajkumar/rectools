@@ -1,4 +1,4 @@
-training <- function(trainSet,
+trainReco <- function(trainSet,
                     trainprop = 0.5,
                     rank = 10){
   library(recosystem)
@@ -6,16 +6,17 @@ training <- function(trainSet,
   write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
   r$train('train.txt',opts = list(dim=rank))
   res <- r$output(NULL,NULL)
+  class(res) <- 'Reco'
   res
 }
 
-prediction <- function(ratingsIn,res,testSet){
-  p = res$P
-  q = res$Q
+predict.Reco <- function(recoObj,testSet){
+  p = recoObj$P
+  q = recoObj$Q
   testSet$pred <- vector(length=nrow(testSet))
   for(i in 1:nrow(testSet)){
-    j = ratingsIn[i,1]
-    k = ratingsIn[i,2]
+    j = testSet[i,1]
+    k = testSet[i,2]
     testSet$pred[i] = p[j,] %*% q[k,]
   }
   testSet$pred
@@ -47,19 +48,19 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
   if(is.null(cls)){
     trainSet = getTrainSet(ratingsIn, trainprop)
     testSet= getTestSet(ratingsIn, trainSet)
-    res = training(trainSet)
-    totalPreds = prediction(ratingsIn,res,testSet)
+    res = trainReco(trainSet)
+    totalPreds = predict(res,testSet)
   
   }else {
     require(partools)
     clusterEvalQ(cls,require(partools))
     distribsplit(cls, 'ratingsIn')
-    clusterExport(cls,c('training','prediction','getTestSet','getTrainSet'))
+    clusterExport(cls,c('trainReco','predict.Reco','getTestSet','getTrainSet'))
     clusterEvalQ(cls, trainSet<- getTrainSet(ratingsIn,trainprop=0.5))
     testSet= clusterEvalQ(cls, testSet<- getTestSet(ratingsIn,trainSet))
     testSet = mapply(c,testSet$ratings[1],testSet$ratings[2],SIMPLIFY = FALSE)
-    clusterEvalQ(cls,resu <- training(trainSet,trainprop=0.5,rank=10))
-    allPreds = clusterEvalQ(cls, pred <- prediction(ratingsIn,resu,testSet))
+    clusterEvalQ(cls,resu <- trainReco(trainSet,trainprop=0.5,rank=10))
+    allPreds = clusterEvalQ(cls, pred <- predict(ratingsIn,resu,testSet))
     totalPreds = mapply(c,totalPreds[1],totalPreds[2],SIMPLIFY = FALSE)
   }
   numpredna = sum(is.na(totalPreds))

@@ -2,5 +2,6 @@
 export(findYdotsMM,predict.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
        xvalMM,xvalMLE,
+       getTrainSet,getTestSet,trainReco,xvalReco,predict.Reco,
        ratingness,covratingness)
 
