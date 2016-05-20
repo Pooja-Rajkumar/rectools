@@ -1,6 +1,6 @@
 \name{trainReco,predict.Reco,getTestSet,xvalReco,getTrainSet}
 \alias{trainReco}
-\alias{predicition}
+\alias{predict.Reco}
 \alias{getTestSet}
 \alias{getTrainSet}
 \alias{xvalReco}
