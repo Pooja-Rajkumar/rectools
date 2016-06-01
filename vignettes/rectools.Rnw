@@ -16,7 +16,7 @@
 
 \title{Rectools}
 % \shorttitle{Your APA6-Style Manuscript}
-\author{Norman Matloff, Pooja Rajkumar}
+\author{Pooja Rajkumar, Norman Matloff}
 % \affiliation{University of California, Davis}
 
 % \abstract{Recommendation engines have a number of different
@@ -45,8 +45,8 @@ A recommender system is an engine to predict the rating or preference
 that a user would give an item. Recommender systems are pervasive on
 e-commerce websites in particular, which traditionally utilize
 collaborative filtering for their methods. This package includes several
-interesting features, particularly a use of the latent factor model in
-predictions. 
+interesting novel features, notably (a) inclusion of covariates and (b)
+parallelized computation.
 
 \section{Methods}
 
