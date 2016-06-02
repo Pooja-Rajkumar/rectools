@@ -45,17 +45,45 @@ A recommender system is an engine to predict the rating or preference
 that a user would give an item. Recommender systems are pervasive on
 e-commerce websites in particular. 
 %which traditionally utilize collaborative filtering for their methods. 
-This package builds on previous methodology by including several
+This package builds on previous methodology/packages by including several
 interesting novel features, notably (a) inclusion of covariates and (b)
 parallelized computation.
 
 \section{Methods}
 
+We have a data matrix of user ratings of some items.  For concreteness,
+let's use the common example of users rating movies.  Our input data
+consist of 
+
 Though a nearest-neighbor approach is planned for addition to {\bf
 rectools}, at present the package is primarily focused on what are
 various called {\it latent factor} (Koren, {\it et al}, 2009), {\it
 baseline predictors} (Ekstrand {\it et al}, 2010) or {\it bias term}
-(Koren {\it et al}, 2009) approaches.
+(Koren {\it et al}, 2009) approaches:
+
+\begin{itemize}
+
+\item Matrix factorization approach:
+
+Let $A$ denote the full ratings matrix, with one row for each user and
+one column for each item.  Thus the dimension of $A$ is $m \times n$,
+where $m$ and $n$ are the numbers of users and items, respectively.
+
+Most of $A$ consists of unknown quantities, but we wish to find known
+matrices whose product approximates $A$:
+
+\begin{equation}
+A \approx P Q
+\end{equation}
+
+where the matrices $P$ and $Q$ have dimensions $m \times k$ and $k
+\times n$, respectively.  The number of columns of $P$ and rows of $Q$,
+$k$, is hopefully much less than $m$ and $n$.
+
+The intuition is as follows.  Consider the matrix $Q$.  It has a column
+for each item
+
+\end{itemize}
 
 \subsection{The data set}
 Overall, the package takes in data sets in the following form: 
