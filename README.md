@@ -51,10 +51,10 @@ Let's try it out (some output has been omitted for clarity):
 # Say want to predict how well students 1 and 3 would like instructor 12
 > testSet[1,2] <- 12
 > testSet[2,2] <- 12
-> # predict
+> # Predict:
 > predict(ydout,testSet[,1:2])  
 [1] 4.272660 4.410612
-> # try using the covariates
+> # Try using the covariates:
 > ydout <- findYdotsMLE(ivl)
 > predict(ydout,testSet[,-3])  
       [,1]
