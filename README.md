@@ -26,18 +26,18 @@ have a normal distribution.
 
 Let's try it out (some output has been omitted for clarity):
 
-> # lme4 data set, needs some prep
+> # Try lme4 data set, needs some prep first.
 > data(InstEval)
 > ivl <- InstEval
-> # convert factors to numeric
+> # Convert factors to numeric:
 > ivl$s <- as.numeric(ivl$s)
 > ivl$d <- as.numeric(ivl$d)
 > ivl$studage <- as.numeric(ivl$studage)
 > ivl$lectage <- as.numeric(ivl$lectage)
 > ivl$service <- as.numeric(ivl$service)
-> # make correct format, choose covs
+> # Make correct format, choose covs:
 > ivl <- ivl[,c(1,2,7,3:6)]
-> # create dummy variables in place of dept
+> # Create dummy variables in place of dept:
 > library(dummies)
 ...
 > dms <- dummy(ivl$dept)
@@ -45,10 +45,10 @@ Let's try it out (some output has been omitted for clarity):
 > dms$dept2 <- NULL
 > ivl$dept <- NULL
 > ivl <- cbind(ivl,dms)
-# run the training data, no covariates
-# form a test set to illustrate prediction
+# Run the training data, no covariates:
+# Form a test set to illustrate prediction:
 > testSet <- ivl[c(3,8),]  # these happen to be students 1, 3
-# say want to predict how well students 1 and 3 would like instructor 12
+# Say want to predict how well students 1 and 3 would like instructor 12
 > testSet[1,2] <- 12
 > testSet[2,2] <- 12
 > # predict
