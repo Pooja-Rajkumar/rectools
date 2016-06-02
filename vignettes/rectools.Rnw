@@ -37,18 +37,25 @@
 
 \begin{document}
 
-\maketitle
+\maketitle   
 
-\section{Recommendation Engines}
+\section{Recommendation Engines} 
 
 A recommender system is an engine to predict the rating or preference
 that a user would give an item. Recommender systems are pervasive on
-e-commerce websites in particular, which traditionally utilize
-collaborative filtering for their methods. This package includes several
+e-commerce websites in particular. 
+%which traditionally utilize collaborative filtering for their methods. 
+This package builds on previous methodology by including several
 interesting novel features, notably (a) inclusion of covariates and (b)
 parallelized computation.
 
 \section{Methods}
+
+Though a nearest-neighbor approach is planned for addition to {\bf
+rectools}, at present the package is primarily focused on what are
+various called {\it latent factor} (Koren, {\it et al}, 2009), {\it
+baseline predictors} (Ekstrand {\it et al}, 2010) or {\it bias term}
+(Koren {\it et al}, 2009) approaches.
 
 \subsection{The data set}
 Overall, the package takes in data sets in the following form: 
@@ -123,6 +130,10 @@ function of the factors. This is currently implemented as if there are
 no covariates.  
 
 \subsection{cls} Para
+
+\section{References}
+
+Koren, 2009.  
 
 \end{document}
 
