@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage[section]{placeins}
+\setlength{\parindent}{0in}
 
 % library(knitr)
 %\VignetteIndexEntry{Partools}
@@ -52,18 +53,15 @@ parallelized computation.
 \section{Methods}
 
 We have a data matrix of user ratings of some items.  For concreteness,
-let's use the common example of users rating movies.  Our input data
-consist of 
+let's use the common example of users rating movies.  
 
 Though a nearest-neighbor approach is planned for addition to {\bf
 rectools}, at present the package is primarily focused on what are
-various called {\it latent factor} (Koren, {\it et al}, 2009), {\it
+variously called {\it latent factor} (Koren, {\it et al}, 2009), {\it
 baseline predictors} (Ekstrand {\it et al}, 2010) or {\it bias term}
 (Koren {\it et al}, 2009) approaches:
 
-\begin{itemize}
-
-\item Matrix factorization approach:
+\subsection{Matrix Factorization Approach}
 
 Let $A$ denote the full ratings matrix, with one row for each user and
 one column for each item.  Thus the dimension of $A$ is $m \times n$,
@@ -77,13 +75,109 @@ A \approx P Q
 \end{equation}
 
 where the matrices $P$ and $Q$ have dimensions $m \times k$ and $k
-\times n$, respectively.  The number of columns of $P$ and rows of $Q$,
-$k$, is hopefully much less than $m$ and $n$.
+\times n$, respectively.  The numbers of columns of $P$ and rows of $Q$,
+$k$, are chosen to be much less than $m$ and $n$, to avoid overfitting.
+In this manner, we formulate predictions for the unknown entries of $A$.
 
 The intuition is as follows.  Consider the matrix $Q$.  It has a column
-for each item
+for each item, so a row corresponds loosely to a set of ratings of all
+the items.  They are not true ratings, as they will be multiplied by
+numbers in $P$, but again loosely speaking, we have found $k$ typical
+user rating patterns that summarize user behavior.
 
-\end{itemize}
+Similarly, the $k$ columns of $P$ summarize item ``behavior,'' i.e.\ how
+items vary from one another.
+
+\subsection{ANOVA Models}
+
+These take a statistical Analysis of Variance approach.  The rating by
+user $i$ of item $j$, denoted $Y_{ij}$, is assumed to have the form
+
+\begin{equation}
+Y_{ij} = \mu + \alpha_i + \beta_j + \epsilon_{ij}
+\end{equation}
+
+Here $\alpha_i$ is the tendency of user $i$ to rate items higher or
+lower than does the average user; $\beta_j$ is the tendency of item
+$j$ to be rated higher or lower than the average item (i.e.\ this item's
+relative popularity); and $\epsilon_{ij}$ is the combined effect of all
+unknown factors, e.g.\ the user's mood at the time the rating is made.
+The terms $\alpha_i$, $\beta_j$ and $\epsilon_{ij}$ are modeled as
+random variables, so we have a {\it random effects model} in ANOVA
+terminlogy, with mean 0.  The parameter $\mu$ is a fixed but unknown
+constant, equal to the theoretical average of all possible items by all
+possible users.
+
+To do prediction, one uses the known user-item data to form estimates of
+$\mu$ and the $\alpha_i$ and $\beta_j$.  Using the statistical ``hat''
+notation to denote ``estimate of,'' our predicted rating of item $j$
+by user $i$ is
+
+\begin{equation}
+\label{anovapred}
+\widehat{Y}_{ij} = \widehat{\mu} + \widehat{\alpha}_i +
+\widehat{\beta}_j
+\end{equation}
+
+The issue then is a matter of deciding how to obtain the estimates on
+the right-hand side of (\ref{anovapred}).
+
+Random effects ANOVA models have been used since the early years of
+statistics.  Typically the $\alpha_i$, $\beta_j$ and $\epsilon_{ij}$ are
+assumed to have normal distributions (with different variances).  The
+quantities in (\ref{anovapred}) are then obtained by the Maximum Likelihood
+Estimation (MLE) approach.
+
+The R package $lme4$ is widely used for random effects models, and is
+one of the ingredients in {\bf rectools}.
+
+An alternative is to use another time-honored statistical technique, the
+Method of Moments (MM) (Owen and Gao, 2015; Perry 2015), as follows:
+
+Define
+
+\begin{equation}
+\label{yidot}
+Y_{i.} = \frac{1}{N_i} \sum_{j=1}^{N_i} Y_{ij}
+\end{equation}
+
+\begin{equation}
+\label{ydotj}
+Y_{.j} = \frac{1}{N_j} \sum_{i=1}^{N_i} Y_{ij}
+\end{equation}
+
+\begin{equation}
+\label{ydotdot}
+Y_{..} =
+\frac{1}{N} \sum_{i=1}^{N_i} 
+\sum_{j=1}^{N_j} Y_{ij}
+\end{equation}
+
+where $N_i$ is the number of items rated by user $i$, $N_j$ is the
+number of users rating item $j$, and $N$ is the sum of all the $N_i$
+(same as sum of all the $N_j$).
+
+Due to the mean-0 nature of the various terms, (\ref{yidot}), (\ref{ydotj})
+and (\ref{ydotdot}) have expected values 
+$\alpha_i + \mu$,
+$\beta_j + \mu$ and 
+$\alpha_i + \beta_j + \mu$, respectively.  This leads to the natural
+estimates
+
+\begin{equation}
+\widehat{\alpha}_i = Y_{i.} - Y_{..}
+\end{equation}
+
+\begin{equation}
+\widehat{\beta}_j = Y_{.j} - Y_{..}
+\end{equation}
+
+\begin{equation}
+\widehat{\mu}_j = Y_{..}
+\end{equation}
+
+These are used in (\ref{anovapred}) to obtain our actual predicted
+ratigs.
 
 \subsection{The data set}
 Overall, the package takes in data sets in the following form: 
@@ -117,21 +211,13 @@ well will have generally high ratings, and thus, a generally high
 $\beta_j$. If a movie has generally poor ratings, then the
 $\beta_j$ will be low.
 
-There are two predictive methods that we implement in our ydots method:
-\begin{enumerate}
-
-\item Method of Moments
-\item Maximum Likelihood 
-
-\end{enumerate}
-
 \subsection{Method of Moments}
 
 Method of Moments regresses the ratings against covariates such as age,
 gender, or genre. We then subtract these predictions from the actual
 value and apply the latent factor model. In order to use method of
 moments, make sure your data set (called ratingsIn) follows the same
-format as below: \\
+format as below: 
 
 
 \begin{tabular}{l l l}
@@ -161,7 +247,10 @@ no covariates.
 
 \section{References}
 
-Koren, 2009.  
+(To be filled in.)
+
+Koren, 2009.  Art Owen and Kaitlyn Gao, 2015.  Patrick Perry, 2015.
+
 
 \end{document}
 
