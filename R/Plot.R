@@ -5,8 +5,14 @@ plot.ydotsMM <- function(ydotsObj,ratingsIn) {
    ydo <- ydotsObj
    rin <- ratingsIn
    names(rin) <- c('user','item','rating')
-   rin$alph <- ydo$usrMeans[rin[,1]] - ydo$grandMean
-   rin$beta <- ydo$itmMeans[rin[,2]] - ydo$grandMean
-   smoothScatter(rin$alph,rin$beta)
+   ydoalph <- ydo$usrMeans - ydo$grandMean
+   ydobeta <- ydo$itmMeans - ydo$grandMean
+   plot(density(ydoalph),xlab='est. alpha',main='')
+   readline('hit Enter for next graph')
+   plot(density(ydobeta),xlab='est. beta',main='')
+   rin$alph <- ydoalph[rin[,1]] 
+   rin$beta <- ydobeta[rin[,2]] 
+   readline('hit Enter for next graph')
+   main <- 'smoothed scatter plot'
+   smoothScatter(rin$alph,rin$beta,main=main)
 }
-

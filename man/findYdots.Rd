@@ -1,7 +1,8 @@
-\name{findYdotsMM,findYdotsMLE, predict.ydotsMM, predict.ydotsMLE}
+\name{findYdotsMM,findYdotsMLE, predict.ydotsMM, predict.ydotsMLE,plot.ydotsMM}
 \alias{findYdotsMM}
 \alias{findYdotsMLE}
 \alias{predict.ydotsMM}
+\alias{plot.ydotsMM}
 \alias{predict.ydotsMLE}
 
 \title{Covariate-Based, Latent-Factor Recommender Systems}
@@ -9,12 +10,13 @@
 \description{
 Tools to incorporate user and item information into latent-factor 
 recommender system methodology, and to add parallel computation
-capability.
+capability.  Various plots can be displayed.
 }
 
 \usage{
 findYdotsMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
 predict.ydotsMM(ydotsObj,testSet) 
+plot(ydotsObj,ratingsIn) 
 findYdotsMLE(ratingsIn,cls=NULL) 
 predict.ydotsMLE(ydotsObj,testSet) 
 }
@@ -67,6 +69,11 @@ predict.ydotsMLE(ydotsObj,testSet)
    \code{findYdotsMLE}, since \code{lmer} calculates the Best Linear
    Unbiased Predictors, thus indirectly assigning weights to the user
    and item effects.
+
+   Plotting:  Calling \code{plot(ydotsObj,ratingsIn)} invokes
+   \code{plot.ydotsMM}.  Several plots are displayed, including density
+   estimates for the user and item random effects, and a smoothed
+   scatter plot for the joint density of those effects.
 
 }
 
