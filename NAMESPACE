@@ -3,5 +3,6 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
        xvalMM,xvalMLE,
        getTrainSet,getTestSet,trainReco,xvalReco,predict.Reco,
+       focusGrp,
        ratingness,covratingness)
 

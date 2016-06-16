@@ -5,7 +5,7 @@ Maintainer: Norm Matloff <normmatloff@gmail.com>
 Date: 04/30/2016
 Title: Advanced Recommender System
 Description: Tools for covariate-oriented recommender systems, with
-   parallel computation.
+   parallel computation, and various analytical tools.
 Depends: partools, lme4
 LazyLoad: no
 ByteCompile: yes
