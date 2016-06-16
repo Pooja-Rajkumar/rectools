@@ -3,7 +3,8 @@ Advanced package for recommender systems.
 
 We allow the user to incorporate user and item covariate information,
 and offer other capabilities not seen in other packages, as well as
-adding parallel computation to some popular methods.
+adding parallel computation to some popular methods.  Also included
+are plot capabilities.
 
 QUICK FIRST EXAMPLES:
 
