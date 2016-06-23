@@ -184,7 +184,6 @@ ratigs.
 
 findYdots allows us to use a latent factor model to predict values in our data set. Ydots makes use of the following equation: 
 
-%%%% \includegraphics{cat}
 
 Suppose we have a user Ali. Ali has seen the following movies: 
 
@@ -278,9 +277,73 @@ In order to get our predicted value:
 
 Thus, $\widehat{Y}_{karina, Iron Man}$ = 4 + (-0.78) + 0.5 = 3.72. Our predicted value for Katrina's rating for Iron Man is thus 3.72. 
 
+\subsection{Movie Lens data (no covariates)}
+Now, we will walk through a step by step example. Suppose we have a movie lens data set, which can be found here: xyz. The three columns are referred to the userID, movieID, and rating for that particular user and movie on a scale of 1-5 respectively. For the sake of convenience, we will rename the three columns like so: 
 
+ADD CODE HERE 
 
+Suppose we take a snippet of the following data set: 
 
+\begin{tabular}{l l l}
+
+\textbf{userID} & \textbf{movieID} & \textbf{rating}\\
+
+196 & 242 & 3\\ 186 & 302 & 3 \\ 22 & 377 & 1 \\
+244 & 51 & 2 \\ 166 & 346 & 1 \\ 298 & 474 & 4 \\
+115 & 265 & 2 \\ 253 & 465 & 5 \\ 305 & 451 & 3 \\
+.. & .. & .. \\
+
+\\ \end{tabular}
+
+Suppose we want to predict the rating user 196 would give movie 2. We would first make a call to findYdots. There are two seperate ways that we can predict- using either findYdotsMM or findYdotsMLE. The first uses method of moments while the later uses maximum likeihood methods. 
+\\ Supose we set the movie lens data set under an alias, data. Looking at findYdotsMM first, we make the following call: 
+\\
+dataMeans = findYdotsMM(data) 
+\\
+This call returns the overall mean of the entire data set, the mean of all users, and the mean of all items, like so: 
+\\
+ADD PICTURE HERE 
+\\
+These means can be accessed quite easily: 
+overall_mean = dataMeans$grandMeans
+user_mean = dataMeans$usrMeans
+item_mean = dataMeans$itmMeans
+\\
+Note: itmMeans and usrMeans are both vectors, because they are the means of each individual user or movie. \\
+Additionally, findYdotsMM has the option to simply regress the estimated mean coefficents, by signaling regressYdots like so: 
+\\
+test = findYdotsMM(data, regressYdots = TRUE)
+\\
+This call returns all the means as well as the regressYdots attribute, which is the coefficents of the regressed means, which can be found like so:\\
+coef_means - test$regressYdots \\
+Which looks like so: \\
+
+ADD PICTURE HERE 
+
+\\
+Additionally, findYdots has a parallelization feature for computational speed up and large data sets. \\
+vals = findYdots(data, regressYdots = FALSE, cls)\\
+\\
+A helpful feature for users who wish to use one data set to predict another, there is a predict function for ydotsMM. Predict requires a ydotsObj and a testSet. Suppose in this case, we want to predict on the movielens data set, from our own data set: 
+\\
+testSet = data
+testSet$rating = 0
+val = predict(dataMeans,testSet)
+\\
+val here would simply be an array of predicted values for each user and each movie in the movielens data set, like so: 
+\\
+ENTER A PICTURE HERE 
+\\
+Suppose we wanted to predict using maximum likeihood methods:\\
+res_mle = findYdotsMLE(data) \\
+The means are fitted to the lme4 model and returned as a ydotsMLE type: 
+\\ ENTER A PICTURE HERE \\
+Parallelization is also a feature for lme4: \\
+res_mle = findYdotsMLE(data, cls) \\
+Predict is also enabled for findYdotsMLE. \\
+pred_val = predict(res_mle, testSet)\\
+pred_val contains a 
+ 
 \subsection{How findYdots is called}
 
 \begin{lstlisting}
@@ -317,7 +380,8 @@ xvalMLE can be called:
 \\
 xvalMLE(ratingsIn, trainprop = 0.5, 'exact')
 \\
-When using xvalMLE, you will need a data set in the same form of ratingsIn (as discussed above), with the option of adding a training proportion, an accuracy measure, and nodes to parallelize. The training proportion will be the proportion of the data set you would like to train in order to predict your test set. Your accuracy measure can be one of three different possibilties: \\
+When using xvalMLE, you will need a data set in the same form of ratingsIn (as discussed above), with the option of adding a training proportion, an accuracy measure, and nodes to parallelize. The training proportion will be the proportion of the data set you would like to train in order to predict your test set. Your accuracy measure can be one of three different possibilties: 
+\\
 1. exact- The accuracy is measured based on the average of all the correct predicted values compared to the test set. \\
 2. mad- The accuracy is measured based on the average of the absolute value of differences between the predicted value and actual value. \\
 3. rms - The accuracy is measured by first subtracting the predicted and actual values, squaring it, taking the mean, and then taking the square root of the mean.\\
@@ -329,14 +393,14 @@ xValMM is similiar to xvalMLE, except it adds a regressYdots option as discussed
 
 \subsection{xvalReco}
 xvalReco is an option for users who want to use a parallelized version of recosystem. xvalReco requires ratingsIn, but has the option to add training proportions, accuracy measures, clusters, and a rank. xvalReco not only calls recosystem on the data set, but also seperates the data set into training and test sets and calculated the accuracy of the cross validation. xvalReco also extends the predict capability, given a recoObj and a testset. A recoObj would be the object returned from recosystem. Thus, xvalReco returns the number of rows in ratingsIn, the training proportion, the accuracy measure, the number of predicted NA values, and the accuracy.xvalReco has additional helpful functions, such as: 
-//
-1. getTrainSet- returns a training set given a data set and an option to add a training proportion //
-// 2. getTestSet- returns a testset given a data set and the training set
-//
-3. trainReco- runs recosystem on a training set, with additional options to add a training proportion and a rank, and returns a class res of type Reco which contains all the predicted user and movie values. //
-//
+\\
+1. getTrainSet- returns a training set given a data set and an option to add a training proportion \\
+\\ 2. getTestSet- returns a testset given a data set and the training set
+\\
+3. trainReco- runs recosystem on a training set, with additional options to add a training proportion and a rank, and returns a class res of type Reco which contains all the predicted user and movie values. \\
+\\
 4. predict- the object returned by recosystem contains two vectors, P and Q, which contain the predicted values for each user and movie respectively. Thus, in order to get the actual predicted value for a particular user and movie, predict multiplies the p and q matricies. Once these are multiplied, we will have the correct predicted values for each $Y_ij$. 
-//
+\\
 xvalReco calls trainset, then testset, then train, and then predict. Once the predicted values are returned, xvalReco calculates the accuracy. 
 \section{References}
 
@@ -346,3 +410,4 @@ Koren, 2009.  Art Owen and Kaitlyn Gao, 2015.  Patrick Perry, 2015.
 
 
 \end{document}
+
