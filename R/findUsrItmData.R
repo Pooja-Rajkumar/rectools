@@ -11,31 +11,43 @@
 #               and rating 
 #    usrCovs: data frame of user covariates, e.g. gender and age, one
 #             row per user
-#    itmCovs: data frame of item categories, e.g. genre for movies,
-#             row per item; categories need not be mutually exclusive
+#    itmCats: data frame of item categories, e.g. genre for movies, one
+#             row of booleans per item; categories need not be 
+#             mutually exclusive
 #    fileOut: if specified, save the value returned by the function
 #             using R save(), with file name fileOut
-
 # value:
 
 #    object of class 'usrData': an R list with one element per user;
 #    each such element is itself an R list, with these components:
 #
 #       ratings: ratings set by this user
+#       itms: item IDs rated by this user
 #       cvrs:  covariate data for this user, if any
-#       itms:  item category data for this user, if any; i-th element
+#       cats:  item category data for this user, if any; i-th element
 #              is proportion of items rated by this user that are 
 #              in category i
 
-formUserData <- function(ratingsIn,usrCovs=NULL,itmCats-NULL,fileOut='') {
+formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    class(retval) <- 'usrData'
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
    retval <- list(length=nusers)
-   for (i in 1:length(usrs)) {
-      retval[[i]]$ratings <- split(ratingsIn[,3],ratingsIn[,1])
-      if (!is.null(covCols))
+   if (!is.null(itmCats)) {
+      itmCats <- as.matrix(itmCats)
+      nitms <- nrow(itmCats)
+   }
+   for (i in 1:nusers) {
+      retval[[i]]$itms <- ratingsIn[rownums[[i]],2]
+      retval[[i]]$ratings <- ratingsIn[rownums[[i]],3]
+      if (!is.null(usrCovs))
+         retval[[i]]$cvrs <- usrCovs[i,]
+      if (!is.null(itmCats)) {
+         tmp <- rep(0,nitms)
+         tmp[retval[[i]]$itms] <- 1
+         retval[[i]]$cats <- tmp %*% itmCats / sum(tmp)
+      }
    }
 
 }
