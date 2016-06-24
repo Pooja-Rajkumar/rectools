@@ -43,7 +43,7 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
       retval[[i]]$itms <- ratingsIn[whichrows,2]
       retval[[i]]$ratings <- ratingsIn[whichrows,3]
       if (!is.null(usrCovs))
-         retval[[i]]$cvrs <- usrCovs[i,]
+         retval[[i]]$cvrs <- as.numeric(usrCovs[i,])
       if (!is.null(itmCats)) {
          tmp <- rep(0,nitems)
          tmp[retval[[i]]$itms] <- 1

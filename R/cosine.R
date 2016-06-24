@@ -10,8 +10,9 @@
 # arguments:
 
 #    usrDataObj: object of class 'usrData'
-#    wtcovs: weight to put on covariates
-#    wtcats: weight to put on item categories
+#    nitms: number of items
+#    wtcovs: weight to put on covariates; NULL if no covs
+#    wtcats: weight to put on item categories; NULL if no cats
 #    k: number of nearest neigbhors
 #    fileOut: name of file to save return value to
 
@@ -19,6 +20,23 @@
 
 #    object of class 'cosknn'
 
-cosprep <- function() {usrDataObj,wtcovs=1.0,wtcats=1.0,k=50,fileOut='')
+cosprep <- 
+   function(usrDataObj,iitms,wtcovs=NULL,wtcats=NULL,k=50,fileOut='') {
 
+}
+
+# cosDist() find cosine distance between x and y, elements of an object
+# of 'usrData' class; wtcovs, wtcats as in cosprep()
+cosDist <- function(x,y,nitems,wtcovs,wtcats) {
+   xrow <- rep(0,nitems)
+   xrow[x$items] <- xrow[x$ratings]
+   yrow <- rep(0,nitems)
+   yrow[y$items] <- yrow[y$ratings]
+   cosTot <- xrow %*% yrow
+   if (!is.null(wtcovs)) {
+      cosTot <- cosTot + wtcovs * x$cvrs %*% y$cvrs
+   }
+   if (!is.null(wtcats)) {
+      cosTot <- cosTot + wtcats * x$cvrs %*% y$cats
+   }
 }
