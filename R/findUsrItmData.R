@@ -2,7 +2,7 @@
 # note: it is assumed that user IDs are consecutive numbers starting at
 # 1
 
-# utilities to read in raw data and form an R list for user data,
+# utility to read in raw data and form an R list for user data,
 # with class 'usrData' 
 
 # arguments:
@@ -22,33 +22,37 @@
 #    each such element is itself an R list, with these components:
 #
 #       ratings: ratings set by this user
-#       itms: item IDs rated by this user
+#       itms: IDs of items rated by this user
 #       cvrs:  covariate data for this user, if any
 #       cats:  item category data for this user, if any; i-th element
 #              is proportion of items rated by this user that are 
 #              in category i
 
 formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
-   class(retval) <- 'usrData'
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
-   retval <- list(length=nusers)
+   retval <- list()
    if (!is.null(itmCats)) {
       itmCats <- as.matrix(itmCats)
-      nitms <- nrow(itmCats)
+      nitems <- nrow(itmCats)
    }
    for (i in 1:nusers) {
-      retval[[i]]$itms <- ratingsIn[rownums[[i]],2]
-      retval[[i]]$ratings <- ratingsIn[rownums[[i]],3]
+      whichrows <- rownums[[i]]
+      retval[[i]] <- list()
+      retval[[i]]$itms <- ratingsIn[whichrows,2]
+      retval[[i]]$ratings <- ratingsIn[whichrows,3]
       if (!is.null(usrCovs))
          retval[[i]]$cvrs <- usrCovs[i,]
       if (!is.null(itmCats)) {
-         tmp <- rep(0,nitms)
+         if (i == 916) browser()
+         tmp <- rep(0,nitems)
          tmp[retval[[i]]$itms] <- 1
          retval[[i]]$cats <- tmp %*% itmCats / sum(tmp)
       }
    }
-
+   class(retval) <- 'usrData'
+   if (fileOut != '') save(retval,file=fileOut)
+   retval
 }
 
