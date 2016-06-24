@@ -45,7 +45,6 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
       if (!is.null(usrCovs))
          retval[[i]]$cvrs <- usrCovs[i,]
       if (!is.null(itmCats)) {
-         if (i == 916) browser()
          tmp <- rep(0,nitems)
          tmp[retval[[i]]$itms] <- 1
          retval[[i]]$cats <- tmp %*% itmCats / sum(tmp)
