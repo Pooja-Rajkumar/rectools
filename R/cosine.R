@@ -29,14 +29,16 @@ cosprep <-
 # of 'usrData' class; wtcovs, wtcats as in cosprep()
 cosDist <- function(x,y,nitems,wtcovs,wtcats) {
    xrow <- rep(0,nitems)
-   xrow[x$items] <- xrow[x$ratings]
+   xrow[x$itms] <- xrow[x$ratings]
    yrow <- rep(0,nitems)
-   yrow[y$items] <- yrow[y$ratings]
+   yrow[y$itms] <- yrow[y$ratings]
+   browser()
    cosTot <- xrow %*% yrow
    if (!is.null(wtcovs)) {
       cosTot <- cosTot + wtcovs * x$cvrs %*% y$cvrs
    }
    if (!is.null(wtcats)) {
-      cosTot <- cosTot + wtcats * x$cvrs %*% y$cats
+      cosTot <- cosTot + wtcats * x$cats %*% t(y$cats)
    }
+   cosTot
 }
