@@ -2,6 +2,8 @@
 # note: it is assumed that user IDs are consecutive numbers starting at
 # 1
 
+
+
 # utility to read in raw data and form an R list for user data,
 # with class 'usrData' 
 
@@ -39,7 +41,7 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    }
    for (i in 1:nusers) {
       whichrows <- rownums[[i]]
-      retval[[i]] <- list()
+      retval[[i]] <- list(userID=i)
       retval[[i]]$itms <- ratingsIn[whichrows,2]
       retval[[i]]$ratings <- ratingsIn[whichrows,3]
       if (!is.null(usrCovs))
@@ -53,5 +55,10 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    class(retval) <- 'usrData'
    if (fileOut != '') save(retval,file=fileOut)
    retval
+}
+
+# utility:  find input row for a given user, item
+findInputRow <- function(ratingsIn,usrID,itmID) {
+   ratingsIn[ratingsIn[,1]==usrID & ratingsIn[,2]==itmID,]
 }
 

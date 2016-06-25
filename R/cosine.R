@@ -27,13 +27,13 @@ cosprep <-
 
 # cosDist() find cosine distance between x and y, elements of an object
 # of 'usrData' class; wtcovs, wtcats as in cosprep()
-cosDist <- function(x,y,nitems,wtcovs,wtcats) {
-   xrow <- rep(0,nitems)
-   xrow[x$itms] <- xrow[x$ratings]
-   yrow <- rep(0,nitems)
-   yrow[y$itms] <- yrow[y$ratings]
-   browser()
-   cosTot <- xrow %*% yrow
+cosDist <- function(x,y,wtcovs,wtcats) {
+   # rated items in common
+   commItms <- intersect(x$itms,y$itms)
+   # where are they in x and y?
+   xwhere <- which(!is.na(match(x$itms,commItms)))
+   ywhere <- which(!is.na(match(y$itms,commItms)))
+   cosTot <- x$ratings[xwhere] %*% y$ratings[ywhere]
    if (!is.null(wtcovs)) {
       cosTot <- cosTot + wtcovs * x$cvrs %*% y$cvrs
    }
