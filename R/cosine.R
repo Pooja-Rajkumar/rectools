@@ -25,6 +25,22 @@ cosprep <-
 
 }
 
+# origData, newData of class usrData, with the latter having only one
+# element; predict latter from former, for the item newNA
+predict.usrData <- function(origData,newData,newItem,k,wtcovs,wtcats) {
+   checkNewItem <- function(oneUsr) 
+      match(oneUsr$items,newItem)
+   tmp <- sapply(origData,checkNewItem)
+   whereNewItem <- which(!is.na(tmp))
+   # whereNewItem[i] tells us, for each user u in origData, the index of
+   # newItem in u$items
+   if (is.null(tmp)) return(NA)
+   origData <- origData[tmp]
+   onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
+   dists <- sapply(origData,onecos) 
+   ksmall <- order(dists)[1:k]
+}
+
 # cosDist() find cosine distance between x and y, elements of an object
 # of 'usrData' class; wtcovs, wtcats as in cosprep()
 cosDist <- function(x,y,wtcovs,wtcats) {
