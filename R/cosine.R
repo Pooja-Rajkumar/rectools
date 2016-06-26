@@ -31,11 +31,12 @@ predict.usrData <- function(origData,newData,newItem,k,wtcovs,wtcats) {
    checkNewItem <- function(oneUsr) 
       match(oneUsr$items,newItem)
    tmp <- sapply(origData,checkNewItem)
-   whereNewItem <- which(!is.na(tmp))
+   whoHasIt <- which(!is.na(tmp))
    # whereNewItem[i] tells us, for each user u in origData, the index of
    # newItem in u$items
-   if (is.null(tmp)) return(NA)
-   origData <- origData[tmp]
+   if (is.null(whoHasIt)) return(NA)  # no one rated this item
+   origData <- origData[whoHasIt]
+   whereIsIt
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    dists <- sapply(origData,onecos) 
    ksmall <- order(dists)[1:k]
