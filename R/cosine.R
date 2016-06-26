@@ -28,18 +28,26 @@ cosprep <-
 # origData, newData of class usrData, with the latter having only one
 # element; predict latter from former, for the item newNA
 predict.usrData <- function(origData,newData,newItem,k,wtcovs,wtcats) {
-   checkNewItem <- function(oneUsr) 
-      match(oneUsr$items,newItem)
-   tmp <- sapply(origData,checkNewItem)
-   whoHasIt <- which(!is.na(tmp))
-   # whereNewItem[i] tells us, for each user u in origData, the index of
-   # newItem in u$items
+   checkNewItem <- function(oneUsr) {
+      tmp <- match(oneUsr$itms,newItem)
+      whichOne <- which(!is.na(tmp))
+      if (is.null(whichOne)) return(NA)
+      c(whichOne,oneUsr$ratings[whichOne])
+   }
+   found <- sapply(origData,checkNewItem)
+   # found is a vector whose i-th element, j, is such that itms[j] of
+   # origData[[i]] is newItem, with NA if newItem wasn't rated by user i
+   whoHasIt <- which(!is.na(found[1,]))
+   # whoHasIt[i] is the index, i.e. user ID, of the i-th non-NA value in
+   # tmp
    if (is.null(whoHasIt)) return(NA)  # no one rated this item
    origData <- origData[whoHasIt]
-   whereIsIt
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    dists <- sapply(origData,onecos) 
    ksmall <- order(dists)[1:k]
+   # ksmall is a vector containing the indices (with respect to
+   # origData) of the k closest users to newData
+   found[2,ksmall]
 }
 
 # cosDist() find cosine distance between x and y, elements of an object
