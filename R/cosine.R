@@ -3,35 +3,28 @@
 
 # covariates and item type preferences may be used
 
-# cosprep() does the initial nearest-neighbor analysis, after which use
-# predict(); finds the k nearest-neighbors of the points in the original
-# input data
-
 # arguments:
 
-#    usrDataObj: object of class 'usrData'
-#    nitms: number of items
+#    origData: training set, object of class 'usrData'
+#    newData: data point (just one for now) to be predicted, object of
+#             class 'usrData'
+#    newItem: ID of the item rating to be predicted for the user in
+#             newData
 #    wtcovs: weight to put on covariates; NULL if no covs
 #    wtcats: weight to put on item categories; NULL if no cats
-#    k: number of nearest neigbhors
-#    fileOut: name of file to save return value to
+#    k: number of nearest neigbhors (code could be modifed to obtain
+#       values for several k in one call)
 
 # value:
 
-#    object of class 'cosknn'
+#    predicted rating
 
-cosprep <- 
-   function(usrDataObj,iitms,wtcovs=NULL,wtcats=NULL,k=50,fileOut='') {
-
-}
-
-# origData, newData of class usrData, with the latter having only one
-# element; predict latter from former, for the item newNA
-predict.usrData <- function(origData,newData,newItem,k,wtcovs,wtcats) {
+predict.usrData <- function(origData,newData,newItem,
+      k,wtcovs=NULL,wtcats=NULL) {
    checkNewItem <- function(oneUsr) {
       tmp <- match(oneUsr$itms,newItem)
+      if (all(is.na(tmp))) return(c(NA,NA))
       whichOne <- which(!is.na(tmp))
-      if (is.null(whichOne)) return(NA)
       c(whichOne,oneUsr$ratings[whichOne])
    }
    found <- sapply(origData,checkNewItem)
@@ -42,12 +35,13 @@ predict.usrData <- function(origData,newData,newItem,k,wtcovs,wtcats) {
    # tmp
    if (is.null(whoHasIt)) return(NA)  # no one rated this item
    origData <- origData[whoHasIt]
+   found <- found[,whoHasIt]
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    dists <- sapply(origData,onecos) 
    ksmall <- order(dists)[1:k]
    # ksmall is a vector containing the indices (with respect to
    # origData) of the k closest users to newData
-   found[2,ksmall]
+   mean(found[2,ksmall])
 }
 
 # cosDist() find cosine distance between x and y, elements of an object
