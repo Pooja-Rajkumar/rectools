@@ -27,7 +27,7 @@ predict.usrData <- function(origData,newData,newItem,
       whichOne <- which(!is.na(tmp))
       c(whichOne,oneUsr$ratings[whichOne])
    }
-   found <- sapply(origData,checkNewItem)
+   found <- as.matrix(sapply(origData,checkNewItem))
    # found is a vector whose i-th element, j, is such that itms[j] of
    # origData[[i]] is newItem, with NA if newItem wasn't rated by user i
    whoHasIt <- which(!is.na(found[1,]))
