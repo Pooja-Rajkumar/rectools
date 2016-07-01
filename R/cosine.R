@@ -38,6 +38,7 @@ predict.usrData <- function(origData,newData,newItem,
    found <- found[,whoHasIt]
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    dists <- sapply(origData,onecos) 
+   if (sum(!is.na(dists)) < k) return(NA)
    ksmall <- order(dists)[1:k]
    # ksmall is a vector containing the indices (with respect to
    # origData) of the k closest users to newData

@@ -25,14 +25,14 @@ xvalCos <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,
    trainprop=0.5,accmeasure=c('exact','mad','rms'))
 {
    # split into random training and validation sets 
-   nrowRatIn = nrow(ratIn)
+   nrowRatIn = nrow(ratingsIn)
    numRows = floor(trainprop * nrowRatIn)
    trainIdxs = sample(1:nrowRatIn,numRows)
-   trainingSet = ratIn[trainIdxs, ]
+   trainingSet = ratingsIn[trainIdxs, ]
    trainRatings = trainingSet[,3]
    trainItems = trainingSet[,2]
    trainUsers = trainingSet[,1]
-   testSet = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
+   testSet = ratingsIn[setdiff(1:nrowRatIn,trainIdxs),]
    # now set up training set for cosine analysis
    trainData <- formUserData(trainingSet,usrCovs,itmCats)
    # for each user i in the test data, find the items rated by user i in
@@ -41,34 +41,26 @@ xvalCos <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,
    preds <- c(NULL,NULL)
    for (l in 1:length(testData)) {
       oneNewDatum <- testData[[l]]
-      i <- ond$userID
-      itms <- ond$itms
-      for (j in 1:length(itms)) {
-         saveRat <- itms[j]
-         itms[j] <- 0
-         predVal <- predict(trainData,oneNewDatum,saveRat)
-         preds <- rbind(preds,c(predVal,saveRat)
-         itms[j]
+      for (j in 1:length(oneNewDatum$ratings)) {
+         saveRat <- oneNewDatum$ratings[j]
+         oneNewDatum$ratings[j] <- 0
+         predVal <- predict(trainData,oneNewDatum,saveRat,k)
+         preds <- rbind(preds,c(predVal,saveRat))
+         oneNewDatum$ratings[j] <- saveRat
       }
    }
-
-
-
-   predOneNewDatum <- function(oneNewDatum) 
-      predict(oneNewDatum)   
-
-  
-  numpredna = sum(is.na(testSet$pred)) # calculate accuracy 
+  numpredna = sum(is.na(preds[,1])) 
+  # calculate accuracy 
   accmeasure = match.arg(accmeasure)
   result = list(ndata=nrowRatIn,trainprop=trainprop,
      accmeasure=accmeasure,numpredna=numpredna)
   if (accmeasure == 'exact') {
-     testSet$pred = round(testSet$pred)
-     acc = mean(testSet$pred == testSet[,3],na.rm=TRUE)
+     roundpreds = round(preds[,1])
+     acc = mean(preds[,1] == preds[,2],na.rm=TRUE)
   } else if (accmeasure == 'mad') {
-     acc = mean(abs(testSet$pred-testSet[,3]),na.rm=TRUE)
+     acc = mean(abs(preds[,1] - preds[,2]),na.rm=TRUE)
   } else if (accmeasure == 'rms') {
-     acc = sqrt(mean((testSet$pred-testSet[,3])^2,na.rm=TRUE))
+     acc = sqrt(mean((reds[,1] - preds[,2])^2,na.rm=TRUE))
   }
   result$acc = acc
   class(result) <- 'xvalb'
