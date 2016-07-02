@@ -16,3 +16,10 @@ plot.ydotsMM <- function(ydotsObj,ratingsIn) {
    main <- 'smoothed scatter plot'
    smoothScatter(rin$alph,rin$beta,main=main)
 }
+
+plot.xvalb <- function(xvalObj) {
+   plot(density(xvalObj$preds,na.rm=TRUE),xlab='predicted ratings',main='')
+   readline('hit Enter for next graph')
+   main <- 'smoothed scatter plot'
+   smoothScatter(xvalObj$actuals,xvalObj$preds,main=main)
+}
