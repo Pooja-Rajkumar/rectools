@@ -17,8 +17,9 @@ predict.Reco <- function(recoObj,testSet){
   for(i in 1:nrow(testSet)){
     j = testSet[i,1]
     k = testSet[i,2]
-print(i)
-    testSet$pred[i] = p[j,] %*% q[k,]
+    testSet$pred[i] <- 
+       if(j > nrow(p) || k > nrow(q)) NA else
+       p[j,] %*% q[k,]
   }
   testSet$pred
 }
