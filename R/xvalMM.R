@@ -23,7 +23,7 @@
 #    accuracy value
 
 xvalMM <- function(ratingsIn, trainprop=0.5,
-    accmeasure=c('exact','mad','rms'),regressYdots=FALSE,cls=NULL){
+    regressYdots=FALSE,cls=NULL){
   if(!is.null(cls)) stop('parallel version under construction')
   if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
   # split into random training and validation sets 
@@ -39,7 +39,8 @@ xvalMM <- function(ratingsIn, trainprop=0.5,
   # Y.. = means$grandMean
   # Yi. = means$usrMeans
   # Y.j = means$itmMeans
-  testA = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
+  testIdxs = setdiff(1:nrowRatIn,trainIdxs)
+  testA = ratIn[testIdxs,]
   testA$pred = predict(means,testA[,-3])  # predict.ydotsMM
   # need to integrate the following into predict.ydotsMM
   if (regressYdots) {
@@ -49,18 +50,25 @@ xvalMM <- function(ratingsIn, trainprop=0.5,
   }
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
-  accmeasure = match.arg(accmeasure)
-  result = list(ndata=nrowRatIn,trainprop=trainprop,
-     accmeasure=accmeasure,numpredna=numpredna)
-  if (accmeasure == 'exact') {
+  result = list(ndata=nrowRatIn,trainprop=trainprop,numpredna=numpredna)
      testA$pred = round(testA$pred)
-     acc = mean(testA$pred == testA[,3],na.rm=TRUE)
-  } else if (accmeasure == 'mad') {
-     acc = mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
-  } else if (accmeasure == 'rms') {
-     acc = sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
-  }
-  result$acc = acc
+  # accuracy measures
+  exact <- mean(round(testA$pred) == testA[,3],na.rm=TRUE)
+  mad <- mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
+  rms= sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
+  # if just guess mean
+  meanRat <- mean(testA[,3],na.rm=TRUE)
+  overallexact <- 
+     mean(round(meanRat) == testA[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testA[,3]),na.rm=TRUE)
+  overallrms <- sd(testA[,3],na.rm=TRUE)  
+  result$acc <- list(exact=exact,mad=mad,rms=rms,
+     overallexact=overallexact,
+     overallmad=overallmad,
+     overallrms=overallrms)
+  result$idxs <- testIdxs
+  result$preds <- testA$pred
+  result$actuals <- testA[,3]
   class(result) <- 'xvalb'
   result
 }
