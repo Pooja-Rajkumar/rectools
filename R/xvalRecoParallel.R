@@ -39,7 +39,6 @@ getTestSet <- function(ratingsIn, trainSet){
 
 
 xvalReco <- function(ratingsIn, trainprop = 0.5,
-                     accmeasure = c('exact','mad','rms'),
                      cls = NULL,
                      rank = 10)
 {
@@ -67,15 +66,20 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
   accmeasure = match.arg(accmeasure)
   result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
                 accmeasure = accmeasure, numpredna = numpredna)
-  if(accmeasure == 'exact'){
-    totalPreds = round(totalPreds)
-    acc = mean(totalPreds == testSet[,3],na.rm = TRUE)
-  } else if (accmeasure == 'mad'){
-    acc = mean(abs(totalPreds-testSet[,3]), na.rm = TRUE)
-  } else if (accmeasure == 'rms'){
-    acc = sqrt(mean((totalPreds-testSet[,3])^2,na.rm = TRUE))
-  }
-  result$acc = acc 
+  # accuracy measures
+  exact <- mean(round(totalPreds) == testSet[,3],na.rm=TRUE)
+  mad <- mean(abs(totalPreds-testSet[,3]),na.rm=TRUE)
+  rms= sqrt(mean((totalPreds-testSet[,3])^2,na.rm=TRUE))
+  # if just guess mean
+  meanRat <- mean(testSet[,3],na.rm=TRUE)
+  overallexact <-
+     mean(round(meanRat) == testSet[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testSet[,3]),na.rm=TRUE)
+  overallrms <- sd(testSet[,3],na.rm=TRUE)
+  result$acc <- list(exact=exact,mad=mad,rms=rms,
+     overallexact=overallexact,
+     overallmad=overallmad,
+     overallrms=overallrms)
   class(result) <- 'xvalreco'
   result
  
