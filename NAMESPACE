@@ -1,7 +1,8 @@
 
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
-       xvalMM,xvalMLE,
+       formUserData,predict.usrData, cosDist,
+       xvalMM,xvalMLE,xvalCos,
        getTrainSet,getTestSet,trainReco,xvalReco,predict.Reco,
        focusGrp,
        ratingness,covratingness)
