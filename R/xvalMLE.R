@@ -7,17 +7,13 @@
 #   ratingsIn: input data, with first cols (userID,itemID,rating,
 #              covariates)
 #   trainprop: proportion of data for the training set
-#   accmeasure: accuracy measure; 'exact', 'mad', 'rms' for
-#               prop of exact matches, mean absolute error, and
-#               root-mean square error
 #   cls: if non-null, do this in parallel
 
 # value:
 
 #    accuracy value
 
-xvalMLE <- function(ratingsIn, trainprop=0.5,
-    accmeasure=c('exact','mad','rms'),cls=NULL){
+xvalMLE <- function(ratingsIn, trainprop=0.5,cls=NULL){
   ratIn = ratingsIn 
   # split into random training and validation sets 
   nrowRatIn = nrow(ratIn)
@@ -30,18 +26,22 @@ xvalMLE <- function(ratingsIn, trainprop=0.5,
   testA$pred = predict(means,testA[,-3])
   numpredna = sum(is.na(testA$pred))
   # calculate accuracy 
-  accmeasure = match.arg(accmeasure)
-  result = list(ndata=nrowRatIn,trainprop=trainprop,
-     accmeasure=accmeasure,numpredna=numpredna)
-  if (accmeasure == 'exact') {
-     testA$pred = round(testA$pred)
-     acc = mean(testA$pred == testA[,3],na.rm=TRUE)
-  } else if (accmeasure == 'mad') {
-     acc = mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
-  } else if (accmeasure == 'rms') {
-     acc = sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
-  }
-  result$acc = acc
+  result = list(ndata=nrowRatIn,trainprop=trainprop,numpredna=numpredna)
+  # accuracy measures
+  exact <- mean(round(testA$pred) == testA[,3],na.rm=TRUE)
+  mad <- mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
+  rms= sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
+  # if just guess mean
+  meanRat <- mean(testA[,3],na.rm=TRUE)
+  overallexact <-
+     mean(round(meanRat) == testA[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testA[,3]),na.rm=TRUE)
+  overallrms <- sd(testA[,3],na.rm=TRUE)
+  result$acc <- list(exact=exact,mad=mad,rms=rms,
+     overallexact=overallexact,
+     overallmad=overallmad,
+     overallrms=overallrms)
+
   class(result) <- 'xvalb'
   result
 }
