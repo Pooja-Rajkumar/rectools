@@ -17,6 +17,7 @@ predict.Reco <- function(recoObj,testSet){
   for(i in 1:nrow(testSet)){
     j = testSet[i,1]
     k = testSet[i,2]
+print(i)
     testSet$pred[i] = p[j,] %*% q[k,]
   }
   testSet$pred
@@ -63,9 +64,8 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
     totalPreds = mapply(c,totalPreds[1],totalPreds[2],SIMPLIFY = FALSE)
   }
   numpredna = sum(is.na(totalPreds))
-  accmeasure = match.arg(accmeasure)
   result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
-                accmeasure = accmeasure, numpredna = numpredna)
+                numpredna = numpredna)
   # accuracy measures
   exact <- mean(round(totalPreds) == testSet[,3],na.rm=TRUE)
   mad <- mean(abs(totalPreds-testSet[,3]),na.rm=TRUE)
