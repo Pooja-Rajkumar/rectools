@@ -60,7 +60,7 @@ xvalCos <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,
   } else if (accmeasure == 'mad') {
      acc = mean(abs(preds[,1] - preds[,2]),na.rm=TRUE)
   } else if (accmeasure == 'rms') {
-     acc = sqrt(mean((reds[,1] - preds[,2])^2,na.rm=TRUE))
+     acc = sqrt(mean((preds[,1] - preds[,2])^2,na.rm=TRUE))
   }
   result$acc = acc
   class(result) <- 'xvalb'
