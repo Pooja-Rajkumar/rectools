@@ -125,7 +125,12 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
      overallexact=overallexact,
      overallmad=overallmad,
      overallrms=overallrms)
-  class(result) <- 'xvalreco'
+  if (is.null(cls)) {
+     result$idxs <- as.numeric(rownames(testSet))
+     result$preds <- totalPreds
+     result$actuals <- ratingsIn[result$idxs,3]
+  }
+  class(result) <- 'xvalb'
   result
 }
 

@@ -22,26 +22,29 @@ xvalMLE <- function(ratingsIn, trainprop=0.5,cls=NULL){
   trainingSet = ratIn[trainIdxs, ]
   # get means
   means = findYdotsMLE(trainingSet,cls)
-  testA = ratIn[setdiff(1:nrowRatIn,trainIdxs),]
-  testA$pred = predict(means,testA[,-3])
-  numpredna = sum(is.na(testA$pred))
+  testIdxs = setdiff(1:nrowRatIn,trainIdxs)
+  testSet = ratIn[testIdxs,]
+  testSet$pred = predict(means,testSet[,-3])
+  numpredna = sum(is.na(testSet$pred))
   # calculate accuracy 
   result = list(ndata=nrowRatIn,trainprop=trainprop,numpredna=numpredna)
   # accuracy measures
-  exact <- mean(round(testA$pred) == testA[,3],na.rm=TRUE)
-  mad <- mean(abs(testA$pred-testA[,3]),na.rm=TRUE)
-  rms= sqrt(mean((testA$pred-testA[,3])^2,na.rm=TRUE))
+  exact <- mean(round(testSet$pred) == testSet[,3],na.rm=TRUE)
+  mad <- mean(abs(testSet$pred-testSet[,3]),na.rm=TRUE)
+  rms= sqrt(mean((testSet$pred-testSet[,3])^2,na.rm=TRUE))
   # if just guess mean
-  meanRat <- mean(testA[,3],na.rm=TRUE)
+  meanRat <- mean(testSet[,3],na.rm=TRUE)
   overallexact <-
-     mean(round(meanRat) == testA[,3],na.rm=TRUE)
-  overallmad <- mean(abs(meanRat-testA[,3]),na.rm=TRUE)
-  overallrms <- sd(testA[,3],na.rm=TRUE)
+     mean(round(meanRat) == testSet[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testSet[,3]),na.rm=TRUE)
+  overallrms <- sd(testSet[,3],na.rm=TRUE)
   result$acc <- list(exact=exact,mad=mad,rms=rms,
      overallexact=overallexact,
      overallmad=overallmad,
      overallrms=overallrms)
-
+  result$idxs <- testIdxs
+  result$preds <- testSet$pred
+  result$actuals <- testSet[,3]
   class(result) <- 'xvalb'
   result
 }

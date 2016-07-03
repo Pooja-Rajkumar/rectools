@@ -18,10 +18,10 @@ as well as add a parallel computation capability.
 	\item{ratingsIn}{Input data frame, training set. Within-row format 
            is (UserID, ItemID, rating).}
         \item{recoObj}{Object of type \code{'Reco'}, output of
-           \code{trainReco}.
+           \code{trainReco}.}
         \item{predSet}{Data to be predicted, having within-row format
-           (UserID, ItemID).
-	\item{rnk}{Desired rank for the matrix factors}
+           (UserID, ItemID).}
+	\item{rnk}{Desired rank for the matrix factors.}
 }
 
 \details{

@@ -1,8 +1,9 @@
-\name{xvalMM,xvalMLE,xvalReco,xvalCos,getTestSet,getTrainSet}
+\name{xvalMM,xvalMLE,xvalReco,xvalCos,getTestSet,getTrainSet,plot.xvalb}
 \alias{xvalMM}
 \alias{xvalMLE}
 \alias{xvalReco}
 \alias{xvalCos}
+\alias{plot.xvalb}
 \alias{getTestSet}
 \alias{getTrainSet}
 
@@ -21,6 +22,7 @@ computation capability in some cases.
            wtcats = NULL, trainprop = 0.5)
 	getTrainSet(ratingsIn,trainprop)
 	getTestSet(ratingsIn,trainSet)
+        plot.xvalb(xvalObj,whichIdxs=NULL)
 }
 
 \arguments{
@@ -28,10 +30,13 @@ computation capability in some cases.
 	ItemID, rating}
 	\item{trainprop}{The fraction of ratingsIn we want to use for our 
 	training set}
-	\item{cls}{R \code{paralell} cluster.
+	\item{cls}{R \code{paralell} cluster.}
         \item{regressYdots}{If TRUE, allow for different weights on
            alpha and beta; see documentation for \code{findYdotsMM}.}
 	\item{rnk}{Desired rank for \code{recosystem} analysis.}
+        \item{xvalObj}{An object of class \code{'xvalb'}.}
+        \item{whichIdxs}{A vector of indices of rows of the test set to
+           be used in plotting.}
 }
 
 \details{
@@ -44,6 +49,13 @@ predicting better with our model than by chance?
 		
 The functions \code{getTrainSet} and \code{getTestSet} are helper
 functions to generate the training and test sets.
+
+The function \code{plot.xvalb} is a method for the generic function
+\code{plot}.  It plots the estimated density of the predicted ratings,
+and a smoothed scatter plot of the predicted ratings against the actual
+ones.  If \code{whichIdxs} is specified, the user can choose to plot
+only a subset of the data, say rows corresponding to large values of a
+covariate.
 
 }
 
@@ -85,7 +97,8 @@ The \code{acc} component is an R list with these elements:
        ivl <- InstEval 
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
-       xvalReco(ivl[,c(1,2,7)]) 
+       xvout <- xvalReco(ivl[,c(1,2,7)]) 
+       plot(xvout)
 }
 
 \author{
