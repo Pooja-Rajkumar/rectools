@@ -17,9 +17,18 @@ plot.ydotsMM <- function(ydotsObj,ratingsIn) {
    smoothScatter(rin$alph,rin$beta,main=main)
 }
 
-plot.xvalb <- function(xvalObj) {
-   plot(density(xvalObj$preds,na.rm=TRUE),xlab='predicted ratings',main='')
+# plot the output of xval*(); if whichIdxs is specified, then plot only
+# those points, e.g. to see how covariates affect prediction
+plot.xvalb <- function(xvalObj,whichIdxs=NULL) {
+   if (is.null(whichIdxs)) {
+      preds <- xvalObj$preds
+      actuals <- xvalObj$actuals
+   } else {
+      preds <- xvalObj$preds[whichIdxs]
+      actuals <- xvalObj$actuals[whichIdxs]
+   }
+   plot(density(preds,na.rm=TRUE),xlab='predicted ratings',main='')
    readline('hit Enter for next graph')
    main <- 'smoothed scatter plot'
-   smoothScatter(xvalObj$actuals,xvalObj$preds,main=main)
+   smoothScatter(actuals,preds,main=main)
 }
