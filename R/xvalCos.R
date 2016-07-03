@@ -20,9 +20,9 @@
 
 #    accuracy value
 
-xvalCos <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,
-   k,wtcovs=NULL,wtcats=NULL,
-   trainprop=0.5,accmeasure=c('exact','mad','rms'))
+xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
+   wtcovs=NULL,wtcats=NULL,
+   trainprop=0.5)
 {
    # split into random training and validation sets 
    nrowRatIn = nrow(ratingsIn)
@@ -52,17 +52,25 @@ xvalCos <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,
   numpredna = sum(is.na(preds[,1])) 
   # calculate accuracy 
   accmeasure = match.arg(accmeasure)
-  result = list(ndata=nrowRatIn,trainprop=trainprop,
-     accmeasure=accmeasure,numpredna=numpredna)
-  if (accmeasure == 'exact') {
-     roundpreds = round(preds[,1])
-     acc = mean(preds[,1] == preds[,2],na.rm=TRUE)
-  } else if (accmeasure == 'mad') {
-     acc = mean(abs(preds[,1] - preds[,2]),na.rm=TRUE)
-  } else if (accmeasure == 'rms') {
-     acc = sqrt(mean((preds[,1] - preds[,2])^2,na.rm=TRUE))
-  }
-  result$acc = acc
+  result = list(ndata=nrowRatIn,trainprop=trainprop,numpredna=numpredna)
+  roundpreds = round(preds[,1])
+  exact = mean(preds[,1] == preds[,2],na.rm=TRUE)
+  mad = mean(abs(preds[,1] - preds[,2]),na.rm=TRUE)
+  rms = sqrt(mean((preds[,1] - preds[,2])^2,na.rm=TRUE))
+  # if just guess mean
+  meanRat <- mean(testA[,3],na.rm=TRUE)
+  overallexact <-
+     mean(round(meanRat) == testA[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testA[,3]),na.rm=TRUE)
+  overallrms <- sd(testA[,3],na.rm=TRUE)
+  result$acc <- list(exact=exact,mad=mad,rms=rms,
+     overallexact=overallexact,
+     overallmad=overallmad,
+     overallrms=overallrms)
+  result$idxs <- testIdxs
+  result$preds <- testA$pred
+  result$actuals <- testA[,3]
+
   class(result) <- 'xvalb'
   result
 }

@@ -10,16 +10,19 @@ as well as add a parallel computation capability.
 }
 
 \usage{
-	trainReco(trainSet,trainprop = 0.5,rank = 10)
-	predict.Reco(recoObj,testSet)
+	trainReco(ratingsIn,rnk = 10)
+	predict.Reco(recoObj,predSet)
 }
 
 \arguments{
-	\item{ratingsIn}{Input data frame. Within row format is UserID,
-	ItemID, rating}
-	\item{trainSet}{Input data frame. Within row format is UserID,
-	ItemID, rating}
-	\item{rank}{Desired rank for the factors}
+	\item{ratingsIn}{Input data frame, training set. Within-row format 
+           is (UserID, ItemID, rating).}
+        \item{recoObj}{Object of type \code{'Reco'}, output of
+           \code{trainReco}.
+        \item{predSet}{Data to be predicted, with within-row format
+           (UserID, ItemID).
+        in the formt of \code{rating}
+	\item{rnk}{Desired rank for the matrix factors}
 }
 
 \details{

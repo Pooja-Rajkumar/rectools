@@ -1,14 +1,32 @@
-trainReco <- function(trainSet,
-                    trainprop = 0.5,
-                    rank = 10){
+
+# arguments:
+
+#    ratingsIn: input data, in the (userID, itemID, rating) format
+#    rnk: desired rank for the P and Q matrices; then A approx= PQ'
+
+# value:
+
+#    an object of class 'Reco', with components being the P and Q
+#    matrices
+
+trainReco <- function(ratingsIn,rnk = 10){
   library(recosystem)
   r <- Reco()
-  write.table(trainSet,file = "train.txt", row.names = FALSE, col.names = FALSE)
-  r$train('train.txt',opts = list(dim=rank))
+  write.table(ratingsIn,file="train.txt",row.names=FALSE,col.names=FALSE)
+  r$train('train.txt',opts = list(dim=rnk))
   res <- r$output(NULL,NULL)
   class(res) <- 'Reco'
   res
 }
+
+# arguments:
+
+#    recoObj: an object of class 'Reco'
+#    testSet: a matrix of the form of ratingsIn above
+
+# value:
+
+#     vector of values predicted for testSet by recoObj
 
 predict.Reco <- function(recoObj,testSet){
   p = recoObj$P
@@ -24,6 +42,18 @@ predict.Reco <- function(recoObj,testSet){
   testSet$pred
 }
 
+########## the remaining functions are for cross-validation:
+
+# arguments:
+
+#    ratingsIn: as above
+#    trainprop: probability that a row from ratingsIn is selected for
+#               the training set
+
+# value:
+
+#    training set, in the format of ratingsIn, plus a component
+#    trainidxs, the indices of the training set in the original data
 
 getTrainSet <- function(ratingsIn,trainprop = 0.5){
   rownew = nrow(ratingsIn)
@@ -34,15 +64,29 @@ getTrainSet <- function(ratingsIn,trainprop = 0.5){
   trainSet
 }
 
+# returns the set-theoretic complement of the training set, to be used
+# as the test set
+
 getTestSet <- function(ratingsIn, trainSet){
   testSet = ratingsIn[setdiff(1:nrow(ratingsIn),trainSet$trainidxs),]
   testSet
 }
 
+# perform cross-validation
+
+# arguments:
+
+#    ratingsIn: as above
+#    trainprop: as above
+#    cls: an R 'parallel' cluster
+#    rnk: as above
+
+# value: object of class 'xvalreco', consisting mainly of various
+# prediction accuracy measures, plus the number of NA predictions
 
 xvalReco <- function(ratingsIn, trainprop = 0.5,
                      cls = NULL,
-                     rank = 10)
+                     rnk = 10)
 {
   library(recosystem)
   library(parallel)
@@ -60,12 +104,12 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
     clusterEvalQ(cls, trainSet<- getTrainSet(ratingsIn,trainprop=0.5))
     testSet= clusterEvalQ(cls, testSet<- getTestSet(ratingsIn,trainSet))
     testSet = mapply(c,testSet$ratings[1],testSet$ratings[2],SIMPLIFY = FALSE)
-    clusterEvalQ(cls,resu <- trainReco(trainSet,trainprop=0.5,rank=10))
+    clusterEvalQ(cls,resu <- trainReco(trainSet,trainprop=0.5,rnk=10))
     allPreds = clusterEvalQ(cls, pred <- predict(ratingsIn,resu,testSet))
     totalPreds = mapply(c,totalPreds[1],totalPreds[2],SIMPLIFY = FALSE)
   }
   numpredna = sum(is.na(totalPreds))
-  result = list(ndata =nrow(ratingsIn),trainprop = trainprop, 
+  result = list(ndata = nrow(ratingsIn),trainprop = trainprop, 
                 numpredna = numpredna)
   # accuracy measures
   exact <- mean(round(totalPreds) == testSet[,3],na.rm=TRUE)
@@ -83,6 +127,5 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
      overallrms=overallrms)
   class(result) <- 'xvalreco'
   result
- 
 }
 
