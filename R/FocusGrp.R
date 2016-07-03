@@ -1,6 +1,13 @@
 
-# finds the users whose ratings correlate the highest with the average
-# ratings of the items they rate
+# finds "representative" users, i.e. the users whose ratings correlate
+# the highest with the average ratings of the items they rate
+
+# specifically, for each user i, vectors u and v will be formed; u will
+# be the vector of ratings set by user i; for v[j], the code will find
+# the item ID of the j-th component of u, then set v[j] to the average
+# rating of all users for that item ID; then the correlation between u
+# and v will be computed for each user, and the k users with the highest
+# correlations will be chosen
 
 # arguments:
 
@@ -29,5 +36,5 @@ focusGrp <- function(ydotsObj,ratingsIn,k=10,minn=50) {
    cor12 <- function(m2) cor(m2)[1,2] 
    cors <- sapply(ugrps1,cor12) 
    cors <- sort(cors,decreasing=TRUE)
-   as.numeric(names(cors))
+   as.numeric(names(cors[1:k]))
 }
