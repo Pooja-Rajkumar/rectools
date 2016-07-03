@@ -92,6 +92,7 @@ The \code{acc} component is an R list with these elements:
    \item \code{overallmad:}{L2 prediction error resulting
       from simply taking our guess to be the overall mean item rating.}
    }
+}
 
 \examples{
        ivl <- InstEval 
