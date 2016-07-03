@@ -14,7 +14,11 @@
 
 * Focus group finder.
 
-## QUICK FIRST EXAMPLES:
+* NMF, ANOVA, cosine models all in one package.
+
+* Some functions new, others enhancements of existing libraries.
+
+## Overview and Examples
 
 ### Random effects ANOVA model:
 
@@ -33,8 +37,18 @@ predicted value of Yij is then
 
 Yi. + Y.j - Y..
 
+Computation is simple, conducted by our function **findYdotsMM**;
+prediction is done on the output by our function **predict.ydotsMM**.
+
+A novel enhancement is to allow for different weights to be given to the
+alpha and beta components.
+
 Under a Maximum Likelihood approach, alpha and beta are assumed to
-have independent normal distributions with different variances.  
+have independent normal distributions with different variances.  Here we
+piggyback R's **lme4** package, forming a wrapper for our application,
+and adding our function **predict.ydotsMLE**.
+
+Covariates are allowed for both the MM and MLE versions.
 
 ### Let's try it:
 
@@ -77,10 +91,59 @@ have independent normal distributions with different variances.
 8 3.551587
 ```
 
+## Matrix factorization model:
+
+Let A denote the matrix of ratings, with Yij in row i, column j.  Most
+of A is unknown, and we wish to predict the unknown values.
+*Nonnegative matrix factorization* does this as follows:
+
+We find nonnegative matrices W and H, each of rank k, such that A is
+approximately equal to the product WH.  Here k is typically much smaller
+than the number of rows and columns of A, and is a tuning parameter,
+kept small to avoid overfitting but large enough to capture most of the
+structure of the data.
+
+Here we piggyback on the R package **recosystem**, adding convenient
+wrappers and adding a parallel computation capability.  See the
+functions **trainReco**, **predictReco** and so on.
+
+## Cosine model:
+
+The basic idea here is as follows.  The predict the rating user i would
+give to item j, find some users who are similar to user i and who have
+rated item j, and average their ratings of that item.  The CRAN package
+**recommderlab** is one implementation of this idea, but our
+**rectools** package uses its own implementation, including novel
+enhancements.
+
+One such enhancement is to do item category matching, an example of
+categories being movie genres.  For each user, our code calculates the
+proportion of items in each category rated by this user, and
+incorporates this into the calculation of similarity between any pair of
+users.  See the functions **cosDist**, **formUserData** and
+**predictUsrData**.
+
+## Cross validation:
+
+The MM, MLE, NMF and cosine methods all have wrappers to do
+cross-validation, reporting the accuracy measures exact prediction, mean
+absolute deviation and l2.
+
+## Plotting:
+
+Some plotting capability is provided, currently in the functions
+**plot.ydotsMM** and **plot.xvalb**.  The former, for instance, can be
+used to assess the normality and independence assumptions of the MLE
+model, and to identify a possible need to consider separate analyses for
+subpopulations.
+
+
 # REFERENCES
 
 K. Gao and A. Owen, *Efficient Moment Calculations for Variance
 Components in Large Unbalanced Crossed Random Effects Models*, 2016.
+
+M. Hahsler, **recommderlab**, CRAN vignette.
 
 Y. Koren et al, Matrix Factorization Techniques for Recommender 
 Systems, *IEEE Computer*, 2009.
