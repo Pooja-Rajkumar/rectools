@@ -68,34 +68,25 @@ the following components:
 The \code{acc} component is an R list with these elements:
 
    \itemize{
-
-   \item \code{exact:} Proportion of ratings predicted exactly
-      correctly.
-   \item \code{mad} Mean absolute prediction error.
-   \item \code{rms} L2 ("root mean squared") prediction error.
-   \item \code{overallexact:} Proportion of ratings predicted exactly
+   \item \code{exact:}{Proportion of ratings predicted exactly
+      correctly.}
+   \item \code{mad}{Mean absolute prediction error.}
+   \item \code{rms}{L2 ("root mean squared") prediction error.}
+   \item \code{overallexact:}{Proportion of ratings predicted exactly
       correctly by simply taking our guess to be the (rounded) 
       overall mean item rating.}
-   \item \code{overallmad:} Mean absolute prediction error resulting
+   \item \code{overallmad:}{Mean absolute prediction error resulting
       from simply taking our guess to be the overall mean item rating.}
-   \item \code{overallmad:} L2 prediction error resulting
+   \item \code{overallmad:}{L2 prediction error resulting
       from simply taking our guess to be the overall mean item rating.}
    }
 
-		The functions getTestSet and getTrainSet return the testing set and trainReco set respectively. trainReco returns the result of calling train on r, and predict.Reco multiplies the predicted values within the result(P and Q) to get the predicted rating/
-		preference. xValReco returns a class called result, which contains the following components: 
-			- ndata: the row number of data
-			- trainprop: the trainReco proportion
-			- accmeasure: the selected measurement for accuracy (default is exact)
-			- numpredna: the number of NA predicted values 
-			- acc: the accuracy of your predicted values from recosystem 
-	}
-	\examples{
-                ivl <- InstEval 
-                ivl$s <- as.numeric(ivl$s) 
-                ivl$d <- as.numeric(ivl$d) 
-                xvalReco(ivl[,c(1,2,7)]) 
-	}
+\examples{
+       ivl <- InstEval 
+       ivl$s <- as.numeric(ivl$s) 
+       ivl$d <- as.numeric(ivl$d) 
+       xvalReco(ivl[,c(1,2,7)]) 
+}
 
 \author{
 	Pooja Rajkumar and Norm Matloff

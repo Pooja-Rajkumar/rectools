@@ -19,9 +19,8 @@ as well as add a parallel computation capability.
            is (UserID, ItemID, rating).}
         \item{recoObj}{Object of type \code{'Reco'}, output of
            \code{trainReco}.
-        \item{predSet}{Data to be predicted, with within-row format
+        \item{predSet}{Data to be predicted, having within-row format
            (UserID, ItemID).
-        in the formt of \code{rating}
 	\item{rnk}{Desired rank for the matrix factors}
 }
 
@@ -42,26 +41,25 @@ The latter function returns several key components, including:
 
 The product of these two matricies consists of the predicted ratings of
 all users on all items.
+
+The function \code{predict.Reco} is a method for the generic function
+\code{predict}.
 	
 }
 
-\value{
-The functions getTestSet and getTrainSet return the testing set and trainReco set respectively. trainReco returns the result of calling train on r, and predict.Reco multiplies the predicted values within the result(P and Q) to get the predicted rating/
-
-
-		preference. xValReco returns a class called result, which contains the following components: 
-			- ndata: the row number of data
-			- trainprop: the trainReco proportion
-			- accmeasure: the selected measurement for accuracy (default is exact)
-			- numpredna: the number of NA predicted values 
-			- acc: the accuracy of your predicted values from recosystem 
-	}
-	\examples{
-                ivl <- InstEval 
-                ivl$s <- as.numeric(ivl$s) 
-                ivl$d <- as.numeric(ivl$d) 
-                xvalReco(ivl[,c(1,2,7)]) 
-	}
+\examples{
+       ivl <- InstEval 
+       ivl$s <- as.numeric(ivl$s) 
+       ivl$d <- as.numeric(ivl$d) 
+       ivl3 <- ivl[,c(1,2,7)]
+       trn <- trainReco(ivl3)
+       onerec <- ivl3[1,]  # form dummy 1-rec data frame
+       # how would student 788 would like lecturer 28
+       onerec$s <- 788  
+       onerec$d <- 28  
+       onerec <- onerec[,-3]
+       predict(trn,onerec)
+}
 
 \author{
 	Pooja Rajkumar and Norm Matloff
