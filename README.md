@@ -1,32 +1,46 @@
 # rectools
-Advanced package for recommender systems.
 
-We allow the user to incorporate user and item covariate information,
-and offer other capabilities not seen in other packages, as well as
-adding parallel computation to some popular methods.  Also included
-are plot capabilities, and a "focus group finder."
+## Advanced Package for Recommender Systems
 
-QUICK FIRST EXAMPLES:
+## FEATURES:
+
+* Incorporate user and item covariate information.
+
+* Parallel computation.
+
+* Novel variations on latent factor model.
+
+* Plotting.
+
+* Focus group finder.
+
+## QUICK FIRST EXAMPLES:
+
+### Random effects ANOVA model:
 
 A simple latent factor model is
 
-E(Yij) =  mu + alphai + betaj
+E(Y) =  mu + alpha + beta
 
-where Yij is the rating of item j by user i, with alphai and betaj
-being specific latent effects for user i and item j.
+where Y is the rating, alpha and beta being specific latent effects for
+the given user and item.
 
-A simple Method of Moments approach would estimate alphai by
+A simple Method of Moments approach would estimate alpha for user i by
 Yi. - Y.., where the first term is the mean of all observed ratings by
 user i and the second is the overall mean of all ratings.  We estimate
-betaj similarly.  The predicted value of Yij is then
+beta for item j similarly, and estimate mu by the overall mean Y..  The
+predicted value of Yij is then
 
 Yi. + Y.j - Y..
 
-Under a Maximum Likelihood approach, the alphai and betaj are assumed to
-have a normal distribution.  
+Under a Maximum Likelihood approach, alpha and beta are assumed to
+have independent normal distributions with different variances.  
 
-Let's try it out (some output has been omitted for clarity):
+### Let's try it:
 
+(Some output has been omitted for clarity.)
+
+```
 > # Try lme4 data set, needs some prep first.
 > data(InstEval)
 > ivl <- InstEval
@@ -61,4 +75,15 @@ Let's try it out (some output has been omitted for clarity):
       [,1]
 3 3.286828
 8 3.551587
+```
+
+# REFERENCES
+
+K. Gao and A. Owen, *Efficient Moment Calculations for Variance
+Components in Large Unbalanced Crossed Random Effects Models*, 2016.
+
+Y. Koren et al, Matrix Factorization Techniques for Recommender 
+Systems, *IEEE Computer*, 2009.
+
+P. Perry, *Fast Moment-Based Estimation for Hierarchical Models*, 2015.
 
