@@ -20,9 +20,9 @@ predict.usrData(origData, newData, newItem, k, wtcovs = NULL, wtcats = NULL)
 \arguments{
 	\item{ratingsIn}{Input data frame, training set. Within-row format 
            is (UserID, ItemID, rating).}
-        \item{usrCovs}(Data frame of user covariates, e.g. gender and
+        \item{usrCovs}{Data frame of user covariates, e.g. gender and
            age, one row per user.}
-        \item{itmCats}(Data frame of item categories, e.g. gender and
+        \item{itmCats}{Data frame of item categories, e.g. gender and
            age, one row per user.}
         \item{x}{Object of class \code{usrDatum}.}
         \item{y}{Object of class \code{usrDatum}.}
@@ -76,8 +76,7 @@ ivl <- InstEval
 ivl$s <- as.numeric(ivl$s) 
 ivl$d <- as.numeric(ivl$d) 
 ivl3 <- ivl[,c(1,2,7)]
-ydo <- findYdotsMM(ivl3)
-focusGrp(ydo,ivl3)  # users 1181, 1462, ... seem to be representative
+predict(udt,udt[[88]],3,8)  # predict rating: 4.125
 }
 
 \author{

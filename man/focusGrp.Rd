@@ -15,7 +15,7 @@ focusGrp(ydotsObj, ratingsIn, k = 10, minn = 50)
 }
 
 \arguments{
-        \item{ydotsObj}{Object of type \code{'ydotsMM'} or \code{ydotsMLE}.
+        \item{ydotsObj}{Object of type \code{'ydotsMM'} or \code{ydotsMLE}.}
 	\item{ratingsIn}{Input data frame, training set. Within-row format 
            is (UserID, ItemID, rating).}
 	\item{k}{Desired size of the focus group.}
