@@ -54,18 +54,18 @@ xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
   mad = mean(abs(preds[,1] - preds[,2]),na.rm=TRUE)
   rms = sqrt(mean((preds[,1] - preds[,2])^2,na.rm=TRUE))
   # if just guess mean
-  meanRat <- mean(testA[,3],na.rm=TRUE)
+  meanRat <- mean(testSet[,3],na.rm=TRUE)
   overallexact <-
-     mean(round(meanRat) == testA[,3],na.rm=TRUE)
-  overallmad <- mean(abs(meanRat-testA[,3]),na.rm=TRUE)
-  overallrms <- sd(testA[,3],na.rm=TRUE)
+     mean(round(meanRat) == testSet[,3],na.rm=TRUE)
+  overallmad <- mean(abs(meanRat-testSet[,3]),na.rm=TRUE)
+  overallrms <- sd(testSet[,3],na.rm=TRUE)
   result$acc <- list(exact=exact,mad=mad,rms=rms,
      overallexact=overallexact,
      overallmad=overallmad,
      overallrms=overallrms)
   result$idxs <- testIdxs
-  result$preds <- testA$pred
-  result$actuals <- testA[,3]
+  result$preds <- testSet$pred
+  result$actuals <- testSet[,3]
 
   class(result) <- 'xvalb'
   result
