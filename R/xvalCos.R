@@ -9,9 +9,6 @@
 #              case this argument is the quoted name of the distributed 
 #              data frame
 #   trainprop: proportion of data for the training set
-#   accmeasure: accuracy measure; 'exact', 'mad', 'rms' for
-#               prop of exact matches, mean absolute error, and
-#               root-mean square error
 #   k: number of nearest neighbors
 #   wtcovs: as in predict.usrData
 #   wtcats: as in predict.usrData
@@ -51,7 +48,6 @@ xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
    }
   numpredna = sum(is.na(preds[,1])) 
   # calculate accuracy 
-  accmeasure = match.arg(accmeasure)
   result = list(ndata=nrowRatIn,trainprop=trainprop,numpredna=numpredna)
   roundpreds = round(preds[,1])
   exact = mean(preds[,1] == preds[,2],na.rm=TRUE)
