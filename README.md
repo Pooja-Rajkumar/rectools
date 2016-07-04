@@ -4,7 +4,8 @@
 
 ## FEATURES:
 
-* Incorporate user and item covariate information.
+* Incorporate user and item covariate information, including item
+  category preferences.
 
 * Parallel computation.
 
@@ -24,7 +25,7 @@
 
 A simple latent factor model is
 
-E(Y) =  mu + alpha + beta
+E(Y) =  mu + alpha<sub>i</sub> + beta
 
 where Y is the rating, alpha and beta being specific latent effects for
 the given user and item.
