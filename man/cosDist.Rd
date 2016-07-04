@@ -24,17 +24,16 @@ predict.usrData(origData, newData, newItem, k, wtcovs = NULL, wtcats = NULL)
            age, one row per user.}
         \item{itmCats}(Data frame of item categories, e.g. gender and
            age, one row per user.}
-        \item{x}{Object of class \code{usrData}.}
-        \item{y}{Object of class \code{usrData}.}
+        \item{x}{Object of class \code{usrDatum}.}
+        \item{y}{Object of class \code{usrDatum}.}
         \item{wtcovs}{Weight to be placed on covariates, relative to
            ratings variables.}
         \item{wtcats}{Weight to be placed on categories, relative to
            ratings variables.}
         \item{origData}{Object of class \code{'usrData'}, serving as the
            training set.}
-        \item{newData}{Object of class \code{'usrData'}, to be
-           predicted.  At present, must be a single user, predicting the
-           rating of a single item.}
+        \item{newData}{Object of class \code{'usrDatum'}, to be
+           predicted.}  
 	\item{newItem}{The item ID of the rating to be predicted.}
 	\item{k}{Number of nearest neighbors.}
         \item{fileOut}{A file name.}
@@ -43,19 +42,32 @@ predict.usrData(origData, newData, newItem, k, wtcovs = NULL, wtcats = NULL)
 \details{
 
 The function \code{formUserData} inputs the usual (user ID,item ID,rating)
-data, and outputs an R list, which has one element per user ID.  That
-element contains the item IDs, ratings and so on for that user.
+data, and outputs an R list, of class \code{usrData} that has one 
+element per user ID.  That element, of class \code{usrDatum}, has the
+following components:
+
+\itemize{
+
+   \item \code{userID:} User ID.
+   \item \code{itms:} Vector of IDs for items rated by this user.
+   \item \code{ratings:} Vector of ratings for those items.
+   \item \code{usrCovs:} Vector of values of covariates, e.g. gender and
+      age, for this user.
+   \item \code{itmCats:} Vector of proportions for the item categories
+      (need not sum to 1) for this user.  The j-th one is the proportion
+      of items rating by this user in item category j.
+}
 
 In \code{cosDist}, the "distance" (not actually a metric) between
-vectors u and v is defined to be (u,v) / sqrt((u,u) (v,v)), where ( , )
-means inner product.  The function \code{cosDist} finds this for two
-one-user objects of class \code{'usrData'}, with the inner product
-being taken on the ratings contained in each of these objects (zeroes
-are used for the ratings that are unknown), as well as the covariates
-and category data if any. 
+numeric vectors u and v is defined to be (u,v) / sqrt((u,u) (v,v)),
+where ( , ) means inner product.  The function \code{cosDist} finds this
+for two objects of class \code{'usrDatum'}, with the inner product being
+taken on the ratings contained in each of these objects (zeroes are used
+for the ratings that are unknown), as well as the covariates and
+category data if any. 
 
-The function \code{predict.usrData} uses a training set, organized by
-\code{formUserData}, to predict one new data point.
+The function \code{predict.usrData} uses a training set, of class
+\code{usrData}, to predict one new data point, of class \code{usrDatum}.
 
 }
 

@@ -21,8 +21,10 @@
 # value:
 
 #    object of class 'usrData': an R list with one element per user;
-#    each such element is itself an R list, with these components:
+#    each such element is itself an R list, an object of class
+#    'usrDatum', with these components:
 #
+#       userID: the ID of this user
 #       ratings: ratings set by this user
 #       itms: IDs of items rated by this user
 #       cvrs:  covariate data for this user, if any
@@ -51,6 +53,7 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
          tmp[retval[[i]]$itms] <- 1
          retval[[i]]$cats <- tmp %*% itmCats / sum(tmp)
       }
+      class(retval[[i]]) <- 'usrDatum'
    }
    class(retval) <- 'usrData'
    if (fileOut != '') save(retval,file=fileOut)
