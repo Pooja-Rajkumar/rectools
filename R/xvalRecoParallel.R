@@ -104,7 +104,7 @@ xvalReco <- function(ratingsIn, trainprop = 0.5,
     clusterEvalQ(cls, trainSet<- getTrainSet(ratingsIn,trainprop=0.5))
     testSet= clusterEvalQ(cls, testSet<- getTestSet(ratingsIn,trainSet))
     testSet = mapply(c,testSet$ratings[1],testSet$ratings[2],SIMPLIFY = FALSE)
-    clusterEvalQ(cls,resu <- trainReco(trainSet,trainprop=0.5,rnk=10))
+    clusterEvalQ(cls,resu <- trainReco(trainSet,rnk=10))
     allPreds = clusterEvalQ(cls, pred <- predict(ratingsIn,resu,testSet))
     totalPreds = mapply(c,totalPreds[1],totalPreds[2],SIMPLIFY = FALSE)
   }
