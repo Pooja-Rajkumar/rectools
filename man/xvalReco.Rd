@@ -99,6 +99,7 @@ The \code{acc} component is an R list with these elements:
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
        xvout <- xvalReco(ivl[,c(1,2,7)]) 
+       xvout$acc
        plot(xvout)
 }
 
