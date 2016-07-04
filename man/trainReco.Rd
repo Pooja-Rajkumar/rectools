@@ -58,7 +58,7 @@ The function \code{predict.Reco} is a method for the generic function
        onerec$s <- 788  
        onerec$d <- 28  
        onerec <- onerec[,-3]
-       predict(trn,onerec)
+       predict(trn,onerec)  # 2.23
 }
 
 \author{
