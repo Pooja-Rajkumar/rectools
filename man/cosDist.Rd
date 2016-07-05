@@ -7,7 +7,7 @@
 
 \description{
 Similarity-based analysis via inner products of user ratings, and
-possibly other variables.
+possibly other variables.  EXPERIMENTAL for now.
 }
 
 

@@ -25,29 +25,32 @@
 
 A simple latent factor model is
 
-E(Y) =  mu + alpha<sub>i</sub> + beta
+E(Y) =  &mu; + &alpha;<sub>i</sub> + &beta;<sub>j</sub>
 
-where Y is the rating, alpha and beta being specific latent effects for
-the given user and item.
+where Y<sub>ij</sub> is the rating, &alpha; and &beta;<sub>j</sub> being
+specific latent effects for the given user and item.
 
-A simple Method of Moments approach would estimate alpha for user i by
+A simple Method of Moments approach would estimate &alpha; for user i by
 Yi. - Y.., where the first term is the mean of all observed ratings by
 user i and the second is the overall mean of all ratings.  We estimate
-beta for item j similarly, and estimate mu by the overall mean Y..  The
-predicted value of Yij is then
+&beta;<sub>j</sub> for item j similarly, and estimate &mu; by the overall
+mean Y..  The predicted value of Y<sub>ij</sub> is then
 
 Yi. + Y.j - Y..
 
 Computation is simple, conducted by our function **findYdotsMM**;
 prediction is done on the output by our function **predict.ydotsMM**.
 
-A novel enhancement is to allow for different weights to be given to the
-alpha and beta components.
+A novel enhancement in the package is to allow for different weights to
+be given to the &alpha;<sub>i</sub> and &beta;<sub>j</sub> components in
+the MM version.
 
-Under a Maximum Likelihood approach, alpha and beta are assumed to
-have independent normal distributions with different variances.  Here we
-piggyback R's **lme4** package, forming a wrapper for our application,
-and adding our function **predict.ydotsMLE**.
+Under a Maximum Likelihood approach, &alpha;<sub>i</sub> and
+&beta;<sub>j</sub> are assumed to have independent normal distributions
+with different variances.  Here we piggyback R's **lme4** package,
+forming a wrapper for our application, and adding our function
+**predict.ydotsMLE**, also a wrapper suited for our context.  Since MLE
+computation can be voluminous, our package offers a parallel version.
 
 Covariates are allowed for both the MM and MLE versions.
 
@@ -94,8 +97,8 @@ Covariates are allowed for both the MM and MLE versions.
 
 ## Matrix factorization model:
 
-Let A denote the matrix of ratings, with Yij in row i, column j.  Most
-of A is unknown, and we wish to predict the unknown values.
+Let A denote the matrix of ratings, with Y<sub>ij</sub> in row i, column
+j.  Most of A is unknown, and we wish to predict the unknown values.
 *Nonnegative matrix factorization* does this as follows:
 
 We find nonnegative matrices W and H, each of rank k, such that A is
@@ -128,7 +131,8 @@ users.  See the functions **cosDist**, **formUserData** and
 
 The MM, MLE, NMF and cosine methods all have wrappers to do
 cross-validation, reporting the accuracy measures exact prediction, mean
-absolute deviation and l2.
+absolute deviation and l2.  In our experiments so far, MM seems to give
+the best accuracy (and the greatest speed).
 
 ## Plotting:
 
