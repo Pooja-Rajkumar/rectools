@@ -25,12 +25,13 @@ focusGrp(ydotsObj, ratingsIn, k = 10, minn = 50)
 
 \details{
 
-For each user i, vectors u and v will be formed; u will be the vector of
-ratings set by user i; for v[j], the code will find the item ID of the
-j-th component of u, then set v[j] to the average rating of all users
-for that item ID.  Then the correlation between u and v will be computed
-for each user, and the k users with the highest correlations will be
-chosen.
+For each user i, vectors u and v will be formed; u will
+be the vector of ratings set by user i; For v[j], the code will find
+the item ID m of the j-th component of u, then set v[j] to the average
+rating of all users for item ID m. Then the mean abolute error will be
+computed, using u to predict v; this will be done for each user, and
+the k users with the lowest MAEs will be chosen.
+
 	
 }
 
@@ -40,7 +41,7 @@ ivl$s <- as.numeric(ivl$s)
 ivl$d <- as.numeric(ivl$d) 
 ivl3 <- ivl[,c(1,2,7)]
 ydo <- findYdotsMM(ivl3)
-focusGrp(ydo,ivl3)  # users 1181, 1462, ... seem to be representative
+focusGrp(ydo,ivl3)  # users 90, 118, 231, ... are chosen
 }
 
 \author{

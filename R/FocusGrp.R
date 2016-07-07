@@ -4,10 +4,10 @@
 
 # specifically, for each user i, vectors u and v will be formed; u will
 # be the vector of ratings set by user i; for v[j], the code will find
-# the item ID of the j-th component of u, then set v[j] to the average
-# rating of all users for that item ID; then the correlation between u
-# and v will be computed for each user, and the k users with the highest
-# correlations will be chosen
+# the item ID m of the j-th component of u, then set v[j] to the average
+# rating of all users for item ID m; then the mean abolute error will be
+# computed, using u to predict v; this will be done for each user, and
+# the k users with the lowest MAEs will be chosen
 
 # arguments:
 
@@ -19,7 +19,6 @@
 # value:  see k above
 
 focusGrp <- function(ydotsObj,ratingsIn,k=10,minn=50) {
-   itmms <- ydotsObj$itmMeans
    rin <- ratingsIn
    # form list, of which element [[i]] is items-ratings submatrix for
    # user i
@@ -28,13 +27,13 @@ focusGrp <- function(ydotsObj,ratingsIn,k=10,minn=50) {
    nvals <- sapply(ugrps,nrow)
    manyrats <- which(nvals >= minn)
    ugrps <- ugrps[manyrats]
-   # inputs cols 2:3 of a matrix like rin; replace vector of item IDs by
-   # the average ratings of those items
-   f <- function(itmsrats) 
-      cbind(itmms[itmsrats[,1]],itmsrats[,2]) 
-   ugrps1 <- lapply(ugrps,f) 
-   cor12 <- function(m2) cor(m2)[1,2] 
-   cors <- sapply(ugrps1,cor12) 
-   cors <- sort(cors,decreasing=TRUE)
-   as.numeric(names(cors[1:k]))
+   itmMeans <- ydotsObj$itmMeans
+   nugrps <- length(ugrps)
+   mads <- vector(length=nugrps)
+   names(mads) <- as.character(1:nugrps)
+   for (i in 1:nugrps) {
+      tmp <- ugrps[[i]][,2] - itmMeans[ugrps[[i]][,1]]
+      mads[i] <- mean(abs(tmp))
+   }
+   as.numeric(names(sort(mads)))[1:k]
 }
