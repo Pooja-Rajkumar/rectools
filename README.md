@@ -113,6 +113,8 @@ functions **trainReco**, **predictReco** and so on.
 
 ## Cosine model:
 
+(EXPERIMENTAL, likely to be replaced by a k-NN model.)
+
 The basic idea here is as follows.  The predict the rating user i would
 give to item j, find some users who are similar to user i and who have
 rated item j, and average their ratings of that item.  The CRAN package
