@@ -16,7 +16,7 @@ capability.  Various plots can be displayed.
 \usage{
 findYdotsMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
 predict.ydotsMM(ydotsObj,testSet) 
-plot(ydotsObj,ratingsIn) 
+plot.ydotsMM(ydotsObj,ratingsIn) 
 findYdotsMLE(ratingsIn,cls=NULL) 
 predict.ydotsMLE(ydotsObj,testSet) 
 }
@@ -34,6 +34,9 @@ predict.ydotsMLE(ydotsObj,testSet)
 }
 
 \details{
+
+   Note:  This software assumes that user and item ID number are
+   consecutive, starting with 1.
 
    All functions here implement latent-factor models for recommender
    systems.  They add the capability of using covariates, and in some
