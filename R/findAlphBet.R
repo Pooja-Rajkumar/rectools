@@ -19,25 +19,32 @@
 
 #   S3 class of type "alphbet", with components:
 
-#      alph: the alpha_i
-#      bet: the beta_j
+#      alpha: the alpha_i
+#      beta: the beta_j
 
-findYdotsAlphBet <- function(ratingsIn,q=0.8) { 
+findAlphBet <- function(ratingsIn,q=0.8,niters=10) { 
    users = ratingsIn[,1] 
    items = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
-   nms <- names(ratingsIn)
-   # for each user i, find the items she rated, storing their indices in
-   # userrated[[i]]
-   userrated  <- split(items,users)
-   # for each item j, find the users who rated this item, storing their
-   # indices in userrated[[i]]
-   itemratedby <- split(users,items)
-   yidots <- sapply(userrated,mean)
-   ydotjs <- sapply(itemrated,mean)
-   bet <- rep(0.
+   linenums <- 1:nrow(ratingsIn)
+   userseqnums <- split(linenums,users)
+   itemseqnums <- split(linenums,items)
+
+   useritemnums <- items[userseqnums]
+   itemusernums <- users[itemseqnums]
+   ratingsbyuser <- ratings[userseqnums]
+   ratingsbyitem <- ratings[itemseqnums]
+   yidots <- sapply(ratingsbyuser,mean)
+   ydotjs <- sapply(ratingsbyitem,mean)
    for (i in 1:niters) {
+      # alpha phase
+      betprods <- prod(beta[useritemnums])
+      alpha <- yidots / betprods
+      # beta phase
+      alpprods <- prod(alpha[itemusernums])
+      beta <- ydotjs / alpprods
    }
+   list(alpha=alpha,beta=beta,yidots=yidots,ydotjs=ydotjs)
 } 
 
 # predict() method for the 'ydots' class
