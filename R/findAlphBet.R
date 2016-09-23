@@ -19,32 +19,35 @@
 
 #   S3 class of type "alphbet", with components:
 
-#      alpha: the alpha_i
-#      beta: the beta_j
+#      alphavec: the alpha_i
+#      betavec: the beta_j
 
-findAlphBet <- function(ratingsIn,q=0.8,niters=10) { 
+findAlphBet <- function(ratingsIn,betavec=rep(0.8,nrow(ratingsIn)),niters=10) { 
    users = ratingsIn[,1] 
    items = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
    linenums <- 1:nrow(ratingsIn)
    userseqnums <- split(linenums,users)
    itemseqnums <- split(linenums,items)
-
-   useritemnums <- items[userseqnums]
-   itemusernums <- users[itemseqnums]
-   ratingsbyuser <- ratings[userseqnums]
-   ratingsbyitem <- ratings[itemseqnums]
-   yidots <- sapply(ratingsbyuser,mean)
-   ydotjs <- sapply(ratingsbyitem,mean)
+   useritemnums <- lapply(userseqnums,
+      function(oneuserseqs) items[oneuserseqs])
+   itemusernums <- lapply(itemseqnums,
+      function(oneitemseqs) users[oneitemseqs])
+   yidots <- sapply(userseqnums,
+      function(oneuserseqs) mean(ratings[oneuserseqs]))
+   ydotjs <- sapply(itemseqnums,
+      function(oneitemseqs) mean(ratings[oneitemseqs]))
    for (i in 1:niters) {
       # alpha phase
-      betprods <- prod(beta[useritemnums])
-      alpha <- yidots / betprods
+      betprods <- sapply(useritemnums,
+         function(oneuserseqs) prod(betavec[oneuserseqs]))
+      alphavec <- yidots / betprods
       # beta phase
-      alpprods <- prod(alpha[itemusernums])
-      beta <- ydotjs / alpprods
+      alpprods <- sapply(itemusernums,
+         function(oneitemseqs) prod(alphavec[oneitemseqs]))
+      betavec <- ydotjs / alpprods
    }
-   list(alpha=alpha,beta=beta,yidots=yidots,ydotjs=ydotjs)
+   list(alpha=alphavec,beta=betavec,yidots=yidots,ydotjs=ydotjs)
 } 
 
 # predict() method for the 'ydots' class
