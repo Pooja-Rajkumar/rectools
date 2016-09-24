@@ -29,6 +29,8 @@ findAlphBet <- function(ratingsIn,betavec=rep(0.8,nrow(ratingsIn)),niters=10) {
    linenums <- 1:nrow(ratingsIn)
    userseqnums <- split(linenums,users)
    itemseqnums <- split(linenums,items)
+   usernsinv <- 1 / sapply(userseqnums,length)
+   itemnsinv <- 1 / sapply(itemseqnums,length)
    useritemnums <- lapply(userseqnums,
       function(oneuserseqs) items[oneuserseqs])
    itemusernums <- lapply(itemseqnums,
@@ -38,14 +40,19 @@ findAlphBet <- function(ratingsIn,betavec=rep(0.8,nrow(ratingsIn)),niters=10) {
    ydotjs <- sapply(itemseqnums,
       function(oneitemseqs) mean(ratings[oneitemseqs]))
    for (i in 1:niters) {
+      print(i)
       # alpha phase
       betprods <- sapply(useritemnums,
          function(oneuserseqs) prod(betavec[oneuserseqs]))
-      alphavec <- yidots / betprods
+      alphavec <- (yidots / betprods) ^ usernsinv
+      alphavec <- pmin(alphavec,1)
+      print(alphavec[1:5])
       # beta phase
       alpprods <- sapply(itemusernums,
          function(oneitemseqs) prod(alphavec[oneitemseqs]))
-      betavec <- ydotjs / alpprods
+      betavec <- (ydotjs / alpprods) ^ itemnsinv
+      betavec <- pmin(betavec,50)
+      cat('   ',betavec[1:5],'\n')
    }
    list(alpha=alphavec,beta=betavec,yidots=yidots,ydotjs=ydotjs)
 } 
