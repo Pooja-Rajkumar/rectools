@@ -6,5 +6,6 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,
        plot.ydotsMM,plot.xvalb,
        getTrainSet,getTestSet,trainReco,xvalReco,predict.Reco,
        focusGrp,
+       findAlphBet,predict.MMmultiplic,
        ratingness,covratingness)
 
