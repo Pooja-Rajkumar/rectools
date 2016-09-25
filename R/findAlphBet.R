@@ -6,56 +6,59 @@
 #
 # using Method of Moments
 
+# in order to be identifiable, this model needs either alpha or beta to
+# be a fixed constant; otherwise, we could, say, halve the alphas and
+# double the betas, with the same products
+
 # arguments:
 
 #   ratingsIn: input data, with first cols (userID,itemID,rating,
-#              covariates); data frame, unless cls is non-null, in which
-#              case this argument is the quoted name of the distributed 
-#              data frame
-#   q:  initial value of the beta_j
-#   niters:  number of iterations
+#              covariates); data frame
 
 # value:
 
-#   S3 class of type "alphbet", with components:
+#   S3 class of type "MMmultiplic", with components:
 
 #      alphavec: the alpha_i
 #      betavec: the beta_j
+#
 
-findAlphBet <- function(ratingsIn,betavec=rep(0.8,nrow(ratingsIn)),niters=10) { 
+findAlphBet <- function(ratingsIn) {
    users = ratingsIn[,1] 
    items = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
    linenums <- 1:nrow(ratingsIn)
    userseqnums <- split(linenums,users)
    itemseqnums <- split(linenums,items)
-   usernsinv <- 1 / sapply(userseqnums,length)
-   itemnsinv <- 1 / sapply(itemseqnums,length)
-   useritemnums <- lapply(userseqnums,
-      function(oneuserseqs) items[oneuserseqs])
-   itemusernums <- lapply(itemseqnums,
-      function(oneitemseqs) users[oneitemseqs])
    yidots <- sapply(userseqnums,
       function(oneuserseqs) mean(ratings[oneuserseqs]))
    ydotjs <- sapply(itemseqnums,
       function(oneitemseqs) mean(ratings[oneitemseqs]))
-   for (i in 1:niters) {
-      print(i)
-      # alpha phase
-      betprods <- sapply(useritemnums,
-         function(oneuserseqs) prod(betavec[oneuserseqs]))
-      alphavec <- (yidots / betprods) ^ usernsinv
-      alphavec <- pmin(alphavec,1)
-      print(alphavec[1:5])
-      # beta phase
-      alpprods <- sapply(itemusernums,
-         function(oneitemseqs) prod(alphavec[oneitemseqs]))
-      betavec <- (ydotjs / alpprods) ^ itemnsinv
-      betavec <- pmin(betavec,50)
-      cat('   ',betavec[1:5],'\n')
-   }
-   list(alpha=alphavec,beta=betavec,yidots=yidots,ydotjs=ydotjs)
+   ydotdot <- mean(ratings)
+   # for identifiability, need the beta_j to be a fixed value
+   betavec <- rep(1.0,length(itemseqnums))
+   names(betavec) <- 1:length(itemseqnums)
+   alphavec <- yidots 
+   res <- list(alphavec=alphavec,betavec=betavec,yidots=yidots,ydotjs=ydotjs)
+   class(res) <- 'MMmultiplic'
+   res
 } 
+
+# predict() method for the 'MMmultiplic' class
+#
+# testSet in same form as ratingsIn above, except that there 
+# is no ratings column 
+
+# MMmultiplic is the output of findAlphBet()
+#
+# returns vector of predicted values for testSet
+predict.MMmultiplic = function(multiplicObj,testSet) {
+   pred = 
+      multiplicObj$alphavec[as.character(testSet[,1])] * 
+      multiplicObj$betavec[as.character(testSet[,2])] 
+   pred
+}
+
 
 # predict() method for the 'ydots' class
 #
