@@ -1,6 +1,10 @@
 Package: rectools
 Version: 1.0.0
-Author: Pooja Rajkumar <prajkumar@ucdavis.edu>, Norm Matloff <normmatloff@gmail.com>
+Author@R: 
+  c(person("Pooja" "Rajkumar", role="aut",email="prajkumar@ucdavis.edu"), 
+  c(person("Norm" "Matloff", role-c("cre","aut"),
+  email="normmatloff@gmail.com")
+   )
 Maintainer: Norm Matloff <normmatloff@gmail.com>
 Date: 04/30/2016
 Title: Advanced Recommender System
