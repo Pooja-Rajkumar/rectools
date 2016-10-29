@@ -9,7 +9,7 @@
 
 * Parallel computation.
 
-* Novel variations on latent factor model.
+* Novel variations on statistical latent factor model.
 
 * Plotting.
 
@@ -23,7 +23,7 @@
 
 ### Random effects ANOVA model:
 
-A simple latent factor model is
+A simple random effects latent factor model is
 
 E(Y) =  &mu; + &alpha;<sub>i</sub> + &beta;<sub>j</sub>
 

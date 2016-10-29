@@ -1,11 +1,18 @@
 
-# rating prediction via nearest neighbors, via "cosine" (inner product
+# rating prediction via nearest neighbors, via "cosine" (inner product);
+# the latter, though standard, has certain problems, and other choices
+# for distance measure will be added
 
 # covariates and item type preferences may be used
 
+########################## predict() function ##########################
+
+# predict newData argument from origData argument
+
 # arguments:
 
-#    origData: training set, object of class 'usrData'
+#    origData: training set, object of class 'usrData' (see file
+#    findUsrData.R)
 #    newData: data point (just one for now) to be predicted, object of
 #             class 'usrData'
 #    newItem: ID of the item rating to be predicted for the user in
@@ -17,10 +24,15 @@
 
 # value:
 
-#    predicted rating
+#    predicted rating for newData
 
 predict.usrData <- function(origData,newData,newItem,
       k,wtcovs=NULL,wtcats=NULL) {
+   # we need to narrow origData down to the users who have rated newItem
+   #
+   # action of checkNewItem(): here oneUsr is one user record in
+   # origData; the function will check which item in the record, if any,
+   # equals newItem
    checkNewItem <- function(oneUsr) {
       tmp <- match(oneUsr$itms,newItem)
       if (all(is.na(tmp))) return(c(NA,NA))
@@ -29,12 +41,13 @@ predict.usrData <- function(origData,newData,newItem,
    }
    found <- as.matrix(sapply(origData,checkNewItem))
    # found is a vector whose i-th element, j, is such that itms[j] of
-   # origData[[i]] is newItem, with NA if newItem wasn't rated by user i
+   # origData[[i]] is newItem, with NA if newItem wasn't rated by user
+   # i; so we need to get rid of the users who have this as NA
    whoHasIt <- which(!is.na(found[1,]))
-   # whoHasIt[i] is the index, i.e. user ID, of the i-th non-NA value in
-   # tmp
+   # whoHasIt[i] is the index, i.e. user ID, of the i-th user who has
+   # rated newData
    if (is.null(whoHasIt)) return(NA)  # no one rated this item
-   origData <- origData[whoHasIt]
+   origData <- origData[whoHasIt]  # now origData only has the relevant users
    found <- found[,whoHasIt,drop=FALSE]
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    cosines <- sapply(origData,onecos) 
