@@ -45,7 +45,7 @@ List of functions:
       predict.ydotsMM():  predict from MM
       xvalMLE):  cross-validation of MLE
       xvalMM):  cross-validation of MM
-      findAlphBet():  fit multiplicative MM model, binary Y
+      findMultiplicYdots():  fit multiplicative MM model, binary Y
 
    k-nearest neighbor model:
 
