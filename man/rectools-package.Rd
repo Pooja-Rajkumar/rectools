@@ -24,13 +24,14 @@ Date: \tab 2016-10-29\cr
 License: \tab GPL (>= 2)\cr
 }
 
-Raw input data:  Standard form, one row per rating, with first three
+\bold{Raw input data:}  
+
+Standard form, one row per rating, with first three
 columns being user ID, item ID and rating.
 
-List of functions:
+\bold{List of functions:}
 
    \preformatted{
-
    matrix factorization model (MFM):
 
       trainReco():  fit MFM
