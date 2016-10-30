@@ -40,14 +40,16 @@ predict.usrData <- function(origData,newData,newItem,
       c(whichOne,oneUsr$ratings[whichOne])
    }
    found <- as.matrix(sapply(origData,checkNewItem))
-   # found is a vector whose i-th element, j, is such that itms[j] of
-   # origData[[i]] is newItem, with NA if newItem wasn't rated by user
-   # i; so we need to get rid of the users who have this as NA
+   # found[i] = j means origData[[i]]$itms[j] = newItem;
+   # found[i] = NA means newItem wasn't rated by user i;
+   # we need to get rid of the users who have this as NA
    whoHasIt <- which(!is.na(found[1,]))
    # whoHasIt[i] is the index, i.e. user ID, of the i-th user who has
    # rated newData
    if (is.null(whoHasIt)) return(NA)  # no one rated this item
-   origData <- origData[whoHasIt]  # now origData only has the relevant users
+   origData <- origData[whoHasIt]  
+   # now origData only has the relevant users, the ones who have rated
+   # newItem
    found <- found[,whoHasIt,drop=FALSE]
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    cosines <- sapply(origData,onecos) 
