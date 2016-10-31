@@ -12,8 +12,10 @@
 trainReco <- function(ratingsIn,rnk = 10){
   library(recosystem)
   r <- Reco()
-  write.table(ratingsIn,file="train.txt",row.names=FALSE,col.names=FALSE)
-  r$train('train.txt',opts = list(dim=rnk))
+  train_set = system.file("dat", "train.txt", package = "recosystem")
+  
+  #write.table(ratingsIn,file="train.txt",row.names=FALSE,col.names=FALSE)
+  r$train(data_file(train_set),opts = list(dim=rnk))
   res <- r$output(NULL,NULL)
   class(res) <- 'Reco'
   res
