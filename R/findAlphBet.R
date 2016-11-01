@@ -21,7 +21,7 @@
 #      alphavec: the alpha_i
 #      betavec: the beta_j
 
-findAlphBet <- function(ratingsIn) {
+findMultiplicYdots <- function(ratingsIn) {
    users = ratingsIn[,1] 
    items = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
