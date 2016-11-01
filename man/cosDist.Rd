@@ -62,9 +62,8 @@ In \code{cosDist}, the "distance" (not actually a metric) between
 numeric vectors u and v is defined to be (u,v) / sqrt((u,u) (v,v)),
 where ( , ) means inner product.  The function \code{cosDist} finds this
 for two objects of class \code{'usrDatum'}, with the inner product being
-taken on the ratings contained in each of these objects (zeroes are used
-for the ratings that are unknown), as well as the covariates and
-category data if any. 
+taken on the ratings contained in each of these objects, as well as the
+covariates and category data if any. 
 
 The function \code{predict.usrData} uses a training set, of class
 \code{usrData}, to predict one new data point, of class \code{usrDatum}.
