@@ -21,12 +21,11 @@
 #             newData
 #    wtcovs: weight to put on covariates; NULL if no covs
 #    wtcats: weight to put on item categories; NULL if no cats
-#    k: number of nearest neigbhors (code could be modifed to obtain
-#       values for several k in one call)
+#    k: a list of the number of nearest neigbhors to be considered while predicting
 
 # value:
 
-#    predicted rating for newData
+#    predicted ratings for newData
 
 predict.usrData <- function(origData,newData,newItem,
       k,wtcovs=NULL,wtcats=NULL) {
@@ -64,13 +63,18 @@ predict.usrData <- function(origData,newData,newItem,
    cosines <- sapply(origData,onecos) 
    # the vector cosines contains the distances from newData to all the
    # original data points;
-   # now find the k nearest neighbors; first,
-   # can't have more neighbors than the whole data set
-   k1 <- min(k,length(cosines))  
-   klarge <- order(cosines,decreasing=TRUE)[1:k1]
-   # klarge is a vector containing the indices (with respect to
-   # origData) of the k closest users to newData
-   mean(as.numeric(found[2, klarge]))
+  
+   #action of findKnghbourRtng(): predict rating based on each k[i] neighbours
+   #x = k[i]
+   #if x > neighbours present in the dataset, then the maximum number of meighbours is used
+   findKnghbourRtng <- function(x){
+     #x can be atmost the number of neighbours in the dataset
+     x <- min(x, length(cosines))
+     #klarge is a vector containing the indices of the x closest neighbours
+     klarge <- order(cosines,decreasing=TRUE)[1:x]
+     mean(as.numeric(found[2, klarge]))
+   }
+   sapply(k, findKnghbourRtng)
 }
 
 # cosDist() find cosine distance between x and y, elements of an object
