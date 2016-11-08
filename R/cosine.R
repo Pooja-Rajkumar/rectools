@@ -14,7 +14,7 @@
 # arguments:
 
 #    origData: training set, object of class 'usrData' (see file
-#    findUsrData.R)
+#    findUsrItmData.R)
 #    newData: data point (just one for now) to be predicted, object of
 #             class 'usrData'
 #    newItem: ID of the item rating to be predicted for the user in
@@ -37,25 +37,27 @@ predict.usrData <- function(origData,newData,newItem,
    # equals newItem, and will return that value and the corresponding
    # rating; defined for use by sapply() below
    checkNewItem <- function(oneUsr) {
-      tmp <- match(oneUsr$itms,newItem)
+     #itms <- as.list(as.data.frame(t(oneUsr$itms)))
+     tmp <- match(oneUsr$itms[[1]], newItem) 
       if (all(is.na(tmp))) return(c(NA,NA))
       whichOne <- which(!is.na(tmp))
-      c(whichOne,oneUsr$ratings[whichOne])
+      c(whichOne,oneUsr$ratings[whichOne,])
    }
    found <- as.matrix(sapply(origData,checkNewItem))
    # found is of dimensions 2 x number of users;
    # found[1,i] = j means origData[[i]]$itms[j] = newItem;
-   # found[1,i] = NA means newItem wasn't rated by user i;
+   # found[1,i] = NA means newItem wasn't rated by user i;ß
    # found[2,i] will be the rating in the non-NA case
    # we need to get rid of the NA users 
    whoHasIt <- which(!is.na(found[1,]))
    # whoHasIt[i] is the index, i.e. user ID, of the i-th user who has
    # rated newData
-   if (is.null(whoHasIt)) return(NA)  # no one rated this item
-   origData <- origData[whoHasIt,]  
+   if (is.null(whoHasIt) | length(whoHasIt)==0) return(NA)  # no one rated this item
+   origData <- origData[whoHasIt]  
    # now origData only has the relevant users, the ones who have rated
    # newItem, so select only those columns of the found matrix
    found <- found[,whoHasIt,drop=FALSE]
+   #found <- found[!is.na(found)]
    # find the distance from newData to one user y of origData; defined for
    # use in sapply() below
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
@@ -68,22 +70,22 @@ predict.usrData <- function(origData,newData,newItem,
    klarge <- order(cosines,decreasing=TRUE)[1:k1]
    # klarge is a vector containing the indices (with respect to
    # origData) of the k closest users to newData
-   mean(found[2,klarge])
+   mean(as.numeric(found[2, klarge]))
 }
 
 # cosDist() find cosine distance between x and y, elements of an object
 # of 'usrData' class; only items rated in both x and y are used; if none
 # exist, then return NaN
 cosDist <- function(x,y,wtcovs,wtcats) {
-   # rated items in common
-   commItms <- intersect(x$itms,y$itms)
-   if (is.null(commItms)) return(Nan)
+  # rated items in common
+   commItms <- intersect(x$itms[[1]],y$itms[[1]])
+   if (is.null(commItms)| length(commItms)==0) return(NaN)
    # where are they in x and y?
-   xwhere <- which(!is.na(match(x$itms,commItms)))
-   ywhere <- which(!is.na(match(y$itms,commItms)))
-   xrats <- x$ratings[xwhere]
-   yrats <- y$ratings[ywhere]
-   cosTot <- xrats %*% yrats
+   xwhere <- which(!is.na(match(x$itms[[1]],commItms)))
+   ywhere <- which(!is.na(match(y$itms[[1]],commItms)))
+   xrats <- x$ratings[xwhere,]
+   yrats <- y$ratings[ywhere,]
+ cosTot <- xrats[[1]] %*% yrats[[1]]
    xl2 <- sum(xrats^2)
    yl2 <- sum(yrats^2)
    if (!is.null(wtcovs)) {
