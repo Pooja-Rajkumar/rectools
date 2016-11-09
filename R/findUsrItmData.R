@@ -2,10 +2,9 @@
 # note: it is assumed that user IDs are consecutive numbers starting at
 # 1
 
-
-
-# utility to read in raw data and form an R list for user data,
-# with class 'usrData' 
+# utility to read in raw data in standrd (user ID, item ID, rating)
+# format, and form an R list for user data, with class 'usrData'; each
+# element of the list will be of class 'usrDatum' 
 
 # arguments:
 
@@ -36,6 +35,16 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
+   userrange <- range(as.numeric(names(rownums)))
+   usermin <- userrange[1]
+   usermax <- userrange[2]
+   if (usermin != 1) {
+      stop('user IDs must start at 1')
+   }
+   if (usermax - usermin + 1 != nusers) {
+      stop('some user IDs missing')
+   }
+   # should add check for item IDs too
    retval <- list()
    if (!is.null(itmCats)) {
       itmCats <- as.matrix(itmCats)
@@ -58,6 +67,14 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    class(retval) <- 'usrData'
    if (fileOut != '') save(retval,file=fileOut)
    retval
+}
+
+# construct a new object of class 'usrDatum'
+
+formUserDatum <- function(itms,ratings,userID=NULL) {
+   obj <- list(itms = itms, ratings=ratings,userID=userID)
+   class(obj) <- 'usrDatum'
+   obj
 }
 
 # utility:  find input row for a given user, item

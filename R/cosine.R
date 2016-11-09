@@ -5,7 +5,7 @@
 # added
 
 # covariates (e.g. age, gender) and item type preferences (e.g.
-# preferred movie genres) may be used
+# preferred movie genres) are allowed
 
 ########################## predict() function ##########################
 
@@ -16,7 +16,7 @@
 #    origData: training set, object of class 'usrData' (see file
 #    findUsrItmData.R)
 #    newData: data point (just one for now) to be predicted, object of
-#             class 'usrData'
+#             class 'usrDatum'
 #    newItem: ID of the item rating to be predicted for the user in
 #             newData
 #    wtcovs: weight to put on covariates; NULL if no covs
@@ -36,11 +36,14 @@ predict.usrData <- function(origData,newData,newItem,
    # equals newItem, and will return that value and the corresponding
    # rating; defined for use by sapply() below
    checkNewItem <- function(oneUsr) {
+browser()
      #itms <- as.list(as.data.frame(t(oneUsr$itms)))
      tmp <- match(oneUsr$itms[[1]], newItem) 
-      if (all(is.na(tmp))) return(c(NA,NA))
+      if (all(is.na(tmp))) {
+         stop('no data on this item')
+      }
       whichOne <- which(!is.na(tmp))
-      c(whichOne,oneUsr$ratings[whichOne,])
+      c(whichOne,oneUsr$ratings[whichOne])
    }
    found <- as.matrix(sapply(origData,checkNewItem))
    # found is of dimensions 2 x number of users;
