@@ -8,7 +8,23 @@
 
 #    an object of class 'Reco', with components being the P and Q
 #    matrices
-
+setGeneric(name="predict", def = function(recoObj,testSet){standardGeneric("predict")})
+setMethod(f ="predict",
+				 definition = function(recoObj,testSet)
+				 {
+				 	 p = recoObj$P
+ 					 q = recoObj$Q
+  					 testSet$pred <- vector(length=nrow(testSet))
+  					 for(i in 1:nrow(testSet)){
+      					 j = testSet[i,1]
+      				     k = testSet[i,2]
+   						 testSet$pred[i] <- 
+       						if(j > nrow(p) || k > nrow(q)) NA else
+       							p[j,] %*% q[k,]
+  					 }
+  					testSet$pred
+				 })
+				 
 trainReco <- function(ratingsIn,rnk = 10)
 {
   library(recosystem)
@@ -19,7 +35,7 @@ trainReco <- function(ratingsIn,rnk = 10)
   P_file = out_file(tempfile())
   Q_file = out_file(tempfile())
   res = r$output(out_memory(),out_memory())
-  res <- setClass("Reco")
+  #res <- setClass("Reco")
   res
 }
 
