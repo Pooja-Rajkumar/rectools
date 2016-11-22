@@ -98,7 +98,7 @@ The \code{acc} component is an R list with these elements:
        ivl <- InstEval 
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
-       xvout <- xvalReco(ivl[,c(1,2,7)]) 
+       xvout <- xvalReco(ivl[,c(1,2,7)]) # $exact 0.2181166; $mad 1.326194; $rms 1.606879; $overallexact 0.2404184; $overallmad 1.134462; $overallrms 1.331158
        xvout$acc
        plot(xvout)
 }
