@@ -8,7 +8,35 @@
 
 #    an object of class 'Reco', with components being the P and Q
 #    matrices
+
+# Tell console we want to make a generic function called predict.
 setGeneric(name="predict", def = function(recoObj,testSet){standardGeneric("predict")})
+
+# arguments:
+
+#    recoObj: an object of class 'Reco'
+#    testSet: a matrix of the form of ratingsIn above
+
+
+trainReco <- function(ratingsIn,rnk = 10)
+{
+  library(recosystem)
+  r <- Reco()
+  train_set = data_memory(ratingsIn[,1],ratingsIn[,2],ratingsIn[,3])
+  print(isS4(r))
+  r$train(train_set,opts = list(dim=rnk)) 
+  P_file = out_file(tempfile())
+  Q_file = out_file(tempfile())
+  res = r$output(out_memory(),out_memory())
+  #res <- setClass("Reco")
+  res
+}
+
+# value:
+
+#     vector of values predicted for testSet by recoObj
+
+
 setMethod(f ="predict",
 				 definition = function(recoObj,testSet)
 				 {
@@ -25,43 +53,6 @@ setMethod(f ="predict",
   					testSet$pred
 				 })
 				 
-trainReco <- function(ratingsIn,rnk = 10)
-{
-  library(recosystem)
-  r <- Reco()
-  train_set = data_memory(ratingsIn[,1],ratingsIn[,2],ratingsIn[,3])
-  print(isS4(r))
-  r$train(train_set,opts = list(dim=rnk)) 
-  P_file = out_file(tempfile())
-  Q_file = out_file(tempfile())
-  res = r$output(out_memory(),out_memory())
-  #res <- setClass("Reco")
-  res
-}
-
-# arguments:
-
-#    recoObj: an object of class 'Reco'
-#    testSet: a matrix of the form of ratingsIn above
-
-# value:
-
-#     vector of values predicted for testSet by recoObj
-
-predict.Reco <- function(recoObj,testSet){
-  p = recoObj$P
-  q = recoObj$Q
-  testSet$pred <- vector(length=nrow(testSet))
-  for(i in 1:nrow(testSet)){
-    j = testSet[i,1]
-    k = testSet[i,2]
-    testSet$pred[i] <- 
-       if(j > nrow(p) || k > nrow(q)) NA else
-       p[j,] %*% q[k,]
-  }
-  testSet$pred
-}
-
 ########## the remaining functions are for cross-validation:
 
 # arguments:
