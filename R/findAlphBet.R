@@ -22,36 +22,49 @@
 #      betavec: the beta_j
 
 findMultiplicYdots <- function(ratingsIn) {
-   users = ratingsIn[,1] 
-   items = ratingsIn[,2] 
+   usrs = ratingsIn[,1] 
+   itms = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
    yd <- findYdotsMM(ratingsIn)
    ydi <- yd$usrMeans
    ydj <- yd$itmMeans
    nu <- yd$grandMean
-   alph <- ydi / nu
-   bet <- ydj / nu
-   res <- list(alph=alph,bet=bet)
+   ### alph <- ydi / nu
+   ### bet <- ydj / nu
+   alph <- ydi 
+   bet <- ydj 
+   ratingsInAlphs <- alph[usrs]
+   ratingsInBets <- bet[itms]
+   alphbet <- alph[usrs] * bet[itms]
+   coefs <- coef(lm(ratingsIn[,3] ~ alphbet))
+   res <- list(alph=alph,bet=bet,nu=nu,coefs=coefs)
    class(res) <- 'MMmultiplic'
    res
 } 
 
 # predict() method for the 'MMmultiplic' class
-#
+
 # testSet in same form as ratingsIn above, except that there 
-# is no ratings column 
+# is no ratings column (that column can be present, but only columns 1
+# and 2) are used
 
 # MMmultiplic is the output of findAlphBet()
-#
+
 # returns vector of predicted values for testSet, i.e. estimated
 # probabilities of rating = 1
+
+# currently predicts only on users/items in the training set, i.e.
+# predicts the missing values in the users/items/ratings matrix
+
 predict.MMmultiplic = function(multiplicObj,testSet) {
-   tmp <- 
-      multiplicObj$alphavec[as.character(testSet[,1])] * 
-      multiplicObj$betavec[as.character(testSet[,2])] 
-   lmc <- multiplicObj$lmcoef
-   tmp <- lmc[1] + lmc[2]*tmp
+   usrs <- testSet[,1]
+   itms <- testSet[,2]
+   alphbet <- 
+      multiplicObj$alph[usrs] * 
+      multiplicObj$bet[itms] 
+   tmp <- cbind(1,alphbet) %*% multiplicObj$coefs
    tmp <- pmin(tmp,1)
-   pmax(tmp,0)
+   tmp <- pmax(tmp,0)
+   cbind(tmp,round(tmp))
 }
 
