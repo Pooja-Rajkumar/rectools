@@ -1,12 +1,13 @@
 Package: rectools
 Version: 1.0.0
 Author@R: 
+  c(person("Vishal" "Chakraborty", role-c("aut"), email="vch@ucdavis.edu"),
+  c(person("Norm" "Matloff", role-c("cre","aut"), email="nsmmatloff@ucdavis.edu"),
   c(person("Pooja" "Rajkumar", role="aut",email="prajkumar@ucdavis.edu"), 
-  c(person("Norm" "Matloff", role-c("cre","aut"),
-  email="normmatloff@gmail.com")
+  c(person("Ariel" "Shin", role-c("aut"), email="arishin@ucdavis.edu")
    )
-Maintainer: Norm Matloff <normmatloff@gmail.com>
-Date: 04/30/2016
+Maintainer: Norm Matloff <nsmmatloff@ucdavis.edu>
+Date: 12/12/2016
 Title: Advanced Recommender System
 Description: Toolbox for recommender systems, including novel methods,
    plotting, parallel computation, and so on.
