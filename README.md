@@ -155,5 +155,9 @@ M. Hahsler, **recommderlab**, CRAN vignette.
 Y. Koren et al, Matrix Factorization Techniques for Recommender 
 Systems, *IEEE Computer*, 2009.
 
+N. Matloff, [Collaborative Filtering in Recommender Systems: 
+a Short Introduction](http://heather.cs.ucdavis.edu/RSTutorial.pdf), 2016. 
+
+
 P. Perry, *Fast Moment-Based Estimation for Hierarchical Models*, 2015.
 
