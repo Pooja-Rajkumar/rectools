@@ -1,6 +1,6 @@
-\name{findMultiplicYdotsMM,predict.ydotsMMmultiplic}
-\alias{findMultiplicYdotsMM}
-\alias{predict.ydotsMMmultiplic}
+\name{findMultiplicYdots,predict.MMmultiplic}
+\alias{findMultiplicYdots}
+\alias{predict.MMmultiplic}
 
 \title{Multiplicative Model for Collaborative Filtering}
 
