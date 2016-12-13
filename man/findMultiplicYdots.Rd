@@ -1,5 +1,5 @@
-\name{findMultiplicYdots,predict.MMmultiplic}
-\alias{findMultiplicYdots}
+\name{trainMultiplic,predict.MMmultiplic}
+\alias{trainMultiplic}
 \alias{predict.MMmultiplic}
 
 \title{Multiplicative Model for Collaborative Filtering}
@@ -64,16 +64,14 @@ ivl$y <- as.numeric(ivl$d)
 # make it binary
 ivl$y <- as.integer(ivl$y >= 4)
 # run the training data
-ydout <- findMultiplicYdots(ivl[,1:3]) 
+ydout <- trainMultiplic(ivl[,1:3]) 
 # form a test set to illustrate prediction; make template first
 testSet <- ivl[c(3,8),]
-# say want to predict whether students 1 and 3 would rate instructor 12
+# say want to predict whether students 3 and 8 would rate instructor 12
 # at least a 4
 testSet[1,2] <- 12
 testSet[2,2] <- 12
-ypred <- predict(ydout,testSet)
-# check the full data set
-mean(predict(ydout,ivl)[,2] == ivl[,3])  # about 0.68
+predict(ydout,testSet)
 }
 
 \author{

@@ -1,13 +1,13 @@
 
 S3method(predict,usrData)
 
-export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,
-       findYdotsMLE,predict.ydotsMLE,
+export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
+       findYdotsMLE,predict.ydotsMLE,trainMLE,
        ### formUserData,predict.usrData, cosDist,
        xvalMM,xvalMLE,xvalCos,
        plot.ydotsMM,plot.xvalb,
        # getTrainSet,getTestSet,trainReco,xvalReco,
        focusGrp,
-       findMultiplicYdots,predict.MMmultiplic,
+       trainMultiplic,predict.MMmultiplic,
        ratingness,covratingness)
 

@@ -51,6 +51,9 @@ findYdotsMLE <- function(ratingsIn,cls=NULL) {
   invisible(ydots)
 }
 
+# alias
+trainMLE <- findYdotsMLE
+
 formYdots = function(ratingsIn,nms,haveCovs,lmerout) {
   ydots = list()
   if (!haveCovs) {

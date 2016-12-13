@@ -44,6 +44,8 @@ starting at 1.
 
       findYdotsMLE():  fit Max. Likelihood model
       findYdotsMM():  fit Method of Moments model
+      trainMLE():  alias for findYdotsMLE()
+      trainMM():  alias for findYdotsMM()
       predict.ydotsMLE():  predict from MLE
       predict.ydotsMM():  predict from MM
       xvalMLE):  cross-validation of MLE
@@ -95,7 +97,8 @@ dms$dept2 <- NULL
 ivl$dept <- NULL
 ivl <- cbind(ivl,dms)
 # run the training data, no covariates:
-ydout <- findYdotsMM(ivl[,1:3])
+# ydout <- findYdotsMM(ivl[,1:3])
+ydout <- trainMM(ivl[,1:3])
 # form a test set to illustrate prediction:
 testSet <- ivl[c(3,8),]  # these happen to be students 1, 3
 # say want to predict how well students 1 and 3 would like instructor 12
@@ -103,8 +106,9 @@ testSet[1,2] <- 12
 testSet[2,2] <- 12
 # predict:
 predict(ydout,testSet[,1:2])  
-# Try using the covariates:
-ydout <- findYdotsMM(ivl)
+# try using the covariates:
+# ydout <- findYdotsMM(ivl)
+ydout <- trainMM(ivl)
 predict(ydout,testSet[,-3])  
 
 }

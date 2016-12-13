@@ -54,7 +54,10 @@ findYdotsMM <- function(ratingsIn,regressYdots=FALSE,cls=NULL) {
   
   class(ydots) = 'ydotsMM'
   invisible(ydots)
-} 
+}
+
+# alias
+trainMM <- findYdotsMM 
 
 # check
 checkyd <- function() {

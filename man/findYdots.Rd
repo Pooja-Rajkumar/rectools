@@ -1,6 +1,8 @@
-\name{findYdotsMM,findYdotsMLE, predict.ydotsMM, predict.ydotsMLE,plot.ydotsMM}
+\name{findYdotsMM,findYdotsMLE,predict.ydotsMM,predict.ydotsMLE,plot.ydotsMM,trainMM,trainMLE}
 \alias{findYdotsMM}
 \alias{findYdotsMLE}
+\alias{trainMM}
+\alias{trainMLE}
 \alias{predict.ydotsMM}
 \alias{plot.ydotsMM}
 \alias{predict.ydotsMLE}
@@ -15,9 +17,11 @@ capability.  Various plots can be displayed.
 
 \usage{
 findYdotsMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
+trainMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
 predict.ydotsMM(ydotsObj,testSet) 
 plot.ydotsMM(ydotsObj,ratingsIn) 
 findYdotsMLE(ratingsIn,cls=NULL) 
+trainMLE(ratingsIn,cls=NULL) 
 predict.ydotsMLE(ydotsObj,testSet) 
 }
 
@@ -110,7 +114,8 @@ dms$dept2 <- NULL
 ivl$dept <- NULL
 ivl <- cbind(ivl,dms)
 # run the training data, no covariates
-ydout <- findYdotsMLE(ivl[,1:3]) 
+# ydout <- findYdotsMLE(ivl[,1:3]) 
+ydout <- trainMLE(ivl[,1:3]) 
 # form a test set to illustrate prediction
 testSet <- ivl[c(3,8),]
 head(testSet)
@@ -120,7 +125,7 @@ testSet[2,2] <- 12
 # predict
 predict(ydout,testSet[,1:2])  # 4.272660 4.410612
 # try using the covariates
-ydout <- findYdotsMLE(ivl)
+ydout <- trainMLE(ivl)
 predict(ydout,testSet[,-3])  # 3.286828 3.551587
 }
 

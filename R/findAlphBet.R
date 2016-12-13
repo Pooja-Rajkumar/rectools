@@ -21,7 +21,7 @@
 #      alphavec: the alpha_i
 #      betavec: the beta_j
 
-findMultiplicYdots <- function(ratingsIn) {
+trainMultiplic<- function(ratingsIn) {
    usrs = ratingsIn[,1] 
    itms = ratingsIn[,2] 
    ratings = ratingsIn[,3] 
