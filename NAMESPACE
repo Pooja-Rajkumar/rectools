@@ -1,7 +1,9 @@
 
+S3method(predict,usrData)
+
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,
        findYdotsMLE,predict.ydotsMLE,
-       formUserData,predict.usrData, cosDist,
+       ### formUserData,predict.usrData, cosDist,
        xvalMM,xvalMLE,xvalCos,
        plot.ydotsMM,plot.xvalb,
        # getTrainSet,getTestSet,trainReco,xvalReco,

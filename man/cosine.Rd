@@ -35,3 +35,12 @@
 \author{
 	Vishal Chakraborty
 }
+
+\examples{
+     ivl <- InstEval 
+     ivl$s <- as.numeric(ivl$s) 
+     ivl$d <- as.numeric(ivl$d) 
+     ivl3 <- ivl[,c(1,2,7)]
+     usrdata <- formUserData(ivl) 
+     predict(usrdata,3,8,10) 
+}
