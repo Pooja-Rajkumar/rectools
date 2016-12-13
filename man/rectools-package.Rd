@@ -26,10 +26,12 @@ License: \tab GPL (>= 2)\cr
 
 \bold{Raw input data:}  
 
-Standard form, one row per rating, with first three
-columns being user ID, item ID and rating.
+Standard form, one row per rating, with first three columns being user
+ID, item ID and rating, followed by optional covariates.  \bold{Note:}
+Most functions assume that user and item IDs are numbered consecutively,
+starting at 1.
 
-\bold{List of functions:}
+\bold{List of major functions:}
 
    \preformatted{
    matrix factorization model (MFM):
@@ -60,12 +62,9 @@ columns being user ID, item ID and rating.
       ratingness():  find number of ratings for each user or 
          number of users per rating
       covratingness():  for each row of the raw input data
-   
-      
+      focusGrp():  finds a "focus group," i.e. some "representative" users
 
    }
-
-
 
 }
 
@@ -73,16 +72,16 @@ columns being user ID, item ID and rating.
 \examples{
 library(parallel)
 
-# Try lme4 data set, needs some prep first.
+# try lme4 data set InstEval, needs some prep first.
 data(InstEval)
 ivl <- InstEval
-# Convert factors to numeric:
+# convert factors to numeric:
 ivl$s <- as.numeric(ivl$s)
 ivl$d <- as.numeric(ivl$d)
 ivl$studage <- as.numeric(ivl$studage)
 ivl$lectage <- as.numeric(ivl$lectage)
 ivl$service <- as.numeric(ivl$service)
-# make correct format, choose covs:
+# make correct format, and choose covs:
 ivl <- ivl[,c(1,2,7,3:6)]
 # create dummy variables in place of dept:
 library(dummies)
@@ -92,6 +91,7 @@ dms$dept2 <- NULL
 ivl$dept <- NULL
 ivl <- cbind(ivl,dms)
 # run the training data, no covariates:
+ydout <- findYdotsMM(ivl[,1:3])
 # form a test set to illustrate prediction:
 testSet <- ivl[c(3,8),]  # these happen to be students 1, 3
 # say want to predict how well students 1 and 3 would like instructor 12
@@ -100,7 +100,7 @@ testSet[2,2] <- 12
 # predict:
 predict(ydout,testSet[,1:2])  
 # Try using the covariates:
-ydout <- findYdotsMLE(ivl)
+ydout <- findYdotsMM(ivl)
 predict(ydout,testSet[,-3])  
 
 }
