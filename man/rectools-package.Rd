@@ -40,7 +40,7 @@ starting at 1.
       predict.Reco():  predict from MFM 
       xvalReco():  cross-validation evaluation of MFM
 
-   statistical random effects model:
+   statistical random effects additive model:
 
       findYdotsMLE():  fit Max. Likelihood model
       findYdotsMM():  fit Method of Moments model
@@ -49,6 +49,11 @@ starting at 1.
       xvalMLE):  cross-validation of MLE
       xvalMM):  cross-validation of MM
       findMultiplicYdots():  fit multiplicative MM model, binary Y
+
+   statistical random effects multiplicative model:
+
+      findYdotsMultiplicYdots(): fit mult. model for binary Y 
+      predict.MMmultiplic(): predict from that model 
 
    k-nearest neighbor model:
 
@@ -59,10 +64,10 @@ starting at 1.
 
    misc.:
 
+      focusGrp():  finds a "focus group," i.e. some "representative" users
       ratingness():  find number of ratings for each user or 
          number of users per rating
       covratingness():  for each row of the raw input data
-      focusGrp():  finds a "focus group," i.e. some "representative" users
 
    }
 
@@ -70,7 +75,6 @@ starting at 1.
 
 
 \examples{
-library(parallel)
 
 # try lme4 data set InstEval, needs some prep first.
 data(InstEval)

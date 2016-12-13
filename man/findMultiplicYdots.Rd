@@ -10,7 +10,7 @@ for general Y.
 }
 
 \usage{
-findYdotsMM(ratingsIn) 
+findsMultiplicYdots(ratingsIn) 
 predict.MMmultiplic(multiplicObj, testSet) 
 }
 
@@ -37,7 +37,7 @@ predict.MMmultiplic(multiplicObj, testSet)
    respectively.
 
    Currently the code works only on the original data set, to predict
-   the missing values.
+   the missing values.  Covariates are not yet allowed.
 
 }
 
@@ -57,22 +57,23 @@ predict.MMmultiplic(multiplicObj, testSet)
 # lme4 data set, needs some prep
 ivl <- InstEval
 ivl <- ivl[,c(1,2,7)]
-ivl$y <- as.integer(ivl$y >= 4)
 # convert from factors
 ivl$s <- as.numeric(ivl$s)
 ivl$d <- as.numeric(ivl$d)
+ivl$y <- as.numeric(ivl$d)
+# make it binary
+ivl$y <- as.integer(ivl$y >= 4)
 # run the training data
 ydout <- findMultiplicYdots(ivl[,1:3]) 
-# form a test set to illustrate prediction
+# form a test set to illustrate prediction; make template first
 testSet <- ivl[c(3,8),]
-head(testSet)
 # say want to predict whether students 1 and 3 would rate instructor 12
 # at least a 4
 testSet[1,2] <- 12
 testSet[2,2] <- 12
 ypred <- predict(ydout,testSet)
 # check the full data set
-mean(predict(ydout,ivl)[,2] == ivl[,3]) 
+mean(predict(ydout,ivl)[,2] == ivl[,3])  # about 0.68
 }
 
 \author{
