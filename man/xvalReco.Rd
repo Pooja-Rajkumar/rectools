@@ -1,8 +1,9 @@
-\name{xvalMM,xvalMLE,xvalReco,xvalCos,getTestSet,getTrainSet,plot.xvalb}
+\name{xvalMM,xvalMLE,xvalReco,xvalCos,xvalMultiplic,getTestSet,getTrainSet,plot.xvalb}
 \alias{xvalMM}
 \alias{xvalMLE}
 \alias{xvalReco}
 \alias{xvalCos}
+\alias{xvalMultiplic}
 \alias{plot.xvalb}
 \alias{getTestSet}
 \alias{getTrainSet}
@@ -20,6 +21,7 @@ computation capability in some cases.
 	xvalReco(ratingsIn, trainprop = 0.5,cls = NULL,rnk = 10)
         xvalCos(ratingsIn, k, usrCovs = NULL, itmCats = NULL, wtcovs = NULL, 
            wtcats = NULL, trainprop = 0.5)
+        xvalMultiplic(ratingsIn) 
 	getTrainSet(ratingsIn,trainprop)
 	getTestSet(ratingsIn,trainSet)
         plot.xvalb(xvalObj,whichIdxs=NULL)
@@ -98,9 +100,9 @@ The \code{acc} component is an R list with these elements:
        ivl <- InstEval 
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
-       xvout <- xvalReco(ivl[,c(1,2,7)]) # $exact 0.2181166; $mad 1.326194; $rms 1.606879; $overallexact 0.2404184; $overallmad 1.134462; $overallrms 1.331158
+       xvout <- xvalMM(ivl[,c(1,2,7)]) 
        xvout$acc
-       plot(xvout)
+       plot(xvout)  # $exact = 0.28 etc.
 }
 
 \author{

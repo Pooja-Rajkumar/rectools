@@ -60,7 +60,7 @@ ivl <- ivl[,c(1,2,7)]
 # convert from factors
 ivl$s <- as.numeric(ivl$s)
 ivl$d <- as.numeric(ivl$d)
-ivl$y <- as.numeric(ivl$d)
+ivl$y <- as.numeric(ivl$y)
 # make it binary
 ivl$y <- as.integer(ivl$y >= 4)
 # run the training data

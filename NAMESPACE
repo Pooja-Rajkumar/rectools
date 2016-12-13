@@ -8,6 +8,6 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        plot.ydotsMM,plot.xvalb,
        # getTrainSet,getTestSet,trainReco,xvalReco,
        focusGrp,
-       trainMultiplic,predict.MMmultiplic,
+       trainMultiplic,predict.MMmultiplic,xvalMultiplic,
        ratingness,covratingness)
 
