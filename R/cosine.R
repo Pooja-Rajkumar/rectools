@@ -22,7 +22,7 @@
 
 predict.usrData <- function(origData,newData,newItem,
       k,wtcovs=NULL,wtcats=NULL) {
-  UseMethod("predict.usrData")
+
    # we need to narrow origData down to the users who have rated newItem
    #
    # action of checkNewItem(): here oneUsr is one user record in
@@ -32,11 +32,13 @@ predict.usrData <- function(origData,newData,newItem,
    checkNewItem <- function(oneUsr) {
      #itms <- as.list(as.data.frame(t(oneUsr$itms)))
      tmp <- match(oneUsr$itms[[1]], newItem)
-      if (all(is.na(tmp))) {
-         stop('no data on this item')
-      }
-      whichOne <- which(!is.na(tmp))
-      c(whichOne,oneUsr$ratings[whichOne])
+     if (all(is.na(tmp))) {
+       c(NA,NA)
+     }
+     else{
+       whichOne <- which(!is.na(tmp))
+       c(whichOne,oneUsr$ratings[whichOne,1])
+     }
    }
 
    found <- as.matrix(sapply(origData,checkNewItem))
