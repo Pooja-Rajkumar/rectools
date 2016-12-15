@@ -30,14 +30,15 @@ predict.usrData <- function(origData,newData,newItem,
    # equals newItem, and will return that value and the corresponding
    # rating; defined for use by sapply() below
    checkNewItem <- function(oneUsr) {
-     #itms <- as.list(as.data.frame(t(oneUsr$itms)))
      tmp <- match(oneUsr$itms[[1]], newItem)
+     #### tmp <- match(oneUsr$itms, newItem)
      if (all(is.na(tmp))) {
        c(NA,NA)
      }
      else{
        whichOne <- which(!is.na(tmp))
-       c(whichOne,oneUsr$ratings[whichOne,1])
+       ### NM comment c(whichOne,oneUsr$ratings[whichOne,1])
+       c(whichOne,oneUsr$ratings[whichOne])
      }
    }
 

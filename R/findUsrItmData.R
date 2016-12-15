@@ -1,10 +1,12 @@
 
 # note: it is assumed that user IDs are consecutive numbers starting at
-# 1
+# 1, and the same for the item numbers
 
-# utility to read in raw data in standrd (user ID, item ID, rating)
-# format, and form an R list for user data, with class 'usrData'; each
-# element of the list will be of class 'usrDatum' 
+# utility to read in raw data in standard format,
+#    (user ID, item ID, rating)
+# and form an R list for user data, with class 'usrData'; each
+# element of the list will be of class 'usrDatum', and will have
+# components as see in 'value' below 
 
 # arguments:
 
@@ -24,7 +26,7 @@
 #    'usrDatum', with these components:
 #
 #       userID: the ID of this user
-#       ratings: ratings set by this user
+#       ratings: vector of ratings made by this user
 #       itms: IDs of items rated by this user
 #       cvrs:  covariate data for this user, if any
 #       cats:  item category data for this user, if any; i-th element
@@ -32,6 +34,8 @@
 #              in category i
 
 formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
+   if (ncol(ratingsIn) > 3)
+      stop('have you included covariates?')
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
@@ -45,14 +49,14 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
       stop('some user IDs missing')
    }
    # should add check for item IDs too
-   retval <- list()
+   retval <- list()  # start building return value
    if (!is.null(itmCats)) {
       itmCats <- as.matrix(itmCats)
       nitems <- nrow(itmCats)
    }
    for (i in 1:nusers) {
       whichrows <- rownums[[i]]
-      retval[[i]] <- list(userID=i)
+      retval[[i]] <- list(userID=i)  # usrDatum object for user i
       retval[[i]]$itms <- ratingsIn[whichrows,2]
       retval[[i]]$ratings <- ratingsIn[whichrows,3]
       if (!is.null(usrCovs))
