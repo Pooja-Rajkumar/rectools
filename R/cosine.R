@@ -64,9 +64,10 @@ predict.usrData <- function(origData,newData,newItem,
    # the vector cosines contains the distances from newData to all the
    # original data points;
 
-   #action of findKnghbourRtng(): predict rating based on each k[i] neighbours
-   #x = k[i]
-   #if x > neighbours present in the dataset, then the maximum number of meighbours is used
+   # action of findKnghbourRtng(): predict rating based on each k[i] neighbours
+   # x = k[i]
+   # if x > neighbours present in the dataset, then the maximum 
+   # number of neighbours is used
    findKnghbourRtng <- function(x){
      #x can be atmost the number of neighbours in the dataset
      x <- min(x, length(cosines))
