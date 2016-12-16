@@ -29,8 +29,7 @@ xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
    trainRatings = trainingSet[,3]
    trainItems = trainingSet[,2]
    trainUsers = trainingSet[,1]
-   testIdxs <- setdiff(1:nrowRatIn,trainIdxs)
-   testSet = ratingsIn[testIdxs,]
+   testSet = ratingsIn[-trainIdxs,]
    # now set up training set for cosine analysis
    trainData <- formUserData(trainingSet,usrCovs,itmCats)
    # for each user i in the test data, find the items rated by user i in
@@ -38,9 +37,11 @@ xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
    testData <- formUserData(testSet,usrCovs,itmCats)
    preds <- c(NULL,NULL)
    for (l in 1:length(testData)) {
+if (l == 20) browser()
       oneNewDatum <- testData[[l]]
       for (j in 1:length(oneNewDatum$ratings)) {
          saveRat <- oneNewDatum$ratings[j]
+         ## NM: what if ratings start at 0?
          oneNewDatum$ratings[j] <- 0
          predVal <- predict(trainData,oneNewDatum,saveRat,k)
          preds <- rbind(preds,c(predVal,saveRat))

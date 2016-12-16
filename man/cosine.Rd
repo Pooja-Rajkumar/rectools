@@ -14,7 +14,7 @@
 
   \item{newData:}{data point (just one for now) to be predicted, object
   of class \code{usrDatum}, same class as each element of the list
-  \code{origData}.}
+  \code{origData}. The \code{userID} component can be NA.}
 
   \item{newItem:}{ID of the item rating to be predicted for the user
   specified in \code{newData}.}
@@ -46,7 +46,6 @@
      ivl <- InstEval 
      ivl$s <- as.numeric(ivl$s) 
      ivl$d <- as.numeric(ivl$d) 
-     ivl3 <- ivl[,c(1,2,7)]
      usrdata <- formUserData(ivl[,1:3]) 
      # predict the rating user 3 would give item 8
      predict(usrdata,usrdata[[3]],8,10)  # 2.6

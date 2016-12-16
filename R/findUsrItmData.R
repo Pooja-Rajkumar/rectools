@@ -1,12 +1,9 @@
 
-# note: it is assumed that user IDs are consecutive numbers starting at
-# 1, and the same for the item numbers
-
 # utility to read in raw data in standard format,
 #    (user ID, item ID, rating)
 # and form an R list for user data, with class 'usrData'; each
 # element of the list will be of class 'usrDatum', and will have
-# components as see in 'value' below 
+# components as seen in 'value' below 
 
 # arguments:
 
@@ -35,20 +32,15 @@
 
 formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    if (ncol(ratingsIn) > 3)
-      stop('have you included covariates?')
+      stop('more than 3 columns; have you included covariates?')
+   ## NM: in order to work in xval, we need to abandon the idea of
+   ## having the user IDs start at and be consecutive; instead, will
+   ## just use the ID numbers as list indices
+
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
+   ## rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
-   userrange <- range(as.numeric(names(rownums)))
-   usermin <- userrange[1]
-   usermax <- userrange[2]
-   if (usermin != 1) {
-      stop('user IDs must start at 1')
-   }
-   if (usermax - usermin + 1 != nusers) {
-      stop('some user IDs missing')
-   }
-   # should add check for item IDs too
    retval <- list()  # start building return value
    if (!is.null(itmCats)) {
       itmCats <- as.matrix(itmCats)
