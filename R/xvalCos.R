@@ -17,6 +17,8 @@
 
 #    accuracy value
 
+## IMPORTANT NOTE: see note about userIDs in findUserData.R
+
 xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
    wtcovs=NULL,wtcats=NULL,
    trainprop=0.5)
@@ -37,15 +39,17 @@ xvalCos <- function(ratingsIn,k,usrCovs=NULL,itmCats=NULL,
    testData <- formUserData(testSet,usrCovs,itmCats)
    preds <- c(NULL,NULL)
    for (l in 1:length(testData)) {
-if (l == 20) browser()
+# cat('l = ',l,'\n')
+# if (l == 11) browser()
       oneNewDatum <- testData[[l]]
       for (j in 1:length(oneNewDatum$ratings)) {
-         saveRat <- oneNewDatum$ratings[j]
+         userID <- oneNewDatum$userID
+         saveRat <- oneNewDatum$ratings[userID]
          ## NM: what if ratings start at 0?
-         oneNewDatum$ratings[j] <- 0
+         oneNewDatum$ratings[userID] <- 0
          predVal <- predict(trainData,oneNewDatum,saveRat,k)
          preds <- rbind(preds,c(predVal,saveRat))
-         oneNewDatum$ratings[j] <- saveRat
+         oneNewDatum$ratings[userID] <- saveRat
       }
    }
   numpredna = sum(is.na(preds[,1])) 

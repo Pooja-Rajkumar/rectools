@@ -33,32 +33,38 @@
 formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    if (ncol(ratingsIn) > 3)
       stop('more than 3 columns; have you included covariates?')
-   ## NM: in order to work in xval, we need to abandon the idea of
-   ## having the user IDs start at and be consecutive; instead, will
-   ## just use the ID numbers as list indices
+
+   ## IMPORTANT NOTE: in order to work in xval, etc. we need to abandon
+   ## the idea of having the user IDs start at 1 and be consecutive;
+   ## instead, will just use the ID numbers as list indices; e.g. if we
+   ## have users numered 2,8,85 retval below will consist of
+   ## retval[[2]], retval[[8]] and retval[[85]]
 
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
    ## rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    rownums <- split(1:nrow(ratingsIn),ratingsIn[,1])
    nusers <- length(rownums)
-   retval <- list()  # start building return value
    if (!is.null(itmCats)) {
       itmCats <- as.matrix(itmCats)
       nitems <- nrow(itmCats)
    }
+   retval <- vector('list',length(rownums))
    for (i in 1:nusers) {
       whichrows <- rownums[[i]]
-      retval[[i]] <- list(userID=i)  # usrDatum object for user i
-      retval[[i]]$itms <- ratingsIn[whichrows,2]
-      retval[[i]]$ratings <- ratingsIn[whichrows,3]
+      userID <- ratingsIn[whichrows[1],1]
+      # start building usrDatum object for this user
+      retval[[userID]] <- list()
+      retval[[userID]]$userID <- userID
+      retval[[userID]]$itms <- ratingsIn[whichrows,2]
+      retval[[userID]]$ratings <- ratingsIn[whichrows,3]
       if (!is.null(usrCovs))
-         retval[[i]]$cvrs <- as.numeric(usrCovs[i,])
+         retval[[userID]]$cvrs <- as.numeric(usrCovs[userID,])
       if (!is.null(itmCats)) {
          tmp <- rep(0,nitems)
-         tmp[retval[[i]]$itms] <- 1
-         retval[[i]]$cats <- tmp %*% itmCats / sum(tmp)
+         tmp[retval[[userID]]$itms] <- 1
+         retval[[userID]]$cats <- tmp %*% itmCats / sum(tmp)
       }
-      class(retval[[i]]) <- 'usrDatum'
+      class(retval[[userID]]) <- 'usrDatum'
    }
    class(retval) <- 'usrData'
    if (fileOut != '') save(retval,file=fileOut)

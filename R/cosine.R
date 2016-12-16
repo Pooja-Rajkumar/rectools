@@ -24,14 +24,13 @@ predict.usrData <- function(origData,newData,newItem,
       k,wtcovs=NULL,wtcats=NULL) {
 
    # we need to narrow origData down to the users who have rated newItem
-   #
+   
    # action of checkNewItem(): here oneUsr is one user record in
    # origData; the function will check which item in the record, if any,
    # equals newItem, and will return that value and the corresponding
    # rating; defined for use by sapply() below
    checkNewItem <- function(oneUsr) {
-     tmp <- match(oneUsr$itms[[1]], newItem)
-     #### tmp <- match(oneUsr$itms, newItem)
+     tmp <- match(oneUsr$itms, newItem)
      if (all(is.na(tmp))) {
        c(NA,NA)
      }
@@ -51,7 +50,8 @@ predict.usrData <- function(origData,newData,newItem,
    whoHasIt <- which(!is.na(found[1,]))
    # whoHasIt[i] is the index, i.e. user ID, of the i-th user who has
    # rated newData
-   if (is.null(whoHasIt) | length(whoHasIt)==0) return(NA)  # no one rated this item
+   if (is.null(whoHasIt) | length(whoHasIt)==0) 
+      return(NA)  # no one rated this item
    origData <- origData[whoHasIt]
    # now origData only has the relevant users, the ones who have rated
    # newItem, so select only those columns of the found matrix
@@ -90,14 +90,14 @@ predict.usrData <- function(origData,newData,newItem,
 #'  @wtcats: weight to put on item categories; NULL if no cats
 cosDist <- function(x,y,wtcovs,wtcats) {
   # rated items in common
-   commItms <- intersect(x$itms[[1]],y$itms[[1]])
+   commItms <- intersect(x$itms,y$itms)
    if (is.null(commItms)| length(commItms)==0) return(NaN)
    # where are they in x and y?
-   xwhere <- which(!is.na(match(x$itms[[1]],commItms)))
-   ywhere <- which(!is.na(match(y$itms[[1]],commItms)))
-   xrats <- x$ratings[xwhere,]
-   yrats <- y$ratings[ywhere,]
- cosTot <- xrats[[1]] %*% yrats[[1]]
+   xwhere <- which(!is.na(match(x$itms,commItms)))
+   ywhere <- which(!is.na(match(y$itms,commItms)))
+   xrats <- x$ratings[xwhere]
+   yrats <- y$ratings[ywhere]
+   cosTot <- xrats %*% yrats
    xl2 <- sum(xrats^2)
    yl2 <- sum(yrats^2)
    if (!is.null(wtcovs)) {
