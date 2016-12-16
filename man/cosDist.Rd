@@ -69,15 +69,6 @@ The function \code{predict.usrData} uses a training set, of class
 
 }
 
-\examples{
-ivl <- InstEval 
-ivl$s <- as.numeric(ivl$s) 
-ivl$d <- as.numeric(ivl$d) 
-ivl3 <- ivl[,c(1,2,7)]
-# generic predict() dispatched to predict.usrData()
-predict(udt,udt[[88]],3,8)  # predict rating: 4.125
-}
-
 \author{
 Norm Matloff and Vishal Chakraborty
 }
