@@ -1,7 +1,6 @@
-\name{cosDist,formUserData,predict.usrData}
+\name{cosDist,formUserDat}
 \alias{cosDist}
 \alias{formUserData}
-\alias{predict.usrData}
 
 \title{Cosine-Based Analysis}
 
@@ -80,5 +79,5 @@ predict(udt,udt[[88]],3,8)  # predict rating: 4.125
 }
 
 \author{
-Norm Matloff
+Norm Matloff and Vishal Chakraborty
 }
