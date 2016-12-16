@@ -39,7 +39,7 @@
 }
 
 \author{
-	Norm Matloff and Vishal Chakraborty
+	Vishal Chakraborty and Norm Matloff
 }
 
 \examples{
