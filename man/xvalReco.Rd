@@ -100,9 +100,12 @@ The \code{acc} component is an R list with these elements:
        ivl <- InstEval 
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
-       xvout <- xvalMM(ivl[,c(1,2,7)]) 
-       xvout$acc
-       plot(xvout)  # $exact = 0.28 etc.
+       ivlsdy <- ivl[,c(1,2,7)]
+       xvoutmm <- xvalMM(ivlsdy) 
+       xvoutmm$acc
+       # plot(xvoutmm)  
+       xvoutcos5 <- xvalCos(ivlsdy,5)  # takes time
+       xvoutcos5$acc
 }
 
 \author{
