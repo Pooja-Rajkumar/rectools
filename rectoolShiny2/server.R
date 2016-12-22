@@ -1,14 +1,11 @@
 library(shiny)
-ratingsIn <- read.csv("data/subset.csv") #first 100 rows of original dataset
-fullRatings <- read.csv("data/fullset.csv") #original dataset
 
 function(input, output) {
     
     #allows user to choose from 2 files
     datasetInput <- reactive({
         switch(input$dataset,
-            "Movie Lens Data (subset)" = ratingsIn,
-            "Movie Lens Data" = fullRatings
+            "lme4 df" = ratingsIn
         )
     })
     
@@ -18,7 +15,8 @@ function(input, output) {
     })
     
     #creates a table by calling recosystem and finding the exact accuracy value
-    output$table2 <- renderTable({
+    output$text2 <- renderText({
+        cat("Computation done; See R Console")
         source('rectools-master/R/xvalRecoParallel.R')
         results = xvalReco(datasetInput())
         results$acc$exact
