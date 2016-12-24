@@ -1,5 +1,5 @@
 
-S3method(usrData)
+S3method(predict,usrData)
 
 importFrom("recosystem", Reco, data_memory, train, out_file, output)
 
