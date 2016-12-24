@@ -10,4 +10,5 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        focusGrp,
        trainMultiplic,predict.MMmultiplic,xvalMultiplic,
        ratingness,covratingness)
+importFrom("recosystem", Reco, data_memory, train, out_file, output)
 
