@@ -8,7 +8,7 @@ trainReco <- function(ratingsIn,rnk = 10)
    P_file = out_file(tempfile())
    Q_file = out_file(tempfile())
    res = r$output(out_memory(),out_memory())
-   #res <- setClass("Reco")
+   res <- setClass("Reco")
    res
  }
 ### 
