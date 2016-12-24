@@ -5,10 +5,10 @@ importFrom("recosystem", Reco, data_memory, train, out_file, output)
 
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        findYdotsMLE,predict.ydotsMLE,trainMLE,
-       formUserData,predict.usrData, cosDist,
+       formUserData,predict.usrData,cosDist,
        xvalMM,xvalMLE,xvalCos,
        plot.ydotsMM,plot.xvalb,
-       getTrainSet,getTestSet,trainReco,,predict.Reco,xvalReco
+       getTrainSet,getTestSet,trainReco,predict.Reco,xvalReco,
        focusGrp,
        trainMultiplic,predict.MMmultiplic,xvalMultiplic,
        ratingness,covratingness)
