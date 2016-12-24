@@ -3,7 +3,8 @@ S3method(predict,usrData)
 
 importFrom("recosystem", Reco, data_memory, out_file)
 
-exportClasses(Reco, predict.Reco)
+exportClasses(Reco)
+exportMethods(predict.Reco)
 
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        findYdotsMLE,predict.ydotsMLE,trainMLE,
