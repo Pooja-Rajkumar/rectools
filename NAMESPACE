@@ -3,12 +3,14 @@ S3method(predict,usrData)
 
 importFrom("recosystem", Reco, data_memory, train, out_file, output)
 
+exportClasses(Reco, predict.Reco)
+
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        findYdotsMLE,predict.ydotsMLE,trainMLE,
        formUserData,predict.usrData,cosDist,
        xvalMM,xvalMLE,xvalCos,
        plot.ydotsMM,plot.xvalb,
-       getTrainSet,getTestSet,trainReco,predict.Reco,xvalReco,
+       getTrainSet,getTestSet,trainReco,xvalReco,
        focusGrp,
        trainMultiplic,predict.MMmultiplic,xvalMultiplic,
        ratingness,covratingness)
