@@ -1,7 +1,7 @@
 
 S3method(predict,usrData)
 
-importFrom("recosystem", Reco, data_memory, train, out_file, output)
+importFrom("recosystem", Reco, data_memory, out_file)
 
 exportClasses(Reco, predict.Reco)
 
