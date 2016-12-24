@@ -3,13 +3,13 @@ trainReco <- function(ratingsIn,rnk = 10)
    library(recosystem)
    r <- Reco()
    train_set = data_memory(ratingsIn[,1],ratingsIn[,2],ratingsIn[,3])
-   print(isS4(r))
    r$train(train_set,opts = list(dim=rnk)) 
    P_file = out_file(tempfile())
    Q_file = out_file(tempfile())
    res = r$output(out_memory(),out_memory())
-   res <- setClass("Reco")
-   res
+   setClass("Reco", respresentation(P = "matrix", Q = "matrix"))
+   result <- new("Reco", P = res$P, Q = res$Q)
+   result
  }
 ### 
 ### # value:
@@ -21,20 +21,13 @@ setGeneric(name = "predict",def = function(recoObj,testSet){standardGeneric("pre
 
 setMethod(f ="predict",definition = function(recoObj,testSet)
  				 {
- 				 	 p = recoObj$P
-  					 q = recoObj$Q
-  					 #print(testSet)
+ 				 	 p = recoObj@P
+  					 q = recoObj@Q
    					 testSet$pred <- vector(length=nrow(testSet))
    					 for(i in 1:nrow(testSet)){
        					 j = testSet[i,1]
        				     k = testSet[i,2]
-       				     #print(j)
-       				     #print(nrow(p))
-       				     #print(k)
-       				     #print(nrow(q))
-       				     #print(k > nrow(q))
-    				     #testSet$pred[i] <- 
-        				if(j > nrow(p) || k < nrow(q)) #NA else
+        				if(j < nrow(p) || k < nrow(q)) #NA else
         					testSet$pred[i] <- p[j,] %*% q[k,]
         				else
         					testSet$pred[i] <- NA
@@ -93,11 +86,8 @@ setMethod(f ="predict",definition = function(recoObj,testSet)
  if(is.null(cls)){
      trainSet = getTrainSet(ratingsIn, trainprop)
      testSet= getTestSet(ratingsIn, trainSet)
-     #print(testSet)
      res = trainReco(trainSet)
-     print("here")
      totalPreds = predict(res,testSet)
-     print("there")
    
    }else {
      require(partools)
