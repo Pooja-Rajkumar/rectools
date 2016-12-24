@@ -19,6 +19,7 @@ trainReco <- function(ratingsIn,rnk = 10)
 ### 
 setGeneric(name = "predict",def = function(recoObj,testSet){standardGeneric("predict")})
 
+@export
 setMethod(f ="predict",definition = function(recoObj,testSet)
  				 {
  				 	 p = recoObj@P
