@@ -8,8 +8,10 @@ trainReco <- function(ratingsIn,rnk = 10)
    P_file = out_file(tempfile())
    Q_file = out_file(tempfile())
    res = r$output(out_memory(),out_memory())
-   setClass("Reco", representation(P = "matrix", Q = "matrix"))
-   result <- new("Reco", P = res$P, Q = res$Q)
+   ## NM del  setClass("Reco", representation(P = "matrix", Q = "matrix"))
+   ## NM del  result <- new("Reco", P = res$P, Q = res$Q)
+   result <- list(P = res$P, Q = res$Q)
+   class(result) <- 'Reco'
    result
  }
 ### 
@@ -18,13 +20,18 @@ trainReco <- function(ratingsIn,rnk = 10)
 ### #     vector of values predicted for testSet by recoObj
 ### 
 ### 
-setGeneric(name = "predict",def = function(recoObj,testSet){standardGeneric("predict")})
+## NM del  setGeneric(name = "predict",def = function(recoObj,testSet){standardGeneric("predict")})
 
 
-setMethod(f ="predict",definition = function(recoObj,testSet)
+## NM del  setMethod(f ="predict",definition = 
+
+predict.Reco <-
+function(recoObj,testSet)
  				 {
- 				 	 p = recoObj@P
-  					 q = recoObj@Q
+ 				 	 ## NM del p = recoObj@P
+  					 ## NM del q = recoObj@Q
+ 				 	 p = recoObj$P
+  					 q = recoObj$Q
    					 testSet$pred <- vector(length=nrow(testSet))
    					 for(i in 1:nrow(testSet)){
        					 j = testSet[i,1]
@@ -35,8 +42,8 @@ setMethod(f ="predict",definition = function(recoObj,testSet)
         					testSet$pred[i] <- NA
    					 }
    					testSet$pred
- 				 })
- 				 
+ 				 }
+
 
 ### ########## the remaining functions are for cross-validation:
 ### 
