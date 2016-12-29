@@ -52,13 +52,14 @@ The function \code{predict.Reco} is a method for the generic function
        ivl$s <- as.numeric(ivl$s) 
        ivl$d <- as.numeric(ivl$d) 
        ivl3 <- ivl[,c(1,2,7)]
+       set.seed(9999)
        trn <- trainReco(ivl3)
        onerec <- ivl3[1,]  # form dummy 1-rec data frame
        # how would student 788 would like lecturer 28
        onerec$s <- 788  
        onerec$d <- 28  
        onerec <- onerec[,-3]
-       predict(trn,onerec)  # 2.23
+       predict(trn,onerec)  # 1.96
        ############################
        # Assume ratingsIn is the 200 K movielens data (found online)
        trainSet = getTrainSet(ratingsIn) 
