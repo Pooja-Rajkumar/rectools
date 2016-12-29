@@ -11,7 +11,7 @@ trainReco <- function(ratingsIn,rnk = 10)
    ## NM del  setClass("Reco", representation(P = "matrix", Q = "matrix"))
    ## NM del  result <- new("Reco", P = res$P, Q = res$Q)
    result <- list(P = res$P, Q = res$Q)
-   class(result) <- 'Reco'
+   class(result) <- 'RecoS3'
    result
  }
 ### 
@@ -25,7 +25,7 @@ trainReco <- function(ratingsIn,rnk = 10)
 
 ## NM del  setMethod(f ="predict",definition = 
 
-predict.Reco <-
+predict.RecoS3 <-
 function(recoObj,testSet)
  				 {
  				 	 ## NM del p = recoObj@P
