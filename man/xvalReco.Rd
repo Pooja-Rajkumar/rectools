@@ -102,7 +102,7 @@ The \code{acc} component is an R list with these elements:
        ivl$d <- as.numeric(ivl$d) 
        ivlsdy <- ivl[,c(1,2,7)]
        # Test for xvalReco
-       res <- xvalReco(ivdlsdy)
+       res <- xvalReco(ivlsdy)
       # Get accuracy of xvalReco test
        res$acc	
        xvoutmm <- xvalMM(ivlsdy) 
