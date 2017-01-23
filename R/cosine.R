@@ -23,6 +23,8 @@
 predict.usrData <- function(origData,newData,newItem,
       k,wtcovs=NULL,wtcats=NULL) {
 
+   #return NA if newData is NULL (no ratings provided for the rater)
+  if (is.na(newData) return(NA)
    # we need to narrow origData down to the users who have rated newItem
    
    # action of checkNewItem(): here oneUsr is one user record in
