@@ -11,11 +11,19 @@ fluidPage(
             selectInput("dataset", "Choose a dataset:",
                 choices = c("lme4 df")),
 
+#add a loading text output
+
             #allows the user to pick the method by clicking a button
             #recosystems is the default because its the only one with a table
             radioButtons("radio", "Choose method:",
                 choices = c("Recosystems" , "Nearest K Neighbor", "Hybrid", "Display Data"),
-                selected = "Recosystems")
+                selected = "Recosystems"),
+
+            conditionalPanel(
+                condition = "input.radio == 'Nearest K Neighbor'",
+                uiOutput("var1"),
+                uiOutput("var2")
+            )
         ),
 
         mainPanel(
