@@ -28,13 +28,16 @@ A simple random effects latent factor model is
 E(Y) =  &mu; + &alpha;<sub>i</sub> + &beta;<sub>j</sub>
 
 where Y<sub>ij</sub> is the rating, &alpha; and &beta;<sub>j</sub> being
-specific latent effects for the given user and item.
+specific latent effects for user i and item j, e.g. movie reviewer i and
+movie j.
 
-A simple Method of Moments approach would estimate &alpha; for user i by
-Yi. - Y.., where the first term is the mean of all observed ratings by
-user i and the second is the overall mean of all ratings.  We estimate
-&beta;<sub>j</sub> for item j similarly, and estimate &mu; by the overall
-mean Y..  The predicted value of Y<sub>ij</sub> is then
+Though typically Maximum Likelihood Estimation is used for latent factor
+models, this is computationally infeasible on large data sets.  Instead,
+we use the Method of Moments, estimating &alpha;<sub>i</sub> by Yi. -
+Y.., where the first term is the mean of all observed ratings by user i
+and the second is the overall mean of all ratings.  We estimate
+&beta;<sub>j</sub> similarly, and estimate &mu; by the
+overall mean Y..  The predicted value of Y<sub>ij</sub> is then
 
 Yi. + Y.j - Y..
 
@@ -45,9 +48,13 @@ A novel enhancement in the package is to allow for different weights to
 be given to the &alpha;<sub>i</sub> and &beta;<sub>j</sub> components in
 the MM version.
 
-Under a Maximum Likelihood approach, &alpha;<sub>i</sub> and
+We do make MLE available.  Here &alpha;<sub>i</sub> and
 &beta;<sub>j</sub> are assumed to have independent normal distributions
-with different variances.  Here we piggyback R's **lme4** package,
+with different variances.  (The error term 
+&epsilon;<sub>ij</sub> = Y<sub>ij</sub> - EY<sub>ij</sub>
+is assumed independent of &alpha;<sub>i</sub> and &beta;<sub>j</sub>, 
+with variance constant across i and j.) 
+We piggyback R's **lme4** package,
 forming a wrapper for our application, and adding our function
 **predict.ydotsMLE**, also a wrapper suited for our context.  Since MLE
 computation can be voluminous, our package offers a parallel version.
@@ -102,18 +109,18 @@ j.  Most of A is unknown, and we wish to predict the unknown values.
 *Nonnegative matrix factorization* does this as follows:
 
 We find nonnegative matrices W and H, each of rank k, such that A is
-approximately equal to the product WH.  Here k is typically much smaller
-than the number of rows and columns of A, and is a tuning parameter,
-kept small to avoid overfitting but large enough to capture most of the
-structure of the data.
+approximately equal to the product WH.  Here k is a user-defined tuning
+parameter, typically much smaller than the number of rows and columns of
+A.  It is kept small to avoid overfitting but large enough to capture
+most of the structure of the data.  Default value is k = 10.
 
 Here we piggyback on the R package **recosystem**, adding convenient
 wrappers and adding a parallel computation capability.  See the
-functions **trainReco**, **predictReco** and so on.
+functions **trainReco()**, **predictReco()** and so on.
 
 ## Cosine model:
 
-(EXPERIMENTAL, likely to be replaced by a k-NN model.)
+(EXPERIMENTAL, likely to be replaced or modified.)
 
 The basic idea here is as follows.  The predict the rating user i would
 give to item j, find some users who are similar to user i and who have
@@ -126,20 +133,20 @@ One such enhancement is to do item category matching, an example of
 categories being movie genres.  For each user, our code calculates the
 proportion of items in each category rated by this user, and
 incorporates this into the calculation of similarity between any pair of
-users.  See the functions **cosDist**, **formUserData** and
-**predictUsrData**.
+users.  See the functions **cosDist()**, **formUserData()** and
+**predictUsrData()**.
 
 ## Cross validation:
 
 The MM, MLE, NMF and cosine methods all have wrappers to do
-cross-validation, reporting the accuracy measures exact prediction, mean
-absolute deviation and l2.  In our experiments so far, MM seems to give
+cross-validation, reporting the accuracy measures exact prediction; mean
+absolute deviation; and l2.  In our experiments so far, MM seems to give
 the best accuracy (and the greatest speed).
 
 ## Plotting:
 
 Some plotting capability is provided, currently in the functions
-**plot.ydotsMM** and **plot.xvalb**.  The former, for instance, can be
+**plot.ydotsMM()** and **plot.xvalb()**.  The former, for instance, can be
 used to assess the normality and independence assumptions of the MLE
 model, and to identify a possible need to consider separate analyses for
 subpopulations.
