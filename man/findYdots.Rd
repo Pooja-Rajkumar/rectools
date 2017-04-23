@@ -123,9 +123,9 @@ testSet[1,2] <- 12
 testSet[2,2] <- 12
 # predict
 predict(ydout,testSet[,1:2])  # 4.272660 4.410612
-### # try using the covariates
-### ydout <- trainMLE(ivl)
-### predict(ydout,testSet[,-3])  # 3.286828 3.551587
+# try using the covariates
+ydout <- trainMM(ivl)
+predict(ydout,testSet[,-3])  # 5.141009 5.137111 
 }
 
 \author{
