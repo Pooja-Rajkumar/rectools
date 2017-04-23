@@ -86,6 +86,7 @@ Covariates are allowed for both the MM and MLE versions.
 > ivl$dept <- NULL
 > ivl <- cbind(ivl,dms)
 # Run the training data, no covariates:
+> ydout <- trainMLE(ivl[,1:3]) 
 # Form a test set to illustrate prediction:
 > testSet <- ivl[c(3,8),]  # these happen to be students 1, 3
 # Say want to predict how well students 1 and 3 would like instructor 12

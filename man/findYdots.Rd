@@ -114,7 +114,6 @@ dms$dept2 <- NULL
 ivl$dept <- NULL
 ivl <- cbind(ivl,dms)
 # run the training data, no covariates
-# ydout <- findYdotsMLE(ivl[,1:3]) 
 ydout <- trainMLE(ivl[,1:3]) 
 # form a test set to illustrate prediction
 testSet <- ivl[c(3,8),]
@@ -124,9 +123,9 @@ testSet[1,2] <- 12
 testSet[2,2] <- 12
 # predict
 predict(ydout,testSet[,1:2])  # 4.272660 4.410612
-# try using the covariates
-ydout <- trainMLE(ivl)
-predict(ydout,testSet[,-3])  # 3.286828 3.551587
+### # try using the covariates
+### ydout <- trainMLE(ivl)
+### predict(ydout,testSet[,-3])  # 3.286828 3.551587
 }
 
 \author{
