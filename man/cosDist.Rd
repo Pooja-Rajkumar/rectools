@@ -69,6 +69,28 @@ The function \code{predict.usrData} uses a training set, of class
 
 }
 
+\examples{
+ivl <- InstEval 
+ivl$s <- as.numeric(ivl$s) 
+ivl$d <- as.numeric(ivl$d) 
+ivl <- ivl[,c(1,2,7)] 
+ivl10 <- ivl[1:10,] 
+ivl10ud <- formUserData(ivl10)
+ivl10ud[[1]]
+# output of last is
+# $userID  
+# [1] 1  
+#   
+# $itms  
+# [1]  525  560  832 1068  
+#   
+# $ratings  
+# [1] 5 2 5 3  
+#   
+# attr(,"class")  
+# [1] "usrDatum"  
+}
+
 \author{
 Norm Matloff and Vishal Chakraborty
 }
