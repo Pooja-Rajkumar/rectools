@@ -16,6 +16,7 @@
 #             mutually exclusive
 #    fileOut: if specified, save the value returned by the function
 #             using R save(), with file name fileOut
+
 # value:
 
 #    object of class 'usrData': an R list with one element per user;
@@ -31,13 +32,15 @@
 #              in category i
 
 formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
+   # covariates, if any, should be in usrCovs; check to see if user has
+   # included them
    if (ncol(ratingsIn) > 3)
-      stop('more than 3 columns; have you included covariates?')
+      stop('ratingsIn more than 3 columns')
 
    ## IMPORTANT NOTE: in order to work in xval, etc. we need to abandon
    ## the idea of having the user IDs start at 1 and be consecutive;
-   ## instead, will just use the ID numbers as list indices; e.g. if we
-   ## have users numered 2,8,85 retval below will consist of
+   ## instead, we will just use the ID numbers as list indices; e.g. if we
+   ## have users numbered 2,8,85 then retval below will consist of
    ## retval[[2]], retval[[8]] and retval[[85]]
 
    # rownums[[i]] will be the row numbers in ratingsIn belonging to user i
@@ -62,7 +65,11 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
       if (!is.null(itmCats)) {
          tmp <- rep(0,nitems)
          tmp[retval[[userID]]$itms] <- 1
-         retval[[userID]]$cats <- tmp %*% itmCats / sum(tmp)
+         # form vector whose j-th element will be the count of items
+         # rated by this user that are in category j
+         catcounts <- tmp %*% itmCats
+         # convert to proportions and record
+         retval[[userID]]$cats <- catcounts / sum(tmp)
       }
       class(retval[[userID]]) <- 'usrDatum'
    }
@@ -71,13 +78,13 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    retval
 }
 
-# construct a new object of class 'usrDatum'
-
-formUserDatum <- function(itms,ratings,userID=NULL) {
-   obj <- list(itms = itms, ratings=ratings,userID=userID)
-   class(obj) <- 'usrDatum'
-   obj
-}
+### # construct a new object of class 'usrDatum'
+### 
+### formUserDatum <- function(itms,ratings,userID=NULL) {
+###    obj <- list(itms = itms, ratings=ratings,userID=userID)
+###    class(obj) <- 'usrDatum'
+###    obj
+### }
 
 # utility:  find input row for a given user, item
 findInputRow <- function(ratingsIn,usrID,itmID) {
