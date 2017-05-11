@@ -9,7 +9,8 @@
 
 * Parallel computation.
 
-* Novel variations on statistical latent factor model.
+* Novel variations on common models, e.g. a hybrid of
+  NMF and k-Nearest Neighbor.
 
 * Plotting.
 
@@ -27,9 +28,9 @@ A simple random effects latent factor model is
 
 E(Y) =  &mu; + &alpha;<sub>i</sub> + &beta;<sub>j</sub>
 
-where Y<sub>ij</sub> is the rating, &alpha; and &beta;<sub>j</sub> being
-specific latent effects for user i and item j, e.g. movie reviewer i and
-movie j.
+where Y<sub>ij</sub> is the rating, with &alpha;<sub>i</sub> and
+&beta;<sub>j</sub> being specific latent effects for user i and item j,
+e.g. movie reviewer i and movie j.
 
 Though typically Maximum Likelihood Estimation is used for latent factor
 models, this is computationally infeasible on large data sets.  Instead,
@@ -41,22 +42,23 @@ overall mean Y..  The predicted value of Y<sub>ij</sub> is then
 
 Yi. + Y.j - Y..
 
-Computation is simple, conducted by our function **findYdotsMM**;
-prediction is done on the output by our function **predict.ydotsMM**.
+Computation is simple, with estimation conducted by our function
+**findYdotsMM()**; prediction is done on the output by our function
+**predict.ydotsMM()**.
 
 A novel enhancement in the package is to allow for different weights to
 be given to the &alpha;<sub>i</sub> and &beta;<sub>j</sub> components in
-the MM version.
+the MM version.  (With MLE it wouldn't matter, just changing the
+variances.)
 
 We do make MLE available.  Here &alpha;<sub>i</sub> and
 &beta;<sub>j</sub> are assumed to have independent normal distributions
-with different variances.  (The error term 
-&epsilon;<sub>ij</sub> = Y<sub>ij</sub> - EY<sub>ij</sub>
-is assumed independent of &alpha;<sub>i</sub> and &beta;<sub>j</sub>, 
-with variance constant across i and j.) 
-We piggyback R's **lme4** package,
-forming a wrapper for our application, and adding our function
-**predict.ydotsMLE**, also a wrapper suited for our context.  Since MLE
+with different variances.  (The error term &epsilon;<sub>ij</sub> =
+Y<sub>ij</sub> - EY<sub>ij</sub> is assumed independent of
+&alpha;<sub>i</sub> and &beta;<sub>j</sub>, with variance constant
+across i and j.) We piggyback R's **lme4** package, forming a wrapper
+for our application, and adding our function **predict.ydotsMLE()** for
+prediction, also an **lme4** wrapper suited for our context.  Since MLE
 computation can be voluminous, our package offers a parallel version.
 
 Covariates are allowed for both the MM and MLE versions.
@@ -75,7 +77,7 @@ Covariates are allowed for both the MM and MLE versions.
 > ivl$studage <- as.numeric(ivl$studage)
 > ivl$lectage <- as.numeric(ivl$lectage)
 > ivl$service <- as.numeric(ivl$service)
-> # Make correct format, choose covs:
+> # Make correct format (user ID, item ID, rating), choose covs:
 > ivl <- ivl[,c(1,2,7,3:6)]
 > # Create dummy variables in place of dept:
 > library(dummies)
@@ -107,7 +109,7 @@ Covariates are allowed for both the MM and MLE versions.
 
 Let A denote the matrix of ratings, with Y<sub>ij</sub> in row i, column
 j.  Most of A is unknown, and we wish to predict the unknown values.
-*Nonnegative matrix factorization* does this as follows:
+Nonnegative Matrix Factorization (NMF) does this as follows:
 
 We find nonnegative matrices W and H, each of rank k, such that A is
 approximately equal to the product WH.  Here k is a user-defined tuning
