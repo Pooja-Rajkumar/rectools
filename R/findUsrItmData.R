@@ -78,13 +78,13 @@ formUserData <- function(ratingsIn,usrCovs=NULL,itmCats=NULL,fileOut='') {
    retval
 }
 
-### # construct a new object of class 'usrDatum'
-### 
-### formUserDatum <- function(itms,ratings,userID=NULL) {
-###    obj <- list(itms = itms, ratings=ratings,userID=userID)
-###    class(obj) <- 'usrDatum'
-###    obj
-### }
+# construct a new object of class 'usrDatum'
+
+formUserDatum <- function(itms,ratings,userID=NULL) {
+    obj <- list(itms = itms, ratings=ratings,userID=userID)
+    class(obj) <- 'usrDatum'
+    obj
+}
 
 # utility:  find input row for a given user, item
 findInputRow <- function(ratingsIn,usrID,itmID) {

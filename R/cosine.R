@@ -35,6 +35,7 @@ predict.usrData <- function(origData,newData,newItem,
    # (NA,NA); defined for use by sapply() below
    checkNewItem <- function(oneUsr) {
      tmp <- match(oneUsr$itms, newItem)
+     #message(oneUsr)
      if (all(is.na(tmp))) {
        c(NA,NA)
      }
