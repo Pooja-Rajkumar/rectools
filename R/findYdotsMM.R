@@ -89,3 +89,22 @@ predict.ydotsMM = function(ydotsObj,testSet) {
    testSet$pred
 }
 
+# Wrapper for recosystem 
+trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
+                    rnk = 10, recosystem = FALSE,regressYdots=FALSE){
+  require(NMF)
+  library(NMF)
+  if(recosystem == TRUE){
+    source((paste(system.file(package = 'rectools'),
+                  'recosys/xvalRecoParallel.R', sep = "")))
+    res <- xvalReco(ratingsIn,trainprop,cls,rnk)
+  }
+  else {
+    means <- findYdotsMM(ratingsIn)
+    preds <- predict.ydotsMM(means,ratingsIn)
+    res <- nmf(as.matrix(preds),10)
+  }
+  res
+}
+
+
