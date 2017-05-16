@@ -89,7 +89,25 @@ predict.ydotsMM = function(ydotsObj,testSet) {
    testSet$pred
 }
 
+buildMatrix <- function(ratingsIn,NAval=NA){
+  # deal with possible factors
+  dmax <- function(d) {
+    if (is.factor(d)) return(length(levels(d)))
+    max(d)
+  }
+  users = ratingsIn[,1]
+  movies = ratingsIn[,2]
+  rating = ratingsIn[,3]
+  newMatrix = matrix(NAval, 
+                     nrow = dmax(users), ncol = dmax(movies))
+  for(rows in 1:nrow(ratingsIn)){
+    newMatrix[ratingsIn[rows,1],ratingsIn[rows,2]] = ratingsIn[rows,3]
+  }
+  return (newMatrix)
+}
+
 # Wrapper for recosystem 
+
 trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
                     rnk = 10, recosystem = FALSE,regressYdots=FALSE){
   require(NMF)
@@ -100,9 +118,19 @@ trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
     res <- xvalReco(ratingsIn,trainprop,cls,rnk)
   }
   else {
-    means <- findYdotsMM(ratingsIn)
-    preds <- predict.ydotsMM(means,ratingsIn)
-    res <- nmf(as.matrix(preds),10)
+    fullMatrix <- buildMatrix(ratingsIn) # Matrix A (Step 1)
+    
+    approxMatrix <- findYdotsMM(ratingsIn) # Matrix V (Step 2)
+    
+    naMatrix <- as.data.frame(which(is.na(fullMatrix) == TRUE, arr.ind = TRUE))
+    naMatrix$ratings <- NA
+    
+    preds <- predict.ydotsMM(approxMatrix, naMatrix) # Step 3
+    
+    fullMatrix[which(is.na(fullMatrix))] <- preds 
+    fullMatrix[fullMatrix < 0] <- 0
+    require(NMF)
+    res <- nmf(as.matrix(fullMatrix),10) # Step 4
   }
   res
 }
