@@ -47,8 +47,6 @@ findYdotsMM <- function(ratingsIn,regressYdots=FALSE,cls=NULL) {
   if (regressYdots && !haveCovs) {
        yi. = Yi.[ratingsIn[,1]]
        y.j = Y.j[ratingsIn[,2]]
-       # yij = yi. * y.j
-       # ydots$regressYdots = coef(lm(ratings ~ yi. + y.j + yij))
        ydots$regressYdots = coef(lm(ratings ~ yi. + y.j))
   }
   
@@ -124,8 +122,11 @@ trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
     
     naMatrix <- as.data.frame(which(is.na(fullMatrix) == TRUE, arr.ind = TRUE))
     naMatrix$ratings <- NA
+  
+     
+    preds <- predict.ydotsMM(approxMatrix,naMatrix) # Step 3
+  
     
-    preds <- predict.ydotsMM(approxMatrix, naMatrix) # Step 3
     
     fullMatrix[which(is.na(fullMatrix))] <- preds 
     fullMatrix[fullMatrix < 0] <- 0
