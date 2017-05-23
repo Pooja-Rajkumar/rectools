@@ -2,7 +2,6 @@
 S3method(predict,usrData)
 S3method(predict,RecoS3)
 
-importFrom("recosystem", Reco, data_memory, out_file)
 
 
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
