@@ -32,7 +32,7 @@
 #      Y.j: vector of mean ratings for each item
 #      regOjb: if have covariates, regression output, e.g. coefs
 
-findNewMM <- function(ratingsIn,regressYdots=FALSE) {
+findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   users <- ratingsIn[,1]
   items <- ratingsIn[,2]
   ratings <- ratingsIn[,3]
@@ -56,13 +56,13 @@ findNewMM <- function(ratingsIn,regressYdots=FALSE) {
 }
 
 # alias
-trainMM <- findMM 
+trainMM <- findYdotsMM 
 
 # predict() method for the 'ydotsMM' class
 
 # in predicting for user i, the code looks at N_i, the number of ratings
 # by user i; if that number is below minN, the prediction comes from
-# user i's covariate information
+# user i's covariate information instead of from Yi.
 
 # arguments
 
@@ -82,7 +82,8 @@ predict.ydotsMM = function(ydotsOjb,testSet,minN=0) {
       tmp <- ifelse (
                 ydotsOjb$Ni[ts1] >= minN,
                 ydotsOjb$usrMeans[ts1],
-                predict(ydotsOjb$lmout,testSet[,-(1:2),drop=FALSE]))
+                predict(ydotsOjb$lmout,testSet[,-(1:2),drop=FALSE])
+      )
    }
    testSet$pred <- tmp +
       ydotsOjb$itmMeans[as.character(testSet[,2])] - ydotsOjb$grandMean
@@ -90,18 +91,18 @@ predict.ydotsMM = function(ydotsOjb,testSet,minN=0) {
 }
 
 # test case
-checkydNew <- function() {
+checkyd <- function() {
    check <- data.frame(
       userID <- c(1,3,2,1,2),
       itemID <- c(1,1,3,2,3),
       ratings <- 6:10)
    names(check) <- c('u','i','r')
    print(check)
-   print(findNewMM(check))
+   print(findYdotsMM(check))
    check$cv <- c(1,4,6,2,10)
    names(check)[4] <- 'x'
    print(check)
-   cout <- findNewMM(check)
+   cout <- findYdotsMM(check)
    print(cout)
    testset <- check[1:2,-3]
    testset$x <- c(5,8)

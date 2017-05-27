@@ -1,7 +1,7 @@
 
 S3method(predict,usrData)
 S3method(predict,RecoS3)
-S3method(predict,newMM)
+S3method(predict,ydotsMM)
 
 export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        findYdotsMLE,predict.ydotsMLE,trainMLE,
@@ -10,7 +10,6 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        plot.ydotsMM,plot.xvalb,
        getTrainSet,getTestSet,trainReco,xvalReco,
        focusGrp,
-       findNewMM,trainNewMM,
        ratingness,covratingness)
 
 
