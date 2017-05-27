@@ -1,9 +1,8 @@
 
-# EXPERIMENTAL
+#  modified version of earlier findYdotsMM() etc., May 27, 2017, with
+#  new approach to use of covariates
 
-#  modified version of findYdotsMM() etc.
-#  
-#  in the original model 
+#  in the basic model 
 #  
 #     Y_ij = mu + alpha_i + beta_j + eps 
 #     
@@ -17,12 +16,12 @@
 
 #  so the phi can be estimated by lm() without a constant term
 
+#  the same could be done for the items, not yet implemented
+
 # arguments:
 
-#   ratingsIn: input data, with first cols (userID,itemID,rating,
-#              covariates); data frame, unless cls is non-null, in which
-#              case this argument is the quoted name of the distributed 
-#              data frame
+#   ratingsIn: input data, with cols (userID,itemID,rating,
+#              covariates); data framee
 
 # value:
 
@@ -49,43 +48,44 @@ findNewMM <- function(ratingsIn,regressYdots=FALSE) {
      frml <- as.formula(paste(nms[3],'~ .-1'))
      lmout <- lm(frml,data=ratingsIn[,-(1:2)])
      ydots$lmout <- lmout
-     # fits = lmout$fitted.values
-     # ratings = ratings - fits
-     # Y.. = 0
      Ni <- tapply(ratings,users,length) # number of ratings per user
      ydots$Ni <- Ni
   } 
-  class(ydots) = 'newMM'
+  class(ydots) = 'ydotsMM'
   invisible(ydots)
 }
 
 # alias
-trainNewMM <- findNewMM 
+trainMM <- findMM 
 
-# predict() method for the 'ydots' class
-#
+# predict() method for the 'ydotsMM' class
+
+# in predicting for user i, the code looks at N_i, the number of ratings
+# by user i; if that number is below minN, the prediction comes from
+# user i's covariate information
+
 # arguments
-#
+
 #    testSet: data frame in same form as ratingsIn above except that there 
 #             is no ratings column; thus covariates, if any, are shifted
 #             leftward one slot, i.e. userID, itemID, cov1, cov2...
-#    newMMObj: the output of newMM()
-#    minN:  if Ni < minN and have covariates, use the latter
-#
+#    ydotsOjb: the output of findYdotsMM()
+#    minN:  if Ni < minN and have covariates, use the latter instead of #    Yi.
+
 # returns vector of predicted values for testSet
-predict.newMM = function(newMMObj,testSet,minN=0) {
+predict.ydotsMM = function(ydotsOjb,testSet,minN=0) {
    haveCovs <- ncol(testSet) > 2
    # use of as.character() is to take advantage of row names, in case of
    # future gaps in consecutive user IDs; not implemented yet
    ts1 <- as.character(testSet[,1])
-   if (!haveCovs) tmp <- newMMObj$usrMeans[ts1] else {
+   if (!haveCovs) tmp <- ydotsOjb$usrMeans[ts1] else {
       tmp <- ifelse (
-                newMMObj$Ni[ts1] >= minN,
-                newMMObj$usrMeans[ts1],
-                predict(newMMObj$lmout,testSet[,-(1:2),drop=FALSE]))
+                ydotsOjb$Ni[ts1] >= minN,
+                ydotsOjb$usrMeans[ts1],
+                predict(ydotsOjb$lmout,testSet[,-(1:2),drop=FALSE]))
    }
    testSet$pred <- tmp +
-      newMMObj$itmMeans[as.character(testSet[,2])] - newMMObj$grandMean
+      ydotsOjb$itmMeans[as.character(testSet[,2])] - ydotsOjb$grandMean
    testSet$pred
 }
 
