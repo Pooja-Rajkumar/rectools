@@ -35,6 +35,8 @@
 findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   users <- ratingsIn[,1]
   items <- ratingsIn[,2]
+  # user and item IDs may not be consecutive; even if they are
+  # consecutive in the original
   ratings <- ratingsIn[,3]
   nms <- names(ratingsIn)
   Y.. <- mean(ratings) 
@@ -70,13 +72,12 @@ trainMM <- findYdotsMM
 #             is no ratings column; thus covariates, if any, are shifted
 #             leftward one slot, i.e. userID, itemID, cov1, cov2...
 #    ydotsOjb: the output of findYdotsMM()
-#    minN:  if Ni < minN and have covariates, use the latter instead of #    Yi.
+#    minN:  if Ni < minN and have covariates, use the latter instead of Yi.
 
 # returns vector of predicted values for testSet
 predict.ydotsMM = function(ydotsOjb,testSet,minN=0) {
    haveCovs <- ncol(testSet) > 2
-   # use of as.character() is to take advantage of row names, in case of
-   # future gaps in consecutive user IDs; not implemented yet
+   # see comment on as.character() above
    ts1 <- as.character(testSet[,1])
    if (!haveCovs) tmp <- ydotsOjb$usrMeans[ts1] else {
       tmp <- ifelse (
