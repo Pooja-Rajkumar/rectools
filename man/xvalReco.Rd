@@ -16,7 +16,7 @@ computation capability in some cases.
 }
 
 \usage{
-        xvalMM(ratingsIn, trainprop = 0.5, regressYdots = FALSE, cls = NULL)
+        xvalMM(ratingsIn, trainprop = 0.5, regressYdots = FALSE, minN = 0)
         xvalMLE(ratingsIn, trainprop = 0.5, cls = NULL) 
 	xvalReco(ratingsIn, trainprop = 0.5,cls = NULL,rnk = 10)
         xvalCos(ratingsIn, k, usrCovs = NULL, itmCats = NULL, wtcovs = NULL, 
@@ -30,6 +30,10 @@ computation capability in some cases.
 \arguments{
 	\item{ratingsIn}{Input data frame. Within-row format is UserID,
 	ItemID, rating}
+        \item{minN}{Applies to situations in which covariates are
+        present. In predicting for user i, then either Yi. or the
+        regression-based prediction will be used, depending on whether
+        N_i >= minN.}
 	\item{trainprop}{The fraction of ratingsIn we want to use for our 
 	training set}
 	\item{cls}{R \code{paralell} cluster.}

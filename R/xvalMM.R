@@ -16,16 +16,15 @@
 #                 (and their product), enabling rating prediction from the
 #                 resulting linear function of the factors; currently
 #                 only implemented if have no covariates
-#   cls: if non-null, 
+#   minN: see findYdotsMM.R
 
 # value:
 
 #    accuracy value
 
 xvalMM <- function(ratingsIn, trainprop=0.5,
-    regressYdots=FALSE,cls=NULL){
-  if(!is.null(cls)) stop('parallel version under construction')
-  if(is.null(cls)) ratIn = ratingsIn else ratIn = get(ratingsIn)
+    regressYdots=FALSE,minN=0){
+  ratIn = ratingsIn 
   # split into random training and validation sets 
   nrowRatIn = nrow(ratIn)
   rowNum = floor(trainprop * nrowRatIn)
@@ -35,13 +34,13 @@ xvalMM <- function(ratingsIn, trainprop=0.5,
   trainItems = trainingSet[,2]
   trainUsers = trainingSet[,1]
   # get means
-  means = findYdotsMM(trainingSet,regressYdots,cls)
+  means = findYdotsMM(trainingSet,regressYdots)
   # Y.. = means$grandMean
   # Yi. = means$usrMeans
   # Y.j = means$itmMeans
   testIdxs = setdiff(1:nrowRatIn,trainIdxs)
   testA = ratIn[testIdxs,]
-  testA$pred = predict(means,testA[,-3])  # predict.ydotsMM
+  testA$pred = predict(means,testA[,-3],minN)  # predict.ydotsMM
   # need to integrate the following into predict.ydotsMM
   if (regressYdots) {
      yi. = means$usrMeans[testA[,1]]
