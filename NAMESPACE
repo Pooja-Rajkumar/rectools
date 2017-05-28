@@ -10,6 +10,7 @@ export(findYdotsMM,predict.ydotsMM,plot.ydotsMM,trainMM,
        plot.ydotsMM,plot.xvalb,
        getTrainSet,getTestSet,trainReco,xvalReco,
        focusGrp,
-       ratingness,covratingness)
+       ratingness,covratingness,
+       gassign,getInstEval,getML)
 
 
