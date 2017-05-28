@@ -36,7 +36,10 @@ findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   users <- ratingsIn[,1]
   items <- ratingsIn[,2]
   # user and item IDs may not be consecutive; even if they are
-  # consecutive in the original
+  # consecutive in the original, if we do cross-validation, this 
+  # may not be the case; so switch to character IDs
+  users <- as.character(users)
+  items <- as.character(items)
   ratings <- ratingsIn[,3]
   nms <- names(ratingsIn)
   Y.. <- mean(ratings) 

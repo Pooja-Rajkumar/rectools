@@ -16,7 +16,7 @@ capability.  Various plots can be displayed.
 }
 
 \usage{
-findYdotsMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
+findYdotsMM(ratingsIn,regressYdots=FALSE,minN) 
 trainMM(ratingsIn,regressYdots=FALSE,cls=NULL) 
 predict.ydotsMM(ydotsObj,testSet) 
 plot.ydotsMM(ydotsObj,ratingsIn) 
@@ -31,6 +31,9 @@ predict.ydotsMLE(ydotsObj,testSet)
   \item{regressYdots}{If TRUE, apply linear regression to the latent
      factors.}
   \item{cls}{An R \code{parallel} cluster.}
+  \item{minN}{If a prediction is to be made on a user with fewer than
+     this number of ratings and if there are covariates, predict from
+     the covariates.}
   \item{ydotsObj}{An object of class \code{'ydotsMM'} or \code{'ydotsMLE'}.}
   \item{testSet}{A data frame consisting of cases to be predicted.
      Format is the same as \code{ratingsIn}, except that there is no
