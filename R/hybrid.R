@@ -8,7 +8,7 @@
 
 # arguments:
 
-#    origData: training set, object of class 'usrData' (see file
+#    datain: training set, object of class 'usrData' (see file
 #    findUsrItmData.R)
 #    newData: data point (just one for now) to be predicted, object of
 #             class 'usrDatum'
@@ -33,8 +33,8 @@ hybdpredict.usrData <- function(datain,newData,newItem,
   }
   else{
     appMatrix = Reco()
-    train_set = data_memory(unlist(ratingsIn[1]), unlist(ratingIn[2]),
-                            unlist(ratingsIn[3]), index1 = 1)
+    train_set = data_memory(unlist(datain[1]), unlist(datain[2]),
+                            unlist(datain[3]), index1 = TRUE)
     appMatrix$train(train_set)
     #get factors after NMF -- need to use $tune() fix later
     factors <- appMatrix$output(out_memory(), out_memory())
@@ -57,10 +57,13 @@ hybdpredict.usrData <- function(datain,newData,newItem,
     #itms <- as.list(as.data.frame(t(oneUsr$itms)))
     tmp <- match(oneUsr$itms[[1]], newItem) 
     if (all(is.na(tmp))) {
-      stop('no data on this item')
+      c(NA, NA)
     }
-    whichOne <- which(!is.na(tmp))
-    c(whichOne,oneUsr$ratings[whichOne])
+    else
+    {
+      whichOne <- which(!is.na(tmp))
+      c(whichOne,oneUsr$ratings[whichOne])
+    }
   }
   found <- as.matrix(sapply(basis,checkNewItem))
   # found is of dimensions 2 x number of users;
