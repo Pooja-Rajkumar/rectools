@@ -112,6 +112,14 @@ checkyd <- function() {
    testset$x <- c(5,8)
    print(predict(cout,testset,2))
 }
+predict.ydotsMM = function(ydotsObj,testSet) {
+   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] + 
+      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
+   if (!is.null(ydotsObj$regObj))
+      testSet$pred = testSet$pred + predict(ydotsObj$regObj,testSet[,-(1:2)])
+   testSet$pred
+}
+
 
 buildMatrix <- function(ratingsIn,NAval=NA){
   # deal with possible factors
@@ -122,7 +130,7 @@ buildMatrix <- function(ratingsIn,NAval=NA){
   users = ratingsIn[,1]
   movies = ratingsIn[,2]
   rating = ratingsIn[,3]
-  newMatrix = matrix(NA, 
+  newMatrix = matrix(NAval, 
                      nrow = dmax(users), ncol = dmax(movies))
   for(rows in 1:nrow(ratingsIn)){
     newMatrix[ratingsIn[rows,1],ratingsIn[rows,2]] = ratingsIn[rows,3]
@@ -130,18 +138,8 @@ buildMatrix <- function(ratingsIn,NAval=NA){
   return (newMatrix)
 }
 
-predict.nm <- function(approxMatrix, testSet){
-    fullMatrix <- buildMatrix(trainSet) # Matrix A (Step 1)
-    naMatrix <- as.data.frame(which(is.na(fullMatrix) == TRUE, arr.ind = TRUE))
-    naMatrix$ratings <- NA
-    preds <- predict.ydotsMM(approxMatrix,naMatrix) # Step 3
-    fullMatrix[which(is.na(fullMatrix))] <- preds 
-    fullMatrix[fullMatrix < 0] <- 0
-    fullMatrix[which(is.na(fullMatrix))] <- 0
-    res <- nmf(as.matrix(fullMatrix),10) # Step 4
-  res
-}
 # Wrapper for recosystem 
+
 trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
                     rnk = 10, recosystem = FALSE,regressYdots=FALSE){
   require(NMF)
@@ -152,33 +150,20 @@ trainNM <- function(ratingsIn, trainprop = 0.5,cls = NULL,
     res <- xvalReco(ratingsIn,trainprop,cls,rnk)
   }
   else {
-    fullMatrix <- buildMatrix(trainSet) # Matrix A (Step 1)
-    fullMatrix[which(fullMatrix == 0)] = NA 
-    approxMatrix <- findYdotsMM(trainSet) # Matrix V (Step 2)
+    fullMatrix <- buildMatrix(ratingsIn) # Matrix A (Step 1)
+    
+    approxMatrix <- findYdotsMM(ratingsIn) # Matrix V (Step 2)
+    
+    naMatrix <- as.data.frame(which(is.na(fullMatrix) == TRUE, arr.ind = TRUE))
+    naMatrix$ratings <- NA
+    preds <- predict.ydotsMM(approxMatrix,naMatrix) # Step 3
+    fullMatrix[which(is.na(fullMatrix))] <- preds 
+    fullMatrix[fullMatrix < 0] <- 0
+    require(NMF)
+    res <- nmf(as.matrix(fullMatrix),10) # Step 4
   }
-  approxMatrix
+  res
 }
 
-# check 
-check.trainNM <- function(ratingsIn){
-  
-  ## 75% of the sample size
-  smp_size <- floor(0.25 * nrow(ratingsIn))
-  
-  ## set the seed to make your partition reproductible
-  set.seed(123)
-  rownew = nrow(ratingsIn)
-  trainRow = floor(0.25*rownew)
-  trainidxs = sample(1:rownew,trainRow)
-  trainSet = ratingsIn[trainidxs,]
-  trainSet$trainidxs = trainidxs
-  testSet = ratingsIn[setdiff(1:nrow(ratingsIn),trainSet$trainidxs),]
-  trainSet = trainSet[,1:3]
-  testSet[,3] = NA
-  trainSet <- trainSet[1:3,]
-  approxMatrix <- trainNM(trainSet)
-  res <- predict.nm(approxMatrix,testSet,crossVal = TRUE)
-
-}
 
 
