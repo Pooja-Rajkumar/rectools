@@ -112,13 +112,7 @@ checkyd <- function() {
    testset$x <- c(5,8)
    print(predict(cout,testset,2))
 }
-predict.ydotsMM = function(ydotsObj,testSet) {
-   testSet$pred = ydotsObj$usrMeans[as.character(testSet[,1])] + 
-      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
-   if (!is.null(ydotsObj$regObj))
-      testSet$pred = testSet$pred + predict(ydotsObj$regObj,testSet[,-(1:2)])
-   testSet$pred
-}
+
 
 
 buildMatrix <- function(ratingsIn,NAval=NA){
