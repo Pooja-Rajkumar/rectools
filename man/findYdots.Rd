@@ -113,6 +113,11 @@ ivl <- ivl[,c(1,2,7,3:6)]
 library(dummies)
 dms <- dummy(ivl$dept)
 dms <- as.data.frame(dms)
+# numeric names won't work, so change
+dnms <- names(dms)
+for (i in 1:length(dnms)) 
+   dnms[i] <- paste('x',dnms[i],sep='') 
+names(dms) <- dnms
 dms$dept2 <- NULL
 ivl$dept <- NULL
 ivl <- cbind(ivl,dms)
