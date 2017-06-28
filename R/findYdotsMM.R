@@ -1,22 +1,18 @@
 
 #  modified version of earlier findYdotsMM() etc., May 27, 2017, with
-#  new approach to use of covariates
+#  new approach to use of covariates U_ijk for user i, item j;
+#  NOTE: the covariates will be centered
 
-#  in the basic model 
+#  basic model:
 #  
-#     Y_ij = mu + alpha_i + beta_j + eps 
+#     Y_ij = 
+#        mu + sum_k gamma_k U_ijk + alpha_i + beta_j + eps 
 #     
-#  break down alpha_i:
-#  
-#     alpha_i = sum_k phi_i x_ik + gamma_i
-
 #  that means
 
-#      E(Y_ij | X_ik, k = 1,...,p) = sum_k phi_i x_ik
+#      E(Y_ij | U_ik, V_jk) = sum_k gamma_k U_ik + sum_k delta_k V_jk
 
-#  so the phi can be estimated by lm() without a constant term
-
-#  the same could be done for the items, not yet implemented
+# and the coefficients can be estimated via lm() without a const term
 
 # arguments:
 
@@ -27,14 +23,15 @@
 
 #   S3 class of type "ydots", with components:
 
-#      Y..: grand mean (0 if have covariates)
-#      Yi.: vector of mean ratings for each user
-#      Y.j: vector of mean ratings for each item
-#      regOjb: if have covariates, regression output, e.g. coefs
+#      Y..: grand mean, est of mu 
+#      Yi.: vector of mean ratings for each user, ests. of alpha_i
+#      Y.j: vector of mean ratings for each item, ests. of betaa_j
+#      regObj: if have covariates, regression output, e.g. coefs
 
 findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   users <- ratingsIn[,1]
   items <- ratingsIn[,2]
+  # IMPORTANT NOTE:
   # user and item IDs may not be consecutive; even if they are
   # consecutive in the original, if we do cross-validation, this 
   # may not be the case; so switch to character IDs
@@ -48,6 +45,10 @@ findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   ydots <- list(grandMean=Y..,usrMeans=Yi.,itmMeans=Y.j)
   haveCovs <- ncol(ratingsIn) > 3
   if (haveCovs) {
+     # center the covs
+     tmp <- scale(ratingsIn[,-(1:2)],scale=FALSE)
+     ratingsIn[,-(1:2)] <- tmp
+     ydots$covmeans <- attr(tmp,'scaled:center')
      # regress, no constant term; could do a weighted least squares,
      # using the Ni, but since the latter is random too, not needed
      frml <- as.formula(paste(nms[3],'~ .-1'))
@@ -74,23 +75,32 @@ trainMM <- findYdotsMM
 #    testSet: data frame in same form as ratingsIn above except that there 
 #             is no ratings column; thus covariates, if any, are shifted
 #             leftward one slot, i.e. userID, itemID, cov1, cov2...
-#    ydotsOjb: the output of findYdotsMM()
-#    minN:  if Ni < minN and have covariates, use the latter instead of Yi.
+#    ydotsObj: the output of findYdotsMM()
+#    minN:  if Ni < minN and have covariates, use the latter instead of Yi;
+#           see above
 
 # returns vector of predicted values for testSet
-predict.ydotsMM = function(ydotsOjb,testSet,minN=0) {
+predict.ydotsMM = function(ydotsObj,testSet,minN=0) {
    haveCovs <- ncol(testSet) > 2
    # see comment on as.character() above
-   ts1 <- as.character(testSet[,1])
-   if (!haveCovs) tmp <- ydotsOjb$usrMeans[ts1] else {
-      tmp <- ifelse (
-                ydotsOjb$Ni[ts1] >= minN,
-                ydotsOjb$usrMeans[ts1],
-                predict(ydotsOjb$lmout,testSet[,-(1:2),drop=FALSE])
+   ts1 <- as.character(testSet[,1])  # user IDs, char form
+   # tmp will basically consist of the user means, except that in the
+   # covariate case some will be replaced by predict.lm() values
+   if (!haveCovs) {
+      tmp <- ydotsObj$usrMeans[ts1] 
+   }
+   else {
+      covs <- testSet[,-(1:2)]
+      colmeans <- ydotsO
+      tmp <- 
+         ifelse (ydotsObj$Ni[ts1] >= minN,
+             ydotsObj$usrMeans[ts1],
+             predict(ydotsObj$lmout,testSet[,-(1:2),drop=FALSE])
       )
    }
+   # so tmp is either estimated mu + alpha or mu + alpha 
    testSet$pred <- tmp +
-      ydotsOjb$itmMeans[as.character(testSet[,2])] - ydotsOjb$grandMean
+      ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
    testSet$pred
 }
 
