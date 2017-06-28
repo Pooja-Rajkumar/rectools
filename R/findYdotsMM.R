@@ -46,8 +46,8 @@ findYdotsMM <- function(ratingsIn,regressYdots=FALSE) {
   haveCovs <- ncol(ratingsIn) > 3
   if (haveCovs) {
      # center the covs
-     tmp <- scale(ratingsIn[,-(1:2)],scale=FALSE)
-     ratingsIn[,-(1:2)] <- tmp
+     tmp <- scale(ratingsIn[,-(1:3)],scale=FALSE)
+     ratingsIn[,-(1:3)] <- tmp
      ydots$covmeans <- attr(tmp,'scaled:center')
      # regress, no constant term; could do a weighted least squares,
      # using the Ni, but since the latter is random too, not needed
@@ -85,20 +85,21 @@ predict.ydotsMM = function(ydotsObj,testSet,minN=0) {
    # see comment on as.character() above
    ts1 <- as.character(testSet[,1])  # user IDs, char form
    # tmp will basically consist of the user means, except that in the
-   # covariate case some will be replaced by predict.lm() values
+   # covariate case some will be replaced by predict.lm() values + Y..
    if (!haveCovs) {
       tmp <- ydotsObj$usrMeans[ts1] 
    }
    else {
-      covs <- testSet[,-(1:2)]
-      colmeans <- ydotsO
+      colmeans <- ydotsObj$covmeans
+      testSet[,-(1:2)] <- 
+         scale(testSet[,-(1:2)],center=colmeans,scale=FALSE)
       tmp <- 
          ifelse (ydotsObj$Ni[ts1] >= minN,
              ydotsObj$usrMeans[ts1],
-             predict(ydotsObj$lmout,testSet[,-(1:2),drop=FALSE])
-      )
+             predict(ydotsObj$lmout,testSet[,-(1:2),drop=FALSE]) +
+                ydotsObj$grandMean
+         )
    }
-   # so tmp is either estimated mu + alpha or mu + alpha 
    testSet$pred <- tmp +
       ydotsObj$itmMeans[as.character(testSet[,2])] - ydotsObj$grandMean
    testSet$pred
